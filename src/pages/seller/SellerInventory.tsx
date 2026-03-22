@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Lightbulb, AlertTriangle } from "lucide-react";
+import { Lightbulb, AlertTriangle, Globe } from "lucide-react";
 
 const products = [
   { name: "Basmati Rice (5kg)", sku: "GR-001", stock: 45, price: "₹320", status: "available" },
@@ -71,11 +71,11 @@ export default function SellerInventory() {
         </div>
 
         <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-2 h-fit">
-          <div className="flex items-center gap-2 mb-4">
-            <Lightbulb className="h-4 w-4 text-warning" />
-            <h3 className="text-sm font-semibold">Suggested Items</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <Globe className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold">Network Suggested Items</h3>
           </div>
-          <p className="text-xs text-muted-foreground mb-4">Based on area demand and network intelligence</p>
+          <p className="text-xs text-muted-foreground mb-4">Based on shared demand data across the network</p>
           <div className="space-y-4">
             {suggestions.map((s) => (
               <div key={s.item} className="border rounded-md p-3">

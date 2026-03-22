@@ -1,4 +1,4 @@
-import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Package, Lightbulb } from "lucide-react";
+import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Package, Lightbulb, Globe, Users } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -26,6 +26,36 @@ export default function SellerDashboard() {
   return (
     <div>
       <PageHeader title="Seller Dashboard" description="Overview of your store performance" />
+
+      {/* Network Status Card */}
+      <div className="bg-card border rounded-lg p-4 mb-6 animate-fade-up">
+        <div className="flex items-center gap-2 mb-3">
+          <Globe className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Network Status</h3>
+          <span className="ml-auto flex items-center gap-1 text-[10px] text-success font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-success inline-block" />
+            Connected
+          </span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <p className="text-lg font-semibold tabular-nums">34</p>
+            <p className="text-xs text-muted-foreground">Active sellers</p>
+          </div>
+          <div>
+            <p className="text-lg font-semibold tabular-nums">12</p>
+            <p className="text-xs text-muted-foreground">Active workers</p>
+          </div>
+          <div>
+            <p className="text-lg font-semibold tabular-nums">High</p>
+            <p className="text-xs text-muted-foreground">Area demand level</p>
+          </div>
+          <div>
+            <p className="text-lg font-semibold tabular-nums">94.7%</p>
+            <p className="text-xs text-muted-foreground">Network efficiency</p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="animate-fade-up stagger-1"><StatCard title="Today's Orders" value="24" change="+12% from yesterday" changeType="positive" icon={ShoppingCart} /></div>
@@ -67,10 +97,11 @@ export default function SellerDashboard() {
 
         <div className="space-y-4">
           <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-4">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-semibold">Demand Insights</h3>
+              <h3 className="text-sm font-semibold">Collective Intelligence</h3>
             </div>
+            <p className="text-[10px] text-muted-foreground mb-3">Powered by shared network data</p>
             <div className="space-y-3">
               {demandInsights.map((d) => (
                 <div key={d.item} className="flex items-center justify-between text-sm">
@@ -82,10 +113,11 @@ export default function SellerDashboard() {
           </div>
 
           <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-5">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-1">
               <Lightbulb className="h-4 w-4 text-warning" />
-              <h3 className="text-sm font-semibold">Stock Suggestions</h3>
+              <h3 className="text-sm font-semibold">Network Suggestions</h3>
             </div>
+            <p className="text-[10px] text-muted-foreground mb-3">Suggestions generated using collective data from all sellers and workers</p>
             <div className="space-y-3">
               {stockSuggestions.map((s) => (
                 <div key={s.item} className="text-sm">

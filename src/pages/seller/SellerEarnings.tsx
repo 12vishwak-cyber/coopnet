@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
-import { DollarSign, TrendingUp, Minus } from "lucide-react";
+import { DollarSign, TrendingUp, Heart } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const history = [
@@ -15,13 +15,17 @@ const history = [
 export default function SellerEarnings() {
   return (
     <div>
-      <PageHeader title="Earnings" description="Track your revenue and fees" />
+      <PageHeader title="Earnings" description="Track your revenue and cooperative contributions" />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="animate-fade-up stagger-1"><StatCard title="Total Earnings" value="₹42,840" change="This month" changeType="neutral" icon={DollarSign} /></div>
-        <div className="animate-fade-up stagger-2"><StatCard title="Fees Deducted" value="₹2,570" change="6% cooperative fee" changeType="neutral" icon={Minus} /></div>
+        <div className="animate-fade-up stagger-2"><StatCard title="Cooperative Contribution" value="₹2,570" change="6% shared fund" changeType="neutral" icon={Heart} /></div>
         <div className="animate-fade-up stagger-3"><StatCard title="Net Balance" value="₹40,270" change="+18% vs last month" changeType="positive" icon={TrendingUp} /></div>
       </div>
+
+      <p className="text-xs text-muted-foreground mb-4 animate-fade-up stagger-3">
+        Shared fund supports routing, intelligence, and network operations. All members contribute to the shared system.
+      </p>
 
       <div className="bg-card border rounded-lg animate-fade-up stagger-4">
         <div className="p-4 border-b">
@@ -33,7 +37,7 @@ export default function SellerEarnings() {
               <TableHead>Order</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Gross</TableHead>
-              <TableHead>Fee</TableHead>
+              <TableHead>Contribution</TableHead>
               <TableHead>Net</TableHead>
             </TableRow>
           </TableHeader>
@@ -43,7 +47,7 @@ export default function SellerEarnings() {
                 <TableCell className="font-medium text-sm">{h.id}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">{h.date}</TableCell>
                 <TableCell className="text-sm tabular-nums">{h.gross}</TableCell>
-                <TableCell className="text-sm text-destructive tabular-nums">{h.fee}</TableCell>
+                <TableCell className="text-sm text-muted-foreground tabular-nums">{h.fee}</TableCell>
                 <TableCell className="text-sm font-medium tabular-nums">{h.net}</TableCell>
               </TableRow>
             ))}
