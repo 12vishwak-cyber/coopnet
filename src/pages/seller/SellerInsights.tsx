@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
-import { TrendingUp, ShoppingCart, MapPin, BarChart3 } from "lucide-react";
+import { TrendingUp, ShoppingCart, MapPin, BarChart3, Globe, Activity } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 
 const demandData = [
@@ -23,7 +23,30 @@ const areaData = [
 export default function SellerInsights() {
   return (
     <div>
-      <PageHeader title="Insights" description="Demand forecasts and performance analytics" />
+      <PageHeader title="Collective Intelligence" description="Network demand forecasts and performance analytics" />
+      <p className="text-xs text-muted-foreground mb-4 -mt-4 animate-fade-up">Data source: Shared ledger · Using network demand and delivery data</p>
+
+      {/* Network Activity Card */}
+      <div className="bg-card border rounded-lg p-4 mb-6 animate-fade-up">
+        <div className="flex items-center gap-2 mb-3">
+          <Activity className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Network Activity</h3>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <p className="text-lg font-semibold tabular-nums">186</p>
+            <p className="text-xs text-muted-foreground">Orders today</p>
+          </div>
+          <div>
+            <p className="text-lg font-semibold tabular-nums">142</p>
+            <p className="text-xs text-muted-foreground">Deliveries today</p>
+          </div>
+          <div>
+            <p className="text-lg font-semibold tabular-nums">48</p>
+            <p className="text-xs text-muted-foreground">Active nodes</p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="animate-fade-up stagger-1"><StatCard title="Weekly Trend" value="+14.2%" change="Demand rising" changeType="positive" icon={TrendingUp} /></div>

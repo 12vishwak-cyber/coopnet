@@ -17,6 +17,7 @@ export default function SellerOrders() {
   return (
     <div>
       <PageHeader title="Orders" description="Manage incoming and active orders" />
+      <p className="text-xs text-muted-foreground mb-3 -mt-4 animate-fade-up">Orders routed through cooperative network · Workers assigned by network</p>
       <div className="bg-card border rounded-lg animate-fade-up stagger-1">
         <Table>
           <TableHeader>

@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/PageHeader";
-import { MapPin, Clock, Navigation } from "lucide-react";
+import { MapPin, Clock, Navigation, Globe } from "lucide-react";
 
 const stops = [
   { type: "pickup", address: "MG Road, Shop 3 — Daily Needs", time: "2 min", done: true },
@@ -21,6 +21,7 @@ export default function WorkerRoute() {
               <Navigation className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">Route Map</p>
               <p className="text-xs text-muted-foreground mt-1">4 stops · 22 min estimated</p>
+              <p className="text-[10px] text-muted-foreground mt-2">Route generated using shared delivery data</p>
             </div>
             {/* Decorative route dots */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 250" fill="none">
@@ -67,7 +68,8 @@ export default function WorkerRoute() {
           </div>
 
           <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">
-            <span className="text-primary font-medium">AI Optimized:</span> Route reordered to minimize travel by 1.2 km
+            <span className="text-primary font-medium flex items-center gap-1 mb-0.5"><Globe className="h-3 w-3" /> Network Optimized</span>
+            Route reordered to minimize travel by 1.2 km using shared delivery data
           </p>
         </div>
       </div>

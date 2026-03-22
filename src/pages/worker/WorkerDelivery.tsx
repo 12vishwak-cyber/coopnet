@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Check, Package, Truck, MapPin, Clock } from "lucide-react";
+import { Check, Package, Truck, MapPin, Clock, Globe } from "lucide-react";
 
 const activeDelivery = {
   id: "TSK-411",
@@ -72,12 +72,22 @@ export default function WorkerDelivery() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Clock className="h-3.5 w-3.5" />
               <span>ETA: {activeDelivery.estimatedTime}</span>
             </div>
             <Button size="sm">Confirm Delivery</Button>
+          </div>
+
+          <div className="border-t pt-3 flex items-center gap-4">
+            <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+              <Globe className="h-3 w-3 text-primary" />
+              Delivery recorded in shared ledger
+            </p>
+            <p className="text-[10px] text-muted-foreground">
+              Transaction synced to network
+            </p>
           </div>
         </div>
       </div>

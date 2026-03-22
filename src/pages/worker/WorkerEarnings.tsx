@@ -20,9 +20,13 @@ export default function WorkerEarnings() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="animate-fade-up stagger-1"><StatCard title="This Week" value="₹2,840" change="32 deliveries" changeType="neutral" icon={DollarSign} /></div>
-        <div className="animate-fade-up stagger-2"><StatCard title="Total Balance" value="₹12,460" change="Available for withdrawal" changeType="neutral" icon={TrendingUp} /></div>
+        <div className="animate-fade-up stagger-2"><StatCard title="Total Balance" value="₹12,460" change="Includes cooperative share" changeType="neutral" icon={TrendingUp} /></div>
         <div className="animate-fade-up stagger-3"><StatCard title="Avg. Per Delivery" value="₹68" change="+₹4 vs last week" changeType="positive" icon={Truck} /></div>
       </div>
+
+      <p className="text-xs text-muted-foreground mb-4 animate-fade-up stagger-3">
+        Network fund contribution applied. All earnings include cooperative share deduction to support shared routing and intelligence.
+      </p>
 
       <div className="bg-card border rounded-lg animate-fade-up stagger-4">
         <div className="p-4 border-b">

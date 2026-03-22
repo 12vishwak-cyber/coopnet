@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Check, X, MapPin, Zap } from "lucide-react";
+import { Check, X, MapPin, Globe } from "lucide-react";
 
 const tasks = [
   { id: "TSK-415", seller: "Sharma General Store", pickup: "MG Road, Shop 7", delivery: "Sector 12, Block C, H-14", items: 3, distance: "2.4 km", pay: "₹65", status: "pending", suggested: true },
@@ -16,6 +16,7 @@ export default function WorkerTasks() {
   return (
     <div>
       <PageHeader title="Tasks" description="View and manage delivery tasks" />
+      <p className="text-xs text-muted-foreground mb-3 -mt-4 animate-fade-up">Tasks assigned based on cooperative routing logic</p>
 
       <div className="bg-card border rounded-lg animate-fade-up stagger-1">
         <Table>
@@ -37,7 +38,7 @@ export default function WorkerTasks() {
                 <TableCell className="font-medium text-sm">
                   <div className="flex items-center gap-1.5">
                     {t.id}
-                    {t.suggested && <Zap className="h-3 w-3 text-warning" />}
+                    {t.suggested && <Globe className="h-3 w-3 text-primary" />}
                   </div>
                 </TableCell>
                 <TableCell className="text-sm">{t.seller}</TableCell>
@@ -61,8 +62,8 @@ export default function WorkerTasks() {
       </div>
 
       <p className="text-xs text-muted-foreground mt-3 animate-fade-up stagger-2">
-        <Zap className="h-3 w-3 inline text-warning mr-1" />
-        Highlighted tasks are suggested by the network based on your location and efficiency data.
+        <Globe className="h-3 w-3 inline text-primary mr-1" />
+        Highlighted tasks are suggested by the network based on your location and cooperative routing data.
       </p>
     </div>
   );
