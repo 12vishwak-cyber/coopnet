@@ -1,0 +1,69 @@
+import { PageHeader } from "@/components/PageHeader";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Check, X, MapPin, Zap } from "lucide-react";
+
+const tasks = [
+  { id: "TSK-415", seller: "Sharma General Store", pickup: "MG Road, Shop 7", delivery: "Sector 12, Block C, H-14", items: 3, distance: "2.4 km", pay: "₹65", status: "pending", suggested: true },
+  { id: "TSK-414", seller: "Kirana Plus", pickup: "Station Road, B-2", delivery: "Anand Nagar, H-8", items: 2, distance: "3.1 km", pay: "₹72", status: "pending", suggested: false },
+  { id: "TSK-412", seller: "Fresh Mart", pickup: "Civil Lines, C-12", delivery: "Gandhi Chowk, Near Temple", items: 1, distance: "1.8 km", pay: "₹45", status: "assigned", suggested: false },
+  { id: "TSK-411", seller: "Daily Needs", pickup: "MG Road, Shop 3", delivery: "Sector 12, Block A", items: 5, distance: "2.2 km", pay: "₹85", status: "in-transit", suggested: false },
+  { id: "TSK-410", seller: "Sharma General Store", pickup: "MG Road, Shop 7", delivery: "Civil Lines, D-4", items: 2, distance: "1.5 km", pay: "₹48", status: "completed", suggested: false },
+];
+
+export default function WorkerTasks() {
+  return (
+    <div>
+      <PageHeader title="Tasks" description="View and manage delivery tasks" />
+
+      <div className="bg-card border rounded-lg animate-fade-up stagger-1">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Task</TableHead>
+              <TableHead>Seller</TableHead>
+              <TableHead>Pickup</TableHead>
+              <TableHead>Delivery</TableHead>
+              <TableHead>Dist.</TableHead>
+              <TableHead>Pay</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tasks.map((t) => (
+              <TableRow key={t.id} className={t.suggested ? "bg-primary/5" : ""}>
+                <TableCell className="font-medium text-sm">
+                  <div className="flex items-center gap-1.5">
+                    {t.id}
+                    {t.suggested && <Zap className="h-3 w-3 text-warning" />}
+                  </div>
+                </TableCell>
+                <TableCell className="text-sm">{t.seller}</TableCell>
+                <TableCell className="text-sm text-muted-foreground max-w-[140px] truncate"><MapPin className="h-3 w-3 inline mr-1" />{t.pickup}</TableCell>
+                <TableCell className="text-sm text-muted-foreground max-w-[140px] truncate"><MapPin className="h-3 w-3 inline mr-1" />{t.delivery}</TableCell>
+                <TableCell className="text-sm tabular-nums">{t.distance}</TableCell>
+                <TableCell className="text-sm font-medium tabular-nums">{t.pay}</TableCell>
+                <TableCell><StatusBadge status={t.status} /></TableCell>
+                <TableCell className="text-right">
+                  {t.status === "pending" && (
+                    <div className="flex items-center justify-end gap-1">
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-success hover:text-success"><Check className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive hover:text-destructive"><X className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <p className="text-xs text-muted-foreground mt-3 animate-fade-up stagger-2">
+        <Zap className="h-3 w-3 inline text-warning mr-1" />
+        Highlighted tasks are suggested by the network based on your location and efficiency data.
+      </p>
+    </div>
+  );
+}
