@@ -22,48 +22,57 @@ export default function WorkerDashboard() {
 
   return (
     <div>
-      <PageHeader title="Worker Dashboard" description="Your delivery overview" />
+      <PageHeader title="Dashboard" description="Your delivery overview" />
 
-      <div className="bg-card border rounded-lg p-4 mb-6 flex items-center justify-between animate-fade-up">
-        <div>
-          <p className="text-sm font-medium">Availability Status</p>
-          <p className="text-xs text-muted-foreground">{available ? "You're visible to the network" : "You won't receive new tasks"}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        {/* Availability */}
+        <div className="bg-card border rounded-lg p-5 flex items-center justify-between animate-fade-up">
+          <div>
+            <p className="text-[13px] font-medium">Availability</p>
+            <p className="text-[11px] text-muted-foreground">{available ? "Visible to the network" : "Won't receive new tasks"}</p>
+          </div>
+          <button onClick={() => setAvailable(!available)} className="flex items-center gap-2 transition-colors">
+            {available ? <ToggleRight className="h-8 w-8 text-success" /> : <ToggleLeft className="h-8 w-8 text-muted-foreground" />}
+            <span className={`text-sm font-medium ${available ? "text-success" : "text-muted-foreground"}`}>
+              {available ? "Online" : "Offline"}
+            </span>
+          </button>
         </div>
-        <button onClick={() => setAvailable(!available)} className="flex items-center gap-2 transition-colors">
-          {available ? (
-            <ToggleRight className="h-8 w-8 text-success" />
-          ) : (
-            <ToggleLeft className="h-8 w-8 text-muted-foreground" />
-          )}
-          <span className={`text-sm font-medium ${available ? "text-success" : "text-muted-foreground"}`}>
-            {available ? "Online" : "Offline"}
-          </span>
-        </button>
-      </div>
 
-      {/* Network Status Card */}
-      <div className="bg-card border rounded-lg p-4 mb-6 animate-fade-up">
-        <div className="flex items-center gap-2 mb-3">
-          <Globe className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold">Network Status</h3>
-          <span className="ml-auto flex items-center gap-1 text-[10px] text-success font-medium">
-            <span className="h-1.5 w-1.5 rounded-full bg-success inline-block" />
-            Connected
-          </span>
+        {/* Network Status */}
+        <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-1">
+          <div className="flex items-center gap-2 mb-3">
+            <Globe className="h-4 w-4 text-primary" />
+            <h3 className="text-[13px] font-semibold">Network Status</h3>
+            <span className="ml-auto flex items-center gap-1.5 text-[10px] text-success font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-success inline-block" />
+              Connected
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <p className="text-lg font-semibold tabular-nums">12</p>
+              <p className="text-[11px] text-muted-foreground">Workers</p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold tabular-nums">8</p>
+              <p className="text-[11px] text-muted-foreground">Deliveries</p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold tabular-nums">High</p>
+              <p className="text-[11px] text-muted-foreground">Demand</p>
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <p className="text-lg font-semibold tabular-nums">12</p>
-            <p className="text-xs text-muted-foreground">Workers online</p>
-          </div>
-          <div>
-            <p className="text-lg font-semibold tabular-nums">8</p>
-            <p className="text-xs text-muted-foreground">Active deliveries</p>
-          </div>
-          <div>
-            <p className="text-lg font-semibold tabular-nums">High</p>
-            <p className="text-xs text-muted-foreground">Demand level</p>
-          </div>
+
+        {/* Cooperative Info */}
+        <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-2">
+          <h3 className="text-[13px] font-semibold mb-3">Cooperative Routing</h3>
+          <ul className="space-y-2 text-[12px] text-muted-foreground">
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Tasks assigned using shared logic</li>
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Routes optimized using network data</li>
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Earnings include cooperative contribution</li>
+          </ul>
         </div>
       </div>
 
@@ -77,7 +86,7 @@ export default function WorkerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card border rounded-lg animate-fade-up stagger-3">
           <div className="p-4 border-b flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Assigned Tasks</h2>
+            <h2 className="text-[13px] font-semibold">Assigned Tasks</h2>
             <span className="text-[10px] text-muted-foreground">Assigned by network</span>
           </div>
           <Table>
@@ -109,19 +118,19 @@ export default function WorkerDashboard() {
         <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-4 h-fit">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-semibold">Performance Stats</h3>
+            <h3 className="text-[13px] font-semibold">Performance</h3>
           </div>
           <div className="space-y-4">
             {performanceStats.map((s) => (
               <div key={s.label} className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{s.label}</span>
-                <span className="text-sm font-semibold">{s.value}</span>
+                <span className="text-sm font-semibold tabular-nums">{s.value}</span>
               </div>
             ))}
           </div>
           <div className="mt-4 pt-4 border-t">
-            <p className="text-xs text-muted-foreground">
-              <span className="text-primary font-medium">Network Suggestion:</span> You're most efficient in Sector 12 area. Consider prioritizing tasks there.
+            <p className="text-[11px] text-muted-foreground">
+              <span className="text-primary font-medium">Network Suggestion:</span> You're most efficient in Sector 12 area.
             </p>
             <p className="text-[10px] text-muted-foreground mt-1">Routing optimized using shared intelligence</p>
           </div>

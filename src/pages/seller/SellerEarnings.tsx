@@ -15,7 +15,7 @@ const history = [
 export default function SellerEarnings() {
   return (
     <div>
-      <PageHeader title="Earnings" description="Track your revenue and cooperative contributions" />
+      <PageHeader title="Earnings" description="Revenue and cooperative contributions" />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="animate-fade-up stagger-1"><StatCard title="Total Earnings" value="₹42,840" change="This month" changeType="neutral" icon={DollarSign} /></div>
@@ -23,13 +23,13 @@ export default function SellerEarnings() {
         <div className="animate-fade-up stagger-3"><StatCard title="Net Balance" value="₹40,270" change="+18% vs last month" changeType="positive" icon={TrendingUp} /></div>
       </div>
 
-      <p className="text-xs text-muted-foreground mb-4 animate-fade-up stagger-3">
-        Shared fund supports routing, intelligence, and network operations. All members contribute to the shared system.
+      <p className="text-[11px] text-muted-foreground mb-5 animate-fade-up stagger-3">
+        All members contribute to shared fund · Fund supports routing, intelligence, and system operation · Distribution follows cooperative rules
       </p>
 
       <div className="bg-card border rounded-lg animate-fade-up stagger-4">
         <div className="p-4 border-b">
-          <h2 className="text-sm font-semibold">Earnings History</h2>
+          <h2 className="text-[13px] font-semibold">Earnings History</h2>
         </div>
         <Table>
           <TableHeader>

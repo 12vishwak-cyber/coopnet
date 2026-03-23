@@ -17,7 +17,7 @@ export default function SellerOrders() {
   return (
     <div>
       <PageHeader title="Orders" description="Manage incoming and active orders" />
-      <p className="text-xs text-muted-foreground mb-3 -mt-4 animate-fade-up">Orders routed through cooperative network · Workers assigned by network</p>
+      <p className="text-[11px] text-muted-foreground mb-4 -mt-4 animate-fade-up">Orders routed through cooperative network · Assigned by network</p>
       <div className="bg-card border rounded-lg animate-fade-up stagger-1">
         <Table>
           <TableHeader>
@@ -38,7 +38,7 @@ export default function SellerOrders() {
                 <TableCell className="font-medium text-sm">{o.id}</TableCell>
                 <TableCell className="text-sm">{o.customer}</TableCell>
                 <TableCell className="text-sm max-w-[200px] truncate">{o.items}</TableCell>
-                <TableCell className="text-sm">{o.total}</TableCell>
+                <TableCell className="text-sm tabular-nums">{o.total}</TableCell>
                 <TableCell className="text-sm text-muted-foreground max-w-[140px] truncate">{o.address}</TableCell>
                 <TableCell><StatusBadge status={o.status} /></TableCell>
                 <TableCell className="text-xs text-muted-foreground">{o.time}</TableCell>
@@ -58,6 +58,7 @@ export default function SellerOrders() {
           </TableBody>
         </Table>
       </div>
+      <p className="text-[10px] text-muted-foreground mt-3">Network rules active · Data from shared ledger</p>
     </div>
   );
 }

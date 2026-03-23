@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,37 +6,71 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 20% 10%;
+    --background: 220 14% 96%;
+    --foreground: 224 20% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 224 20% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
+    --popover-foreground: 224 20% 14%;
     --primary: 173 58% 39%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 14% 93%;
-    --secondary-foreground: 220 20% 10%;
-    --muted: 210 14% 95%;
-    --muted-foreground: 220 10% 46%;
-    --accent: 173 58% 39%;
-    --accent-foreground: 0 0% 100%;
+    --secondary: 220 13% 91%;
+    --secondary-foreground: 224 20% 14%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 173 40% 94%;
+    --accent-foreground: 173 58% 30%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 18% 89%;
-    --input: 214 18% 89%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
     --ring: 173 58% 39%;
-    --radius: 0.5rem;
-    --sidebar-background: 220 20% 10%;
-    --sidebar-foreground: 210 14% 83%;
+    --radius: 0.625rem;
+    --sidebar-background: 224 20% 10%;
+    --sidebar-foreground: 220 14% 75%;
     --sidebar-primary: 173 58% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 18% 16%;
-    --sidebar-accent-foreground: 210 14% 93%;
-    --sidebar-border: 220 18% 18%;
+    --sidebar-accent: 224 18% 15%;
+    --sidebar-accent-foreground: 220 14% 93%;
+    --sidebar-border: 224 18% 16%;
     --sidebar-ring: 173 58% 48%;
     --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    --background: 224 20% 8%;
+    --foreground: 220 14% 90%;
+    --card: 224 18% 11%;
+    --card-foreground: 220 14% 90%;
+    --popover: 224 18% 11%;
+    --popover-foreground: 220 14% 90%;
+    --primary: 173 58% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 224 16% 16%;
+    --secondary-foreground: 220 14% 90%;
+    --muted: 224 16% 14%;
+    --muted-foreground: 220 9% 55%;
+    --accent: 173 30% 15%;
+    --accent-foreground: 173 58% 55%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 224 14% 16%;
+    --input: 224 14% 16%;
+    --ring: 173 58% 45%;
+    --sidebar-background: 224 22% 6%;
+    --sidebar-foreground: 220 14% 65%;
+    --sidebar-primary: 173 58% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 224 20% 12%;
+    --sidebar-accent-foreground: 220 14% 85%;
+    --sidebar-border: 224 18% 12%;
+    --sidebar-ring: 173 58% 48%;
+    --success: 152 55% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 85% 55%;
     --warning-foreground: 0 0% 100%;
   }
 }
@@ -47,26 +81,29 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 }
 
 @layer utilities {
   .card-hover {
-    @apply transition-shadow duration-200;
+    @apply transition-all duration-200;
   }
   .card-hover:hover {
-    box-shadow: 0 4px 6px -1px hsl(220 20% 10% / 0.06), 0 2px 4px -2px hsl(220 20% 10% / 0.04);
+    box-shadow: 0 1px 3px 0 hsl(220 20% 10% / 0.04), 0 1px 2px -1px hsl(220 20% 10% / 0.03);
   }
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
-  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-up { animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.stagger-1 { animation-delay: 60ms; }
-.stagger-2 { animation-delay: 120ms; }
-.stagger-3 { animation-delay: 180ms; }
-.stagger-4 { animation-delay: 240ms; }
-.stagger-5 { animation-delay: 300ms; }
+.animate-fade-up { animation: fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
