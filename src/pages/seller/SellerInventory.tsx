@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Lightbulb, AlertTriangle, Globe } from "lucide-react";
+import { AlertTriangle, Globe } from "lucide-react";
 
 const products = [
   { name: "Basmati Rice (5kg)", sku: "GR-001", stock: 45, price: "₹320", status: "available" },
@@ -31,7 +31,7 @@ export default function SellerInventory() {
           <AlertTriangle className="h-4 w-4 text-destructive mt-0.5" />
           <div>
             <p className="text-sm font-medium">{lowStockCount} items are running low</p>
-            <p className="text-xs text-muted-foreground">Consider restocking before demand peaks</p>
+            <p className="text-[11px] text-muted-foreground">Consider restocking before demand peaks</p>
           </div>
         </div>
       )}
@@ -39,7 +39,7 @@ export default function SellerInventory() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card border rounded-lg animate-fade-up stagger-1">
           <div className="p-4 border-b flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Products</h2>
+            <h2 className="text-[13px] font-semibold">Products</h2>
             <Button size="sm" variant="outline" className="text-xs">Add Product</Button>
           </div>
           <Table>
@@ -59,7 +59,7 @@ export default function SellerInventory() {
                   <TableCell className="font-medium text-sm">{p.name}</TableCell>
                   <TableCell className="text-xs text-muted-foreground font-mono">{p.sku}</TableCell>
                   <TableCell className="text-sm tabular-nums">{p.stock}</TableCell>
-                  <TableCell className="text-sm">{p.price}</TableCell>
+                  <TableCell className="text-sm tabular-nums">{p.price}</TableCell>
                   <TableCell><StatusBadge status={p.status} /></TableCell>
                   <TableCell className="text-right">
                     <Button size="sm" variant="ghost" className="text-xs h-7">Update</Button>
@@ -73,14 +73,14 @@ export default function SellerInventory() {
         <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-2 h-fit">
           <div className="flex items-center gap-2 mb-1">
             <Globe className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-semibold">Network Suggested Items</h3>
+            <h3 className="text-[13px] font-semibold">Network Suggested Items</h3>
           </div>
-          <p className="text-xs text-muted-foreground mb-4">Based on shared demand data across the network</p>
+          <p className="text-[11px] text-muted-foreground mb-4">Based on shared demand data across the network</p>
           <div className="space-y-4">
             {suggestions.map((s) => (
-              <div key={s.item} className="border rounded-md p-3">
+              <div key={s.item} className="border rounded-lg p-3">
                 <p className="text-sm font-medium">{s.item}</p>
-                <p className="text-xs text-muted-foreground mt-1">{s.reason}</p>
+                <p className="text-[11px] text-muted-foreground mt-1">{s.reason}</p>
                 <Button size="sm" variant="outline" className="text-xs mt-2 h-7">Add to Inventory</Button>
               </div>
             ))}

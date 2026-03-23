@@ -14,6 +14,9 @@ import WorkerTasks from "@/pages/worker/WorkerTasks";
 import WorkerDelivery from "@/pages/worker/WorkerDelivery";
 import WorkerRoute from "@/pages/worker/WorkerRoute";
 import WorkerEarnings from "@/pages/worker/WorkerEarnings";
+import About from "@/pages/About";
+import Profile from "@/pages/Profile";
+import SettingsPage from "@/pages/SettingsPage";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
           <Route path="/worker/delivery" element={<DashboardLayout><WorkerDelivery /></DashboardLayout>} />
           <Route path="/worker/route" element={<DashboardLayout><WorkerRoute /></DashboardLayout>} />
           <Route path="/worker/earnings" element={<DashboardLayout><WorkerEarnings /></DashboardLayout>} />
+          <Route path="/about" element={<DashboardLayout><About /></DashboardLayout>} />
+          <Route path="/profile" element={<DashboardLayout><Profile /></DashboardLayout>} />
+          <Route path="/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

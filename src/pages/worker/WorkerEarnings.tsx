@@ -24,13 +24,13 @@ export default function WorkerEarnings() {
         <div className="animate-fade-up stagger-3"><StatCard title="Avg. Per Delivery" value="₹68" change="+₹4 vs last week" changeType="positive" icon={Truck} /></div>
       </div>
 
-      <p className="text-xs text-muted-foreground mb-4 animate-fade-up stagger-3">
-        Network fund contribution applied. All earnings include cooperative share deduction to support shared routing and intelligence.
+      <p className="text-[11px] text-muted-foreground mb-5 animate-fade-up stagger-3">
+        All members contribute to shared fund · Fund supports routing, intelligence, and system operation · Distribution follows cooperative rules
       </p>
 
       <div className="bg-card border rounded-lg animate-fade-up stagger-4">
         <div className="p-4 border-b">
-          <h2 className="text-sm font-semibold">Earnings History</h2>
+          <h2 className="text-[13px] font-semibold">Earnings History</h2>
         </div>
         <Table>
           <TableHeader>

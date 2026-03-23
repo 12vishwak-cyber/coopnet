@@ -14,16 +14,14 @@ export default function WorkerRoute() {
       <PageHeader title="Route" description="Optimized delivery route" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Map placeholder */}
         <div className="lg:col-span-2 bg-card border rounded-lg overflow-hidden animate-fade-up stagger-1">
           <div className="aspect-[16/10] bg-muted flex items-center justify-center relative">
             <div className="text-center">
               <Navigation className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">Route Map</p>
-              <p className="text-xs text-muted-foreground mt-1">4 stops · 22 min estimated</p>
-              <p className="text-[10px] text-muted-foreground mt-2">Route generated using shared delivery data</p>
+              <p className="text-[11px] text-muted-foreground mt-1">4 stops · 22 min estimated</p>
+              <p className="text-[10px] text-muted-foreground mt-2">Route generated using collective delivery data</p>
             </div>
-            {/* Decorative route dots */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 250" fill="none">
               <path d="M80 180 Q120 60 200 120 Q280 180 340 80" stroke="hsl(173 58% 39%)" strokeWidth="2" strokeDasharray="6 4" fill="none" />
               <circle cx="80" cy="180" r="6" fill="hsl(173 58% 39%)" />
@@ -34,11 +32,10 @@ export default function WorkerRoute() {
           </div>
         </div>
 
-        {/* Stops list */}
         <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-2 h-fit">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold">Route Stops</h3>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">Route Stops</h3>
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
               <Clock className="h-3 w-3" />
               <span>~22 min total</span>
             </div>
@@ -61,15 +58,15 @@ export default function WorkerRoute() {
                     {stop.done && <span className="text-[10px] text-success font-medium">✓ Done</span>}
                   </div>
                   <p className="text-sm mt-0.5">{stop.address}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{stop.time} from previous</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{stop.time} from previous</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">
+          <p className="text-[11px] text-muted-foreground mt-3 pt-3 border-t">
             <span className="text-primary font-medium flex items-center gap-1 mb-0.5"><Globe className="h-3 w-3" /> Network Optimized</span>
-            Route reordered to minimize travel by 1.2 km using shared delivery data
+            Shared routing engine active · Optimized across network members
           </p>
         </div>
       </div>

@@ -32,42 +32,41 @@ export default function WorkerDelivery() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm font-semibold">{activeDelivery.id}</p>
-              <p className="text-xs text-muted-foreground">{activeDelivery.seller}</p>
+              <p className="text-[11px] text-muted-foreground">{activeDelivery.seller}</p>
             </div>
             <StatusBadge status={activeDelivery.status} />
           </div>
 
-          {/* Status timeline */}
           <div className="flex items-center gap-2 mb-6">
             {statusSteps.map((step, i) => (
               <div key={step.label} className="flex items-center gap-2 flex-1">
                 <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${step.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                   <step.icon className="h-3.5 w-3.5" />
                 </div>
-                <span className={`text-xs ${step.done ? "font-medium" : "text-muted-foreground"}`}>{step.label}</span>
+                <span className={`text-[11px] ${step.done ? "font-medium" : "text-muted-foreground"}`}>{step.label}</span>
                 {i < statusSteps.length - 1 && <div className={`h-px flex-1 ${step.done ? "bg-primary" : "bg-border"}`} />}
               </div>
             ))}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div className="border rounded-md p-3">
-              <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Package className="h-3 w-3" /> Pickup</p>
+            <div className="border rounded-lg p-3">
+              <p className="text-[11px] text-muted-foreground mb-1 flex items-center gap-1"><Package className="h-3 w-3" /> Pickup</p>
               <p className="text-sm font-medium">{activeDelivery.pickup.address}</p>
-              <p className="text-xs text-muted-foreground mt-1">{activeDelivery.pickup.contact}</p>
+              <p className="text-[11px] text-muted-foreground mt-1">{activeDelivery.pickup.contact}</p>
             </div>
-            <div className="border rounded-md p-3">
-              <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><MapPin className="h-3 w-3" /> Delivery</p>
+            <div className="border rounded-lg p-3">
+              <p className="text-[11px] text-muted-foreground mb-1 flex items-center gap-1"><MapPin className="h-3 w-3" /> Delivery</p>
               <p className="text-sm font-medium">{activeDelivery.delivery.address}</p>
-              <p className="text-xs text-muted-foreground mt-1">{activeDelivery.delivery.contact}</p>
+              <p className="text-[11px] text-muted-foreground mt-1">{activeDelivery.delivery.contact}</p>
             </div>
           </div>
 
-          <div className="border rounded-md p-3 mb-4">
-            <p className="text-xs text-muted-foreground mb-2">Items ({activeDelivery.items.length})</p>
+          <div className="border rounded-lg p-3 mb-4">
+            <p className="text-[11px] text-muted-foreground mb-2">Items ({activeDelivery.items.length})</p>
             <div className="flex flex-wrap gap-2">
               {activeDelivery.items.map((item) => (
-                <span key={item} className="text-xs bg-muted px-2 py-1 rounded">{item}</span>
+                <span key={item} className="text-[11px] bg-muted px-2.5 py-1 rounded-md">{item}</span>
               ))}
             </div>
           </div>
@@ -86,7 +85,7 @@ export default function WorkerDelivery() {
               Delivery recorded in shared ledger
             </p>
             <p className="text-[10px] text-muted-foreground">
-              Transaction synced to network
+              Transaction synced to network · Performance affects future assignment
             </p>
           </div>
         </div>
