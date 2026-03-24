@@ -1,4 +1,4 @@
-import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Lightbulb, Globe, Activity } from "lucide-react";
+import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Lightbulb, Globe, Activity, Zap, BarChart3, Users } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -27,7 +27,7 @@ export default function SellerDashboard() {
     <div>
       <PageHeader title="Dashboard" description="Store performance overview" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {/* Network Status */}
         <div className="bg-card border rounded-lg p-5 animate-fade-up">
           <div className="flex items-center gap-2 mb-4">
@@ -85,16 +85,46 @@ export default function SellerDashboard() {
           <p className="text-[10px] text-muted-foreground mt-3 pt-3 border-t">Transactions stored in shared ledger</p>
         </div>
 
-        {/* Cooperative Info */}
+        {/* New: Network Efficiency & Rank */}
         <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-2">
-          <h3 className="text-[13px] font-semibold mb-3">Cooperative Network</h3>
+          <div className="flex items-center gap-2 mb-4">
+            <Zap className="h-4 w-4 text-warning" />
+            <h3 className="text-[13px] font-semibold">Performance</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-lg font-semibold tabular-nums">#4</p>
+              <p className="text-[11px] text-muted-foreground">Seller rank in area</p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold tabular-nums">↑12%</p>
+              <p className="text-[11px] text-muted-foreground">Shared demand trend</p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold tabular-nums">14</p>
+              <p className="text-[11px] text-muted-foreground">Suggested restock</p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold tabular-nums">₹2,570</p>
+              <p className="text-[11px] text-muted-foreground">Fund contribution</p>
+            </div>
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-3 pt-3 border-t">Based on network data · Generated from shared ledger</p>
+        </div>
+
+        {/* Cooperative Info */}
+        <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-3">
+          <div className="flex items-center gap-2 mb-3">
+            <Users className="h-4 w-4 text-primary" />
+            <h3 className="text-[13px] font-semibold">Cooperative Network</h3>
+          </div>
           <ul className="space-y-2.5 text-[12px] text-muted-foreground">
             <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />You are part of a shared delivery network</li>
             <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Orders routed collectively</li>
-            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Workers assigned by system</li>
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Workers assigned by network</li>
             <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Insights from all sellers</li>
           </ul>
-          <p className="text-[10px] text-muted-foreground mt-3 pt-3 border-t">System updated using network data</p>
+          <p className="text-[10px] text-muted-foreground mt-3 pt-3 border-t">System governed by cooperative · No central owner</p>
         </div>
       </div>
 
@@ -142,7 +172,7 @@ export default function SellerDashboard() {
               <TrendingUp className="h-4 w-4 text-primary" />
               <h3 className="text-[13px] font-semibold">Collective Intelligence</h3>
             </div>
-            <p className="text-[10px] text-muted-foreground mb-3">Insights based on collective data</p>
+            <p className="text-[10px] text-muted-foreground mb-3">Generated from shared ledger · Used for routing and demand forecast</p>
             <div className="space-y-3">
               {demandInsights.map((d) => (
                 <div key={d.item} className="flex items-center justify-between text-sm">
@@ -158,7 +188,7 @@ export default function SellerDashboard() {
               <Lightbulb className="h-4 w-4 text-warning" />
               <h3 className="text-[13px] font-semibold">Network Suggestions</h3>
             </div>
-            <p className="text-[10px] text-muted-foreground mb-3">Generated from collective seller and worker data</p>
+            <p className="text-[10px] text-muted-foreground mb-3">Suggestions generated using collective data from all sellers and workers</p>
             <div className="space-y-3">
               {stockSuggestions.map((s) => (
                 <div key={s.item} className="text-sm">
@@ -173,6 +203,7 @@ export default function SellerDashboard() {
           </div>
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground mt-3">Network rules active · Data from shared ledger · Shared intelligence active</p>
     </div>
   );
 }

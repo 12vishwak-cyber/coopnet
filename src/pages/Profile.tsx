@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/PageHeader";
-import { User, Globe, MapPin, Calendar, Activity, Shield } from "lucide-react";
+import { User, Globe, MapPin, Calendar, Activity, Shield, Star, Award, CheckCircle, BarChart3 } from "lucide-react";
 
 const profileData = {
   memberId: "COOP-00482",
@@ -9,6 +9,12 @@ const profileData = {
   memberSince: "March 2025",
   contributionRate: "6%",
   status: "Active",
+  nodeReputation: "Trusted",
+  trustScore: "92/100",
+  participationLevel: "High",
+  contributionHistory: "₹18,420",
+  assignmentsCompleted: "342",
+  networkRating: "4.8/5",
 };
 
 export default function Profile() {
@@ -38,6 +44,12 @@ export default function Profile() {
             { icon: MapPin, label: "Location", value: profileData.location },
             { icon: Calendar, label: "Member Since", value: profileData.memberSince },
             { icon: Activity, label: "Contribution Rate", value: profileData.contributionRate },
+            { icon: Star, label: "Node Reputation", value: profileData.nodeReputation },
+            { icon: BarChart3, label: "Trust Score", value: profileData.trustScore },
+            { icon: Award, label: "Participation Level", value: profileData.participationLevel },
+            { icon: Activity, label: "Contribution History", value: profileData.contributionHistory },
+            { icon: CheckCircle, label: "Assignments Completed", value: profileData.assignmentsCompleted },
+            { icon: Star, label: "Network Rating", value: profileData.networkRating },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -51,7 +63,7 @@ export default function Profile() {
       </div>
 
       <p className="text-[11px] text-muted-foreground mt-4 animate-fade-up">
-        Data shared across system · Rules applied by cooperative
+        Data shared across system · Rules applied by cooperative · Member of cooperative network
       </p>
     </div>
   );

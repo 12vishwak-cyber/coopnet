@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
-import { TrendingUp, ShoppingCart, MapPin, BarChart3, Activity } from "lucide-react";
+import { TrendingUp, ShoppingCart, MapPin, BarChart3, Activity, Brain, Database } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 
 const demandData = [
@@ -24,11 +24,25 @@ export default function SellerInsights() {
   return (
     <div>
       <PageHeader title="Collective Intelligence" description="Network demand forecasts and performance analytics" />
-      <p className="text-[11px] text-muted-foreground mb-5 -mt-4 animate-fade-up">
-        Data from all sellers and workers · Generated from shared ledger · Used for routing and demand forecast
-      </p>
 
-      <div className="bg-card border rounded-lg p-5 mb-6 animate-fade-up">
+      {/* Collective Intelligence Engine Info */}
+      <div className="bg-accent/30 border border-primary/10 rounded-lg p-5 mb-6 animate-fade-up">
+        <div className="flex items-center gap-2 mb-3">
+          <Brain className="h-4 w-4 text-primary" />
+          <h3 className="text-[13px] font-semibold">Collective Intelligence Engine</h3>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Database className="h-3 w-3 text-primary" />Data from all sellers and workers</div>
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Database className="h-3 w-3 text-primary" />Stored in shared ledger</div>
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Database className="h-3 w-3 text-primary" />Used for routing optimization</div>
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Database className="h-3 w-3 text-primary" />Used for demand forecast</div>
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Database className="h-3 w-3 text-primary" />Used for fund distribution</div>
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Database className="h-3 w-3 text-primary" />No central owner</div>
+        </div>
+        <p className="text-[10px] text-muted-foreground">All members share access to data · System governed by cooperative</p>
+      </div>
+
+      <div className="bg-card border rounded-lg p-5 mb-6 animate-fade-up stagger-1">
         <div className="flex items-center gap-2 mb-3">
           <Activity className="h-4 w-4 text-primary" />
           <h3 className="text-[13px] font-semibold">Network Activity</h3>
@@ -47,7 +61,6 @@ export default function SellerInsights() {
             <p className="text-[11px] text-muted-foreground">Active nodes</p>
           </div>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-3 pt-3 border-t">All members share access to data · No central owner</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -59,7 +72,8 @@ export default function SellerInsights() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-3">
-          <h3 className="text-[13px] font-semibold mb-4">Demand Forecast (7-Day)</h3>
+          <h3 className="text-[13px] font-semibold mb-1">Demand Forecast (7-Day)</h3>
+          <p className="text-[10px] text-muted-foreground mb-4">Data source: Shared ledger · Using network demand and delivery data</p>
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={demandData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -72,7 +86,8 @@ export default function SellerInsights() {
         </div>
 
         <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-4">
-          <h3 className="text-[13px] font-semibold mb-4">Area Demand</h3>
+          <h3 className="text-[13px] font-semibold mb-1">Area Demand</h3>
+          <p className="text-[10px] text-muted-foreground mb-4">Insights based on collective data</p>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={areaData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -97,6 +112,7 @@ export default function SellerInsights() {
           ))}
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground mt-3">Network rules active · Routing optimized by network · Contribution rules applied</p>
     </div>
   );
 }

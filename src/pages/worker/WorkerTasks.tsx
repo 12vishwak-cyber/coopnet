@@ -5,18 +5,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Check, X, MapPin, Globe } from "lucide-react";
 
 const tasks = [
-  { id: "TSK-415", seller: "Sharma General Store", pickup: "MG Road, Shop 7", delivery: "Sector 12, Block C, H-14", items: 3, distance: "2.4 km", pay: "₹65", status: "pending", suggested: true },
-  { id: "TSK-414", seller: "Kirana Plus", pickup: "Station Road, B-2", delivery: "Anand Nagar, H-8", items: 2, distance: "3.1 km", pay: "₹72", status: "pending", suggested: false },
-  { id: "TSK-412", seller: "Fresh Mart", pickup: "Civil Lines, C-12", delivery: "Gandhi Chowk, Near Temple", items: 1, distance: "1.8 km", pay: "₹45", status: "assigned", suggested: false },
-  { id: "TSK-411", seller: "Daily Needs", pickup: "MG Road, Shop 3", delivery: "Sector 12, Block A", items: 5, distance: "2.2 km", pay: "₹85", status: "in-transit", suggested: false },
-  { id: "TSK-410", seller: "Sharma General Store", pickup: "MG Road, Shop 7", delivery: "Civil Lines, D-4", items: 2, distance: "1.5 km", pay: "₹48", status: "completed", suggested: false },
+  { id: "TSK-415", seller: "Sharma General Store", pickup: "MG Road, Shop 7", delivery: "Sector 12, Block C, H-14", items: 3, distance: "2.4 km", pay: "₹65", status: "pending", suggested: true, priority: 92, load: "Light" },
+  { id: "TSK-414", seller: "Kirana Plus", pickup: "Station Road, B-2", delivery: "Anand Nagar, H-8", items: 2, distance: "3.1 km", pay: "₹72", status: "pending", suggested: false, priority: 78, load: "Medium" },
+  { id: "TSK-412", seller: "Fresh Mart", pickup: "Civil Lines, C-12", delivery: "Gandhi Chowk, Near Temple", items: 1, distance: "1.8 km", pay: "₹45", status: "assigned", suggested: false, priority: 65, load: "Light" },
+  { id: "TSK-411", seller: "Daily Needs", pickup: "MG Road, Shop 3", delivery: "Sector 12, Block A", items: 5, distance: "2.2 km", pay: "₹85", status: "in-transit", suggested: false, priority: 71, load: "Heavy" },
+  { id: "TSK-410", seller: "Sharma General Store", pickup: "MG Road, Shop 7", delivery: "Civil Lines, D-4", items: 2, distance: "1.5 km", pay: "₹48", status: "completed", suggested: false, priority: 60, load: "Light" },
 ];
 
 export default function WorkerTasks() {
   return (
     <div>
       <PageHeader title="Tasks" description="View and manage delivery tasks" />
-      <p className="text-[11px] text-muted-foreground mb-4 -mt-4 animate-fade-up">Tasks assigned based on cooperative routing logic</p>
+      <p className="text-[11px] text-muted-foreground mb-4 -mt-4 animate-fade-up">Tasks assigned based on cooperative routing logic · Tasks generated using shared routing logic</p>
 
       <div className="bg-card border rounded-lg animate-fade-up stagger-1">
         <Table>
@@ -26,7 +26,11 @@ export default function WorkerTasks() {
               <TableHead>Seller</TableHead>
               <TableHead>Pickup</TableHead>
               <TableHead>Delivery</TableHead>
+              <TableHead>
+                <span className="flex items-center gap-1">Priority <span className="text-[9px] text-primary font-normal">(network)</span></span>
+              </TableHead>
               <TableHead>Dist.</TableHead>
+              <TableHead>Load</TableHead>
               <TableHead>Pay</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -42,9 +46,11 @@ export default function WorkerTasks() {
                   </div>
                 </TableCell>
                 <TableCell className="text-sm">{t.seller}</TableCell>
-                <TableCell className="text-sm text-muted-foreground max-w-[140px] truncate"><MapPin className="h-3 w-3 inline mr-1" />{t.pickup}</TableCell>
-                <TableCell className="text-sm text-muted-foreground max-w-[140px] truncate"><MapPin className="h-3 w-3 inline mr-1" />{t.delivery}</TableCell>
+                <TableCell className="text-sm text-muted-foreground max-w-[120px] truncate"><MapPin className="h-3 w-3 inline mr-1" />{t.pickup}</TableCell>
+                <TableCell className="text-sm text-muted-foreground max-w-[120px] truncate"><MapPin className="h-3 w-3 inline mr-1" />{t.delivery}</TableCell>
+                <TableCell className="text-sm tabular-nums">{t.priority}</TableCell>
                 <TableCell className="text-sm tabular-nums">{t.distance}</TableCell>
+                <TableCell className="text-[11px] text-muted-foreground">{t.load}</TableCell>
                 <TableCell className="text-sm font-medium tabular-nums">{t.pay}</TableCell>
                 <TableCell><StatusBadge status={t.status} /></TableCell>
                 <TableCell className="text-right">
@@ -63,7 +69,7 @@ export default function WorkerTasks() {
 
       <p className="text-[10px] text-muted-foreground mt-3 animate-fade-up stagger-2">
         <Globe className="h-3 w-3 inline text-primary mr-1" />
-        Highlighted tasks are suggested by the network · Routing generated by network
+        Highlighted tasks are suggested by network · Network assignment active · Routing generated by network
       </p>
     </div>
   );
