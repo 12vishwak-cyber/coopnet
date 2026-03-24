@@ -14,6 +14,13 @@ import WorkerTasks from "@/pages/worker/WorkerTasks";
 import WorkerDelivery from "@/pages/worker/WorkerDelivery";
 import WorkerRoute from "@/pages/worker/WorkerRoute";
 import WorkerEarnings from "@/pages/worker/WorkerEarnings";
+import NetworkOverview from "@/pages/network/NetworkOverview";
+import NetworkRules from "@/pages/network/NetworkRules";
+import NetworkFund from "@/pages/network/NetworkFund";
+import NetworkLedger from "@/pages/network/NetworkLedger";
+import NetworkVoting from "@/pages/network/NetworkVoting";
+import NetworkActivity from "@/pages/network/NetworkActivity";
+import Onboarding from "@/pages/Onboarding";
 import About from "@/pages/About";
 import Profile from "@/pages/Profile";
 import SettingsPage from "@/pages/SettingsPage";
@@ -29,6 +36,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/seller" replace />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/seller" element={<DashboardLayout><SellerDashboard /></DashboardLayout>} />
           <Route path="/seller/orders" element={<DashboardLayout><SellerOrders /></DashboardLayout>} />
           <Route path="/seller/inventory" element={<DashboardLayout><SellerInventory /></DashboardLayout>} />
@@ -39,6 +47,12 @@ const App = () => (
           <Route path="/worker/delivery" element={<DashboardLayout><WorkerDelivery /></DashboardLayout>} />
           <Route path="/worker/route" element={<DashboardLayout><WorkerRoute /></DashboardLayout>} />
           <Route path="/worker/earnings" element={<DashboardLayout><WorkerEarnings /></DashboardLayout>} />
+          <Route path="/network" element={<DashboardLayout><NetworkOverview /></DashboardLayout>} />
+          <Route path="/network/rules" element={<DashboardLayout><NetworkRules /></DashboardLayout>} />
+          <Route path="/network/fund" element={<DashboardLayout><NetworkFund /></DashboardLayout>} />
+          <Route path="/network/ledger" element={<DashboardLayout><NetworkLedger /></DashboardLayout>} />
+          <Route path="/network/voting" element={<DashboardLayout><NetworkVoting /></DashboardLayout>} />
+          <Route path="/network/activity" element={<DashboardLayout><NetworkActivity /></DashboardLayout>} />
           <Route path="/about" element={<DashboardLayout><About /></DashboardLayout>} />
           <Route path="/profile" element={<DashboardLayout><Profile /></DashboardLayout>} />
           <Route path="/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
