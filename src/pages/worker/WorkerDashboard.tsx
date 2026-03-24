@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Truck, DollarSign, ClipboardList, BarChart3, ToggleLeft, ToggleRight, Globe } from "lucide-react";
+import { Truck, DollarSign, ClipboardList, BarChart3, ToggleLeft, ToggleRight, Globe, Zap, MapPin, Database } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 
@@ -24,7 +24,7 @@ export default function WorkerDashboard() {
     <div>
       <PageHeader title="Dashboard" description="Your delivery overview" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {/* Availability */}
         <div className="bg-card border rounded-lg p-5 flex items-center justify-between animate-fade-up">
           <div>
@@ -65,13 +65,40 @@ export default function WorkerDashboard() {
           </div>
         </div>
 
-        {/* Cooperative Info */}
+        {/* New: Predictions & Intelligence */}
         <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-2">
+          <div className="flex items-center gap-2 mb-3">
+            <Zap className="h-4 w-4 text-warning" />
+            <h3 className="text-[13px] font-semibold">Network Intelligence</h3>
+          </div>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" />Next assignment</span>
+              <span className="text-[12px] font-medium">Sector 12</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1"><Zap className="h-3 w-3" />Demand hotspot</span>
+              <span className="text-[12px] font-medium">MG Road</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1"><BarChart3 className="h-3 w-3" />Efficiency score</span>
+              <span className="text-[12px] font-medium">94.2%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1"><Database className="h-3 w-3" />Ledger sync</span>
+              <span className="text-[10px] text-success font-medium">Synced</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Cooperative Info */}
+        <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-3">
           <h3 className="text-[13px] font-semibold mb-3">Cooperative Routing</h3>
           <ul className="space-y-2 text-[12px] text-muted-foreground">
-            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Tasks assigned using shared logic</li>
-            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Routes optimized using network data</li>
-            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Earnings include cooperative contribution</li>
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Assigned using cooperative routing</li>
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Routes optimized using shared data</li>
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />Earnings include contribution</li>
+            <li className="flex items-start gap-2"><span className="h-1 w-1 rounded-full bg-primary mt-1.5 shrink-0" />No central owner</li>
           </ul>
         </div>
       </div>
@@ -136,6 +163,7 @@ export default function WorkerDashboard() {
           </div>
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground mt-3">Network rules active · System governed by cooperative · Transaction recorded in ledger</p>
     </div>
   );
 }

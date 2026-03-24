@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Check, Package, Truck, MapPin, Clock, Globe } from "lucide-react";
+import { Check, Package, Truck, MapPin, Clock, Globe, Database, BarChart3 } from "lucide-react";
 
 const activeDelivery = {
   id: "TSK-411",
@@ -20,6 +20,8 @@ const statusSteps = [
   { label: "Picked Up", done: true, icon: Package },
   { label: "In Transit", done: true, icon: Truck },
   { label: "Delivered", done: false, icon: MapPin },
+  { label: "Recorded in Ledger", done: false, icon: Database },
+  { label: "Value Distributed", done: false, icon: BarChart3 },
 ];
 
 export default function WorkerDelivery() {
@@ -37,14 +39,14 @@ export default function WorkerDelivery() {
             <StatusBadge status={activeDelivery.status} />
           </div>
 
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex flex-wrap items-center gap-2 mb-6">
             {statusSteps.map((step, i) => (
-              <div key={step.label} className="flex items-center gap-2 flex-1">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${step.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                  <step.icon className="h-3.5 w-3.5" />
+              <div key={step.label} className="flex items-center gap-2">
+                <div className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 ${step.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                  <step.icon className="h-3 w-3" />
                 </div>
-                <span className={`text-[11px] ${step.done ? "font-medium" : "text-muted-foreground"}`}>{step.label}</span>
-                {i < statusSteps.length - 1 && <div className={`h-px flex-1 ${step.done ? "bg-primary" : "bg-border"}`} />}
+                <span className={`text-[10px] ${step.done ? "font-medium" : "text-muted-foreground"}`}>{step.label}</span>
+                {i < statusSteps.length - 1 && <div className={`h-px w-4 ${step.done ? "bg-primary" : "bg-border"}`} />}
               </div>
             ))}
           </div>
@@ -79,13 +81,13 @@ export default function WorkerDelivery() {
             <Button size="sm">Confirm Delivery</Button>
           </div>
 
-          <div className="border-t pt-3 flex items-center gap-4">
+          <div className="border-t pt-3 space-y-1.5">
             <p className="text-[10px] text-muted-foreground flex items-center gap-1">
               <Globe className="h-3 w-3 text-primary" />
-              Delivery recorded in shared ledger
+              Transaction stored in shared ledger · Delivery updates network data
             </p>
             <p className="text-[10px] text-muted-foreground">
-              Transaction synced to network · Performance affects future assignment
+              Performance affects future assignment · System intelligence updated
             </p>
           </div>
         </div>

@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, Globe } from "lucide-react";
+import { AlertTriangle, Globe, Brain } from "lucide-react";
 
 const products = [
   { name: "Basmati Rice (5kg)", sku: "GR-001", stock: 45, price: "₹320", status: "available" },
@@ -31,7 +31,7 @@ export default function SellerInventory() {
           <AlertTriangle className="h-4 w-4 text-destructive mt-0.5" />
           <div>
             <p className="text-sm font-medium">{lowStockCount} items are running low</p>
-            <p className="text-[11px] text-muted-foreground">Consider restocking before demand peaks</p>
+            <p className="text-[11px] text-muted-foreground">Consider restocking before demand peaks · Network forecast active</p>
           </div>
         </div>
       )}
@@ -70,23 +70,30 @@ export default function SellerInventory() {
           </Table>
         </div>
 
-        <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-2 h-fit">
-          <div className="flex items-center gap-2 mb-1">
-            <Globe className="h-4 w-4 text-primary" />
-            <h3 className="text-[13px] font-semibold">Network Suggested Items</h3>
-          </div>
-          <p className="text-[11px] text-muted-foreground mb-4">Based on shared demand data across the network</p>
-          <div className="space-y-4">
-            {suggestions.map((s) => (
-              <div key={s.item} className="border rounded-lg p-3">
-                <p className="text-sm font-medium">{s.item}</p>
-                <p className="text-[11px] text-muted-foreground mt-1">{s.reason}</p>
-                <Button size="sm" variant="outline" className="text-xs mt-2 h-7">Add to Inventory</Button>
-              </div>
-            ))}
+        <div className="space-y-4">
+          <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-2 h-fit">
+            <div className="flex items-center gap-2 mb-1">
+              <Globe className="h-4 w-4 text-primary" />
+              <h3 className="text-[13px] font-semibold">Network Suggested Items</h3>
+            </div>
+            <p className="text-[11px] text-muted-foreground mb-4">Based on shared demand across nodes · High demand in nearby sellers</p>
+            <div className="space-y-4">
+              {suggestions.map((s) => (
+                <div key={s.item} className="border rounded-lg p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Brain className="h-3 w-3 text-primary" />
+                    <span className="text-[10px] text-primary font-medium">Collective intelligence suggestion</span>
+                  </div>
+                  <p className="text-sm font-medium">{s.item}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">{s.reason}</p>
+                  <Button size="sm" variant="outline" className="text-xs mt-2 h-7">Add to Inventory</Button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+      <p className="text-[10px] text-muted-foreground mt-3">Network rules active · Shared intelligence active</p>
     </div>
   );
 }

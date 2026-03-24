@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/PageHeader";
-import { MapPin, Clock, Navigation, Globe } from "lucide-react";
+import { MapPin, Clock, Navigation, Globe, Fuel, Timer, BarChart3, Route } from "lucide-react";
 
 const stops = [
   { type: "pickup", address: "MG Road, Shop 3 — Daily Needs", time: "2 min", done: true },
@@ -14,21 +14,58 @@ export default function WorkerRoute() {
       <PageHeader title="Route" description="Optimized delivery route" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-card border rounded-lg overflow-hidden animate-fade-up stagger-1">
-          <div className="aspect-[16/10] bg-muted flex items-center justify-center relative">
-            <div className="text-center">
-              <Navigation className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">Route Map</p>
-              <p className="text-[11px] text-muted-foreground mt-1">4 stops · 22 min estimated</p>
-              <p className="text-[10px] text-muted-foreground mt-2">Route generated using collective delivery data</p>
+        <div className="lg:col-span-2 space-y-4">
+          <div className="bg-card border rounded-lg overflow-hidden animate-fade-up stagger-1">
+            <div className="aspect-[16/10] bg-muted flex items-center justify-center relative">
+              <div className="text-center">
+                <Navigation className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Route Map</p>
+                <p className="text-[11px] text-muted-foreground mt-1">4 stops · 22 min estimated</p>
+                <p className="text-[10px] text-muted-foreground mt-2">Route generated using collective delivery data</p>
+              </div>
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 250" fill="none">
+                <path d="M80 180 Q120 60 200 120 Q280 180 340 80" stroke="hsl(173 58% 39%)" strokeWidth="2" strokeDasharray="6 4" fill="none" />
+                <circle cx="80" cy="180" r="6" fill="hsl(173 58% 39%)" />
+                <circle cx="200" cy="120" r="5" fill="hsl(173 58% 39%)" opacity="0.7" />
+                <circle cx="280" cy="160" r="5" fill="hsl(173 58% 39%)" opacity="0.7" />
+                <circle cx="340" cy="80" r="6" fill="hsl(0 72% 51%)" />
+              </svg>
             </div>
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 250" fill="none">
-              <path d="M80 180 Q120 60 200 120 Q280 180 340 80" stroke="hsl(173 58% 39%)" strokeWidth="2" strokeDasharray="6 4" fill="none" />
-              <circle cx="80" cy="180" r="6" fill="hsl(173 58% 39%)" />
-              <circle cx="200" cy="120" r="5" fill="hsl(173 58% 39%)" opacity="0.7" />
-              <circle cx="280" cy="160" r="5" fill="hsl(173 58% 39%)" opacity="0.7" />
-              <circle cx="340" cy="80" r="6" fill="hsl(0 72% 51%)" />
-            </svg>
+          </div>
+
+          {/* Route Efficiency Info */}
+          <div className="bg-card border rounded-lg p-4 animate-fade-up stagger-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="flex items-center gap-2">
+                <Fuel className="h-4 w-4 text-success" />
+                <div>
+                  <p className="text-sm font-semibold">1.2L</p>
+                  <p className="text-[10px] text-muted-foreground">Fuel saved</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Timer className="h-4 w-4 text-primary" />
+                <div>
+                  <p className="text-sm font-semibold">12 min</p>
+                  <p className="text-[10px] text-muted-foreground">Time saved</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-warning" />
+                <div>
+                  <p className="text-sm font-semibold">94%</p>
+                  <p className="text-[10px] text-muted-foreground">Efficiency score</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Route className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-semibold">1</p>
+                  <p className="text-[10px] text-muted-foreground">Alt. route available</p>
+                </div>
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3 pt-3 border-t">Route optimized using network data · Stops reordered automatically</p>
           </div>
         </div>
 
