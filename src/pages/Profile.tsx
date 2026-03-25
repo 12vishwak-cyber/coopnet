@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/PageHeader";
-import { User, Globe, MapPin, Calendar, Activity, Shield, Star, Award, CheckCircle, BarChart3 } from "lucide-react";
+import { User, Globe, MapPin, Calendar, Activity, Shield, Star, Award, CheckCircle, BarChart3, Vote, DollarSign } from "lucide-react";
 
 const profileData = {
   memberId: "COOP-00482",
@@ -15,6 +15,9 @@ const profileData = {
   contributionHistory: "₹18,420",
   assignmentsCompleted: "342",
   networkRating: "4.8/5",
+  votingRights: "Active",
+  fundContribution: "₹11,052",
+  activityCount: "1,247",
 };
 
 export default function Profile() {
@@ -47,9 +50,12 @@ export default function Profile() {
             { icon: Star, label: "Node Reputation", value: profileData.nodeReputation },
             { icon: BarChart3, label: "Trust Score", value: profileData.trustScore },
             { icon: Award, label: "Participation Level", value: profileData.participationLevel },
-            { icon: Activity, label: "Contribution History", value: profileData.contributionHistory },
+            { icon: DollarSign, label: "Contribution History", value: profileData.contributionHistory },
+            { icon: DollarSign, label: "Fund Contribution", value: profileData.fundContribution },
             { icon: CheckCircle, label: "Assignments Completed", value: profileData.assignmentsCompleted },
             { icon: Star, label: "Network Rating", value: profileData.networkRating },
+            { icon: Vote, label: "Voting Rights", value: profileData.votingRights },
+            { icon: Activity, label: "Activity Count", value: profileData.activityCount },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -63,7 +69,7 @@ export default function Profile() {
       </div>
 
       <p className="text-[11px] text-muted-foreground mt-4 animate-fade-up">
-        Data shared across system · Rules applied by cooperative · Member of cooperative network
+        Member of cooperative network · Data shared across system · Rules applied by cooperative
       </p>
     </div>
   );

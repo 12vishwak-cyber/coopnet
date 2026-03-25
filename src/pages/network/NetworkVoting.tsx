@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Check, Clock, Vote } from "lucide-react";
+import { Check, Clock, Vote, Shield, Users } from "lucide-react";
 
 const proposals = [
   {
@@ -14,6 +14,7 @@ const proposals = [
     totalMembers: 48,
     status: "voting",
     deadline: "2 days remaining",
+    requiredMajority: "60%",
   },
   {
     id: "PROP-011",
@@ -25,6 +26,7 @@ const proposals = [
     totalMembers: 48,
     status: "voting",
     deadline: "5 days remaining",
+    requiredMajority: "60%",
   },
   {
     id: "PROP-010",
@@ -36,6 +38,7 @@ const proposals = [
     totalMembers: 48,
     status: "approved",
     deadline: "Approved 3 days ago",
+    requiredMajority: "60%",
   },
 ];
 
@@ -44,6 +47,15 @@ export default function NetworkVoting() {
     <div>
       <PageHeader title="Rule Proposals" description="Vote on cooperative rule changes" />
       <p className="text-[11px] text-muted-foreground mb-4 -mt-4 animate-fade-up">Rules activated after approval · Rules decided by cooperative</p>
+
+      {/* Voting eligibility */}
+      <div className="bg-accent/30 border border-primary/10 rounded-lg p-4 mb-4 animate-fade-up flex items-center gap-3">
+        <Shield className="h-4 w-4 text-primary shrink-0" />
+        <div>
+          <p className="text-xs font-medium text-primary">You are eligible to vote</p>
+          <p className="text-[10px] text-muted-foreground">Voting rights: Active · Member role: Seller Member · Each member has one vote</p>
+        </div>
+      </div>
 
       <div className="space-y-4">
         {proposals.map((p) => {
@@ -69,15 +81,20 @@ export default function NetworkVoting() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mb-3">
+              <div className="grid grid-cols-4 gap-3 mb-3 text-sm">
                 <div>
-                  <p className="text-sm font-semibold tabular-nums text-success">{p.votesFor} For</p>
+                  <p className="font-semibold tabular-nums text-success">{p.votesFor} For</p>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold tabular-nums text-destructive">{p.votesAgainst} Against</p>
+                  <p className="font-semibold tabular-nums text-destructive">{p.votesAgainst} Against</p>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold tabular-nums">{participation}% participation</p>
+                  <p className="font-semibold tabular-nums">{participation}%</p>
+                  <p className="text-[10px] text-muted-foreground">participation</p>
+                </div>
+                <div>
+                  <p className="font-semibold tabular-nums">{p.requiredMajority}</p>
+                  <p className="text-[10px] text-muted-foreground">required</p>
                 </div>
               </div>
 
@@ -89,16 +106,21 @@ export default function NetworkVoting() {
                 <Progress value={approvalRate} className="h-1.5" />
               </div>
 
-              {p.status === "voting" && (
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="text-xs h-7 text-success border-success/30">
-                    <Vote className="h-3 w-3 mr-1" /> Vote For
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-xs h-7 text-destructive border-destructive/30">
-                    <Vote className="h-3 w-3 mr-1" /> Vote Against
-                  </Button>
-                </div>
-              )}
+              <div className="flex items-center justify-between">
+                {p.status === "voting" && (
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="text-xs h-7 text-success border-success/30">
+                      <Vote className="h-3 w-3 mr-1" /> Vote For
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-xs h-7 text-destructive border-destructive/30">
+                      <Vote className="h-3 w-3 mr-1" /> Vote Against
+                    </Button>
+                  </div>
+                )}
+                <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <Users className="h-3 w-3" /> {totalVotes}/{p.totalMembers} members voted
+                </span>
+              </div>
             </div>
           );
         })}

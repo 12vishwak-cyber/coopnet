@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/PageHeader";
-import { Globe, Database, Brain, Route, Heart, Scale, ArrowRight } from "lucide-react";
+import { Globe, Database, Brain, Route, Heart, Scale, ArrowRight, Users } from "lucide-react";
 
 const features = [
   { icon: Database, title: "Shared Ledger", desc: "All transactions and data stored in a transparent, shared system accessible to every cooperative member." },
@@ -26,8 +26,22 @@ export default function About() {
         </p>
       </div>
 
+      {/* Who can join */}
+      <div className="bg-card border rounded-lg p-5 mb-6 animate-fade-up stagger-1">
+        <div className="flex items-center gap-2 mb-3">
+          <Users className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Who can join the cooperative?</h3>
+        </div>
+        <ul className="space-y-1.5 text-xs text-muted-foreground">
+          <li>• Sellers and workers automatically become members upon joining</li>
+          <li>• Additional governance members can be approved by voting</li>
+          <li>• Each member has one vote regardless of role</li>
+          <li>• No company ownership — all members share governance</li>
+        </ul>
+      </div>
+
       {/* System Loop */}
-      <div className="bg-accent/30 border border-primary/10 rounded-lg p-5 mb-6 animate-fade-up stagger-1">
+      <div className="bg-accent/30 border border-primary/10 rounded-lg p-5 mb-6 animate-fade-up stagger-2">
         <h3 className="text-[13px] font-semibold mb-3">System Loop</h3>
         <div className="flex flex-wrap items-center gap-1">
           {loopSteps.map((step, i) => (
