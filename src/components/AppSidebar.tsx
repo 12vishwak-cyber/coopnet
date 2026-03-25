@@ -1,7 +1,8 @@
 import {
   LayoutDashboard, ShoppingCart, Package, BarChart3, DollarSign,
   Truck, ClipboardList, MapPin, Route, ArrowLeftRight, Info, User, Settings,
-  Globe, Scale, PiggyBank, Database, Vote, Activity
+  Globe, Scale, PiggyBank, Database, Vote, Activity, Users, BookOpen,
+  AlertCircle, HelpCircle, LogOut
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,16 +31,20 @@ const workerItems = [
 
 const networkItems = [
   { title: "Overview", url: "/network", icon: Globe },
+  { title: "Members", url: "/network/members", icon: Users },
   { title: "Rules", url: "/network/rules", icon: Scale },
+  { title: "Rulebook", url: "/network/rulebook", icon: BookOpen },
   { title: "Fund", url: "/network/fund", icon: PiggyBank },
   { title: "Ledger", url: "/network/ledger", icon: Database },
   { title: "Voting", url: "/network/voting", icon: Vote },
+  { title: "Complaints", url: "/network/complaints", icon: AlertCircle },
   { title: "Activity", url: "/network/activity", icon: Activity },
 ];
 
 const bottomItems = [
   { title: "About", url: "/about", icon: Info },
   { title: "Profile", url: "/profile", icon: User },
+  { title: "Help", url: "/help", icon: HelpCircle },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
@@ -48,9 +53,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
-  const isSeller = location.pathname.startsWith("/seller") || location.pathname === "/";
   const isWorker = location.pathname.startsWith("/worker");
-  const isNetwork = location.pathname.startsWith("/network");
   const items = isWorker ? workerItems : sellerItems;
 
   return (
@@ -117,7 +120,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-3">
+      <SidebarFooter className="p-3 space-y-1">
         <Button
           variant="ghost"
           size="sm"

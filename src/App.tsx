@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import DashboardLayout from "@/components/DashboardLayout";
+import Login from "@/pages/Login";
 import SellerDashboard from "@/pages/seller/SellerDashboard";
 import SellerOrders from "@/pages/seller/SellerOrders";
 import SellerInventory from "@/pages/seller/SellerInventory";
@@ -20,10 +21,14 @@ import NetworkFund from "@/pages/network/NetworkFund";
 import NetworkLedger from "@/pages/network/NetworkLedger";
 import NetworkVoting from "@/pages/network/NetworkVoting";
 import NetworkActivity from "@/pages/network/NetworkActivity";
+import NetworkMembers from "@/pages/network/NetworkMembers";
+import NetworkRulebook from "@/pages/network/NetworkRulebook";
+import NetworkComplaints from "@/pages/network/NetworkComplaints";
 import Onboarding from "@/pages/Onboarding";
 import About from "@/pages/About";
 import Profile from "@/pages/Profile";
 import SettingsPage from "@/pages/SettingsPage";
+import Help from "@/pages/Help";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -36,6 +41,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/seller" replace />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/seller" element={<DashboardLayout><SellerDashboard /></DashboardLayout>} />
           <Route path="/seller/orders" element={<DashboardLayout><SellerOrders /></DashboardLayout>} />
@@ -53,9 +59,13 @@ const App = () => (
           <Route path="/network/ledger" element={<DashboardLayout><NetworkLedger /></DashboardLayout>} />
           <Route path="/network/voting" element={<DashboardLayout><NetworkVoting /></DashboardLayout>} />
           <Route path="/network/activity" element={<DashboardLayout><NetworkActivity /></DashboardLayout>} />
+          <Route path="/network/members" element={<DashboardLayout><NetworkMembers /></DashboardLayout>} />
+          <Route path="/network/rulebook" element={<DashboardLayout><NetworkRulebook /></DashboardLayout>} />
+          <Route path="/network/complaints" element={<DashboardLayout><NetworkComplaints /></DashboardLayout>} />
           <Route path="/about" element={<DashboardLayout><About /></DashboardLayout>} />
           <Route path="/profile" element={<DashboardLayout><Profile /></DashboardLayout>} />
           <Route path="/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
+          <Route path="/help" element={<DashboardLayout><Help /></DashboardLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

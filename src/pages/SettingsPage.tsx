@@ -1,6 +1,9 @@
 import { PageHeader } from "@/components/PageHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { LogOut, ArrowLeftRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const settings = [
   { label: "Order Notifications", desc: "Receive alerts for new orders and assignments", default: true },
@@ -20,6 +23,14 @@ const dataSettings = [
 ];
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("coopnet-auth");
+    localStorage.removeItem("coopnet-role");
+    navigate("/login");
+  };
+
   return (
     <div className="max-w-xl">
       <PageHeader title="Settings" description="System preferences" />
@@ -72,6 +83,16 @@ export default function SettingsPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="bg-card border rounded-lg p-5 animate-fade-up stagger-4 space-y-3">
+          <h3 className="text-sm font-medium">Account</h3>
+          <Button variant="outline" className="w-full justify-start gap-2 h-10 text-sm" onClick={() => navigate("/login")}>
+            <ArrowLeftRight className="h-4 w-4" /> Switch Account
+          </Button>
+          <Button variant="destructive" className="w-full justify-start gap-2 h-10 text-sm" onClick={handleLogout}>
+            <LogOut className="h-4 w-4" /> Logout from CoopNet
+          </Button>
         </div>
       </div>
 
