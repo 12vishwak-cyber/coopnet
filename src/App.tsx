@@ -29,6 +29,16 @@ import About from "@/pages/About";
 import Profile from "@/pages/Profile";
 import SettingsPage from "@/pages/SettingsPage";
 import Help from "@/pages/Help";
+import CustomerLayout from "@/components/CustomerLayout";
+import CustomerHome from "@/pages/customer/CustomerHome";
+import CustomerExplore from "@/pages/customer/CustomerExplore";
+import CustomerSellerProfile from "@/pages/customer/CustomerSellerProfile";
+import CustomerCart from "@/pages/customer/CustomerCart";
+import CustomerOrders from "@/pages/customer/CustomerOrders";
+import CustomerOrderTracking from "@/pages/customer/CustomerOrderTracking";
+import CustomerPostOrder from "@/pages/customer/CustomerPostOrder";
+import CustomerNetwork from "@/pages/customer/CustomerNetwork";
+import CustomerProfile from "@/pages/customer/CustomerProfile";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -66,6 +76,15 @@ const App = () => (
           <Route path="/profile" element={<DashboardLayout><Profile /></DashboardLayout>} />
           <Route path="/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
           <Route path="/help" element={<DashboardLayout><Help /></DashboardLayout>} />
+          <Route path="/customer" element={<CustomerLayout><CustomerHome /></CustomerLayout>} />
+          <Route path="/customer/explore" element={<CustomerLayout><CustomerExplore /></CustomerLayout>} />
+          <Route path="/customer/seller/:id" element={<CustomerLayout><CustomerSellerProfile /></CustomerLayout>} />
+          <Route path="/customer/cart" element={<CustomerLayout><CustomerCart /></CustomerLayout>} />
+          <Route path="/customer/orders" element={<CustomerLayout><CustomerOrders /></CustomerLayout>} />
+          <Route path="/customer/order/track" element={<CustomerLayout><CustomerOrderTracking /></CustomerLayout>} />
+          <Route path="/customer/order/impact" element={<CustomerLayout><CustomerPostOrder /></CustomerLayout>} />
+          <Route path="/customer/network" element={<CustomerLayout><CustomerNetwork /></CustomerLayout>} />
+          <Route path="/customer/profile" element={<CustomerLayout><CustomerProfile /></CustomerLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

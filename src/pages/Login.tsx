@@ -8,7 +8,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [step, setStep] = useState(1);
-  const [role, setRole] = useState<"seller" | "worker" | "member" | null>(null);
+  const [role, setRole] = useState<"seller" | "worker" | "member" | "customer" | null>(null);
 
   const handleLogin = () => {
     localStorage.setItem("coopnet-auth", "true");
@@ -23,7 +23,8 @@ export default function Login() {
     }
     localStorage.setItem("coopnet-auth", "true");
     localStorage.setItem("coopnet-role", role || "seller");
-    if (role === "member") navigate("/network");
+    if (role === "customer") navigate("/customer");
+    else if (role === "member") navigate("/network");
     else if (role === "worker") navigate("/worker");
     else navigate("/seller");
   };
@@ -72,6 +73,7 @@ export default function Login() {
                   {([
                     { id: "seller" as const, label: "Seller", desc: "Sell products through the cooperative network" },
                     { id: "worker" as const, label: "Worker", desc: "Deliver orders using shared routing" },
+                    { id: "customer" as const, label: "Customer", desc: "Shop from local sellers in the cooperative network" },
                     { id: "member" as const, label: "Cooperative Member", desc: "Governance, auditing, or committee role" },
                   ]).map(r => (
                     <button
@@ -106,6 +108,13 @@ export default function Login() {
                       <Input placeholder="Phone" className="h-10" />
                       <Input placeholder="Vehicle Type" className="h-10" />
                       <Input placeholder="Operating Area" className="h-10" />
+                    </>
+                  )}
+                  {role === "customer" && (
+                    <>
+                      <Input placeholder="Full Name" className="h-10" />
+                      <Input placeholder="Phone" className="h-10" />
+                      <Input placeholder="Delivery Address" className="h-10" />
                     </>
                   )}
                   {role === "member" && (
