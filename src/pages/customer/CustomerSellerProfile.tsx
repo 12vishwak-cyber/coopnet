@@ -1,22 +1,22 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Star, MapPin, ShoppingCart, ArrowLeft, Clock, Package, Shield } from "lucide-react";
+import { Star, MapPin, ShoppingCart, ArrowLeft, Clock, Package, Shield, Plus, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const sellerData: Record<string, { name: string; location: string; rating: number; orders: number; avgTime: string; contribution: number; description: string }> = {
-  s1: { name: "Ravi General Store", location: "MG Road, Block A", rating: 4.6, orders: 1240, avgTime: "22 min", contribution: 92, description: "Family-run general store serving the neighborhood for 15 years. Member of CoopNet since 2023." },
-  s2: { name: "Priya Fresh Mart", location: "Sector 12, Market Street", rating: 4.8, orders: 890, avgTime: "18 min", contribution: 97, description: "Organic and fresh produce specialist. Top contributor to the cooperative fund." },
-  s3: { name: "Kumar Groceries", location: "Main Bazaar, Shop 14", rating: 4.3, orders: 2100, avgTime: "25 min", contribution: 85, description: "Wholesale and retail grocery store. Longest-running member in the network." },
-  s4: { name: "Lakshmi Dairy", location: "Dairy Colony, Lane 3", rating: 4.7, orders: 560, avgTime: "15 min", contribution: 94, description: "Fresh dairy products delivered daily. All products sourced from local farms." },
-  s5: { name: "Ahmed Provisions", location: "Old Town, Circle Road", rating: 4.4, orders: 1580, avgTime: "28 min", contribution: 88, description: "Large inventory provisions store. Known for bulk order handling." },
+const sellerData: Record<string, { name: string; location: string; rating: number; orders: number; avgTime: string; contribution: number; description: string; banner: string }> = {
+  s1: { name: "Ravi General Store", location: "MG Road, Block A", rating: 4.6, orders: 1240, avgTime: "22 min", contribution: 92, description: "Family-run general store serving the neighborhood for 15 years. Member of CoopNet since 2023.", banner: "🏪" },
+  s2: { name: "Priya Fresh Mart", location: "Sector 12, Market Street", rating: 4.8, orders: 890, avgTime: "18 min", contribution: 97, description: "Organic and fresh produce specialist. Top contributor to the cooperative fund.", banner: "🌿" },
+  s3: { name: "Kumar Groceries", location: "Main Bazaar, Shop 14", rating: 4.3, orders: 2100, avgTime: "25 min", contribution: 85, description: "Wholesale and retail grocery store. Longest-running member in the network.", banner: "🛒" },
+  s4: { name: "Lakshmi Dairy", location: "Dairy Colony, Lane 3", rating: 4.7, orders: 560, avgTime: "15 min", contribution: 94, description: "Fresh dairy products delivered daily. All products sourced from local farms.", banner: "🥛" },
+  s5: { name: "Ahmed Provisions", location: "Old Town, Circle Road", rating: 4.4, orders: 1580, avgTime: "28 min", contribution: 88, description: "Large inventory provisions store. Known for bulk order handling.", banner: "📦" },
 };
 
 const products = [
-  { name: "Rice (5kg)", price: "₹280" },
-  { name: "Wheat Flour (2kg)", price: "₹95" },
-  { name: "Cooking Oil (1L)", price: "₹180" },
-  { name: "Sugar (1kg)", price: "₹45" },
-  { name: "Tea (250g)", price: "₹120" },
-  { name: "Salt (1kg)", price: "₹20" },
+  { name: "Rice (5kg)", price: 280, image: "🍚" },
+  { name: "Wheat Flour (2kg)", price: 95, image: "🌾" },
+  { name: "Cooking Oil (1L)", price: 180, image: "🫒" },
+  { name: "Sugar (1kg)", price: 45, image: "🍬" },
+  { name: "Tea (250g)", price: 120, image: "🍵" },
+  { name: "Salt (1kg)", price: 20, image: "🧂" },
 ];
 
 export default function CustomerSellerProfile() {
@@ -25,59 +25,92 @@ export default function CustomerSellerProfile() {
   const seller = sellerData[id || "s1"] || sellerData.s1;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-        <ArrowLeft className="h-3 w-3" /> Back to Explore
-      </button>
-
-      <div className="bg-card border rounded-xl p-5 animate-fade-up">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-lg font-semibold">{seller.name}</h1>
-            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" />{seller.location}</p>
-          </div>
-          <div className="flex items-center gap-1 text-sm font-medium">
-            <Star className="h-4 w-4 text-warning" /> {seller.rating}
-          </div>
+    <div className="space-y-4">
+      {/* Banner */}
+      <div className="relative">
+        <div className="h-36 bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center text-6xl">
+          {seller.banner}
         </div>
-        <p className="text-xs text-muted-foreground mt-3">{seller.description}</p>
-
-        <div className="grid grid-cols-3 gap-3 mt-4">
-          <div className="text-center p-2 bg-muted rounded-lg">
-            <Package className="h-3.5 w-3.5 mx-auto text-primary mb-0.5" />
-            <p className="text-sm font-semibold">{seller.orders.toLocaleString()}</p>
-            <p className="text-[10px] text-muted-foreground">Orders</p>
-          </div>
-          <div className="text-center p-2 bg-muted rounded-lg">
-            <Clock className="h-3.5 w-3.5 mx-auto text-primary mb-0.5" />
-            <p className="text-sm font-semibold">{seller.avgTime}</p>
-            <p className="text-[10px] text-muted-foreground">Avg Delivery</p>
-          </div>
-          <div className="text-center p-2 bg-muted rounded-lg">
-            <Shield className="h-3.5 w-3.5 mx-auto text-primary mb-0.5" />
-            <p className="text-sm font-semibold">{seller.contribution}%</p>
-            <p className="text-[10px] text-muted-foreground">Network Score</p>
-          </div>
-        </div>
-        <p className="text-[10px] text-muted-foreground mt-2">Network contribution score from shared ledger · Member of cooperative</p>
+        <button 
+          onClick={() => navigate(-1)} 
+          className="absolute top-3 left-3 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm"
+        >
+          <ArrowLeft className="h-4 w-4 text-gray-700" />
+        </button>
       </div>
 
-      <div className="bg-card border rounded-xl p-4 animate-fade-up stagger-1">
-        <h3 className="text-sm font-medium mb-3">Products</h3>
-        <div className="space-y-2">
-          {products.map((p) => (
-            <div key={p.name} className="flex items-center justify-between py-2 border-b last:border-0">
-              <span className="text-sm">{p.name}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{p.price}</span>
-                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => navigate("/customer/cart")}>
-                  <ShoppingCart className="h-3 w-3 mr-1" /> Add
-                </Button>
-              </div>
+      <div className="px-4 space-y-4">
+        {/* Seller Info */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 -mt-8 relative z-10">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">{seller.name}</h1>
+              <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                <MapPin className="h-3 w-3" />{seller.location}
+              </p>
             </div>
-          ))}
+            <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-full">
+              <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+              <span className="text-sm font-bold text-gray-900">{seller.rating}</span>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mt-3 leading-relaxed">{seller.description}</p>
+
+          <div className="grid grid-cols-3 gap-2 mt-4">
+            <div className="text-center p-2.5 bg-gray-50 rounded-xl">
+              <Package className="h-4 w-4 mx-auto text-emerald-500 mb-1" />
+              <p className="text-sm font-bold text-gray-900">{seller.orders.toLocaleString()}</p>
+              <p className="text-[10px] text-gray-400 font-medium">Orders</p>
+            </div>
+            <div className="text-center p-2.5 bg-gray-50 rounded-xl">
+              <Clock className="h-4 w-4 mx-auto text-emerald-500 mb-1" />
+              <p className="text-sm font-bold text-gray-900">{seller.avgTime}</p>
+              <p className="text-[10px] text-gray-400 font-medium">Delivery</p>
+            </div>
+            <div className="text-center p-2.5 bg-gray-50 rounded-xl">
+              <Shield className="h-4 w-4 mx-auto text-emerald-500 mb-1" />
+              <p className="text-sm font-bold text-gray-900">{seller.contribution}%</p>
+              <p className="text-[10px] text-gray-400 font-medium">Trust Score</p>
+            </div>
+          </div>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-3">Prices set by seller · No platform markup · Cooperative network</p>
+
+        {/* Fair Distribution - subtle */}
+        <div className="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-100">
+          <p className="text-[11px] font-bold text-emerald-800 mb-1">💚 Fair Distribution</p>
+          <p className="text-[11px] text-emerald-700">
+            78% to seller · 12% to workers · 6% to community fund
+          </p>
+        </div>
+
+        {/* Products */}
+        <div>
+          <h3 className="text-[15px] font-bold text-gray-900 mb-3">Products</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {products.map((p) => (
+              <div key={p.name} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
+                <div className="h-16 rounded-xl bg-gray-50 flex items-center justify-center text-3xl mb-2">
+                  {p.image}
+                </div>
+                <p className="text-[13px] font-bold text-gray-900">{p.name}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[15px] font-bold text-gray-900">₹{p.price}</span>
+                  <Button 
+                    size="sm" 
+                    className="h-8 w-8 p-0 rounded-xl bg-emerald-500 hover:bg-emerald-600"
+                    onClick={() => navigate("/customer/cart")}
+                  >
+                    <Plus className="h-4 w-4 text-white" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="text-[11px] text-gray-400 text-center pb-4 font-medium">
+          Prices set by seller · No platform markup
+        </p>
       </div>
     </div>
   );

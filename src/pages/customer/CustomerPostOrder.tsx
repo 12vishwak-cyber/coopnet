@@ -1,91 +1,90 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, Star, Users, PiggyBank, Truck, ArrowRight } from "lucide-react";
+import { ArrowLeft, Heart, Star, Users, PiggyBank, Truck, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function CustomerPostOrder() {
   const navigate = useNavigate();
+  const [sellerRating, setSellerRating] = useState(4);
+  const [workerRating, setWorkerRating] = useState(5);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-3 w-3" /> Back
-      </button>
-
-      <div className="text-center animate-fade-up py-2">
-        <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-2">
-          <Heart className="h-6 w-6 text-success" />
-        </div>
-        <h1 className="text-lg font-semibold">Order Delivered!</h1>
-        <p className="text-xs text-muted-foreground">ORD-1847 · Your impact in the network</p>
+    <div className="min-h-screen bg-[#f5f5f5]">
+      <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+        <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+          <ArrowLeft className="h-4 w-4 text-gray-600" />
+        </button>
+        <span className="text-[15px] font-bold text-gray-900">Order Complete</span>
       </div>
 
-      {/* Impact Cards */}
-      <div className="space-y-3 animate-fade-up stagger-1">
-        <div className="bg-card border rounded-xl p-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-            <PiggyBank className="h-5 w-5 text-primary" />
+      <div className="p-4 space-y-3">
+        {/* Success */}
+        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
+          <div className="h-16 w-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
-          <div>
-            <p className="text-sm font-medium">You contributed ₹34 to the cooperative fund</p>
-            <p className="text-[11px] text-muted-foreground">Supports routing, intelligence, and shared infrastructure</p>
-          </div>
+          <h1 className="text-lg font-bold text-gray-900">Order Delivered!</h1>
+          <p className="text-xs text-gray-400 mt-1">ORD-1847 · Here's your impact</p>
         </div>
 
-        <div className="bg-card border rounded-xl p-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
-            <Users className="h-5 w-5 text-success" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">You supported a local seller</p>
-            <p className="text-[11px] text-muted-foreground">Kumar Groceries received ₹445 directly · No platform commission</p>
-          </div>
-        </div>
-
-        <div className="bg-card border rounded-xl p-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
-            <Truck className="h-5 w-5 text-warning" />
-          </div>
-          <div>
-            <p className="text-sm font-medium">You enabled fair worker earnings</p>
-            <p className="text-[11px] text-muted-foreground">Worker-07 earned ₹68 · Based on cooperative rules, not surge pricing</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Rate */}
-      <div className="bg-card border rounded-xl p-4 animate-fade-up stagger-2">
-        <h3 className="text-sm font-medium mb-3">Rate Your Experience</h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Seller</span>
-            <div className="flex gap-1">
-              {[1,2,3,4,5].map(n => <Star key={n} className={`h-5 w-5 cursor-pointer ${n <= 4 ? "text-warning fill-warning" : "text-muted-foreground"}`} />)}
+        {/* Impact Cards */}
+        {[
+          { icon: PiggyBank, color: "bg-emerald-50", iconColor: "text-emerald-500", title: "₹34 contributed to community fund", desc: "Supports routing, infrastructure, and shared intelligence" },
+          { icon: Users, color: "bg-blue-50", iconColor: "text-blue-500", title: "Supported a local seller", desc: "Kumar Groceries received ₹445 directly — no commission" },
+          { icon: Truck, color: "bg-amber-50", iconColor: "text-amber-500", title: "Fair worker earnings", desc: "Arun K. earned ₹68 — based on cooperative rules" },
+        ].map(({ icon: Icon, color, iconColor, title, desc }) => (
+          <div key={title} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
+            <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center shrink-0`}>
+              <Icon className={`h-5 w-5 ${iconColor}`} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-900">{title}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">{desc}</p>
             </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Worker</span>
-            <div className="flex gap-1">
-              {[1,2,3,4,5].map(n => <Star key={n} className={`h-5 w-5 cursor-pointer ${n <= 5 ? "text-warning fill-warning" : "text-muted-foreground"}`} />)}
+        ))}
+
+        {/* Ratings */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <h3 className="text-sm font-bold text-gray-900 mb-4">Rate Your Experience</h3>
+          {[
+            { label: "Seller", rating: sellerRating, setRating: setSellerRating },
+            { label: "Worker", rating: workerRating, setRating: setWorkerRating },
+          ].map(({ label, rating, setRating }) => (
+            <div key={label} className="flex items-center justify-between mb-3 last:mb-0">
+              <span className="text-sm font-medium text-gray-700">{label}</span>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map(n => (
+                  <button key={n} onClick={() => setRating(n)}>
+                    <Star className={`h-6 w-6 transition-colors ${n <= rating ? "text-amber-400 fill-amber-400" : "text-gray-200"}`} />
+                  </button>
+                ))}
+              </div>
             </div>
+          ))}
+        </div>
+
+        {/* Membership CTA */}
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 shadow-lg shadow-emerald-200">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+              <Heart className="h-5 w-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-white">Become a Cooperative Member</p>
+              <p className="text-[11px] text-white/80 mt-0.5">12 orders done! Vote on rules & shape the network.</p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-white/60" />
           </div>
         </div>
-      </div>
 
-      {/* Membership CTA */}
-      <div className="bg-accent/30 border border-primary/10 rounded-xl p-4 animate-fade-up stagger-3">
-        <h3 className="text-sm font-semibold mb-1">Become a Cooperative Member</h3>
-        <p className="text-xs text-muted-foreground mb-3">
-          You've completed 5+ orders. You're eligible to join as a governance member.
-          Vote on rules, propose changes, and access system insights.
-        </p>
-        <Button size="sm" className="h-8 text-xs">
-          Apply for Membership <ArrowRight className="h-3 w-3 ml-1" />
+        <Button 
+          className="w-full h-12 rounded-2xl font-bold bg-gray-900 hover:bg-gray-800"
+          onClick={() => navigate("/customer")}
+        >
+          Continue Shopping
         </Button>
       </div>
-
-      <p className="text-[10px] text-muted-foreground text-center pb-4">
-        Transaction recorded in shared ledger · Value distributed via cooperative rules
-      </p>
     </div>
   );
 }
