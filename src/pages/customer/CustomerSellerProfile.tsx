@@ -1,22 +1,35 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { Star, MapPin, ShoppingCart, ArrowLeft, Clock, Package, Shield, Plus, Truck } from "lucide-react";
+import { Star, MapPin, ArrowLeft, Clock, Package, Shield, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import storeGeneral from "@/assets/stores/general-store.jpg";
+import storeFreshMart from "@/assets/stores/fresh-mart.jpg";
+import storeGroceries from "@/assets/stores/groceries.jpg";
+import storeDairy from "@/assets/stores/dairy.jpg";
+import storeProvisions from "@/assets/stores/provisions.jpg";
+
+import imgRice from "@/assets/products/rice.jpg";
+import imgWheatFlour from "@/assets/products/wheat-flour.jpg";
+import imgCookingOil from "@/assets/products/cooking-oil.jpg";
+import imgSugar from "@/assets/products/sugar.jpg";
+import imgMilk from "@/assets/products/milk.jpg";
+import imgPaneer from "@/assets/products/paneer.jpg";
+
 const sellerData: Record<string, { name: string; location: string; rating: number; orders: number; avgTime: string; contribution: number; description: string; banner: string }> = {
-  s1: { name: "Ravi General Store", location: "MG Road, Block A", rating: 4.6, orders: 1240, avgTime: "22 min", contribution: 92, description: "Family-run general store serving the neighborhood for 15 years. Member of CoopNet since 2023.", banner: "🏪" },
-  s2: { name: "Priya Fresh Mart", location: "Sector 12, Market Street", rating: 4.8, orders: 890, avgTime: "18 min", contribution: 97, description: "Organic and fresh produce specialist. Top contributor to the cooperative fund.", banner: "🌿" },
-  s3: { name: "Kumar Groceries", location: "Main Bazaar, Shop 14", rating: 4.3, orders: 2100, avgTime: "25 min", contribution: 85, description: "Wholesale and retail grocery store. Longest-running member in the network.", banner: "🛒" },
-  s4: { name: "Lakshmi Dairy", location: "Dairy Colony, Lane 3", rating: 4.7, orders: 560, avgTime: "15 min", contribution: 94, description: "Fresh dairy products delivered daily. All products sourced from local farms.", banner: "🥛" },
-  s5: { name: "Ahmed Provisions", location: "Old Town, Circle Road", rating: 4.4, orders: 1580, avgTime: "28 min", contribution: 88, description: "Large inventory provisions store. Known for bulk order handling.", banner: "📦" },
+  s1: { name: "Ravi General Store", location: "MG Road, Block A", rating: 4.6, orders: 1240, avgTime: "22 min", contribution: 92, description: "Family-run general store serving the neighborhood for 15 years. Member of CoopNet since 2023.", banner: storeGeneral },
+  s2: { name: "Priya Fresh Mart", location: "Sector 12, Market Street", rating: 4.8, orders: 890, avgTime: "18 min", contribution: 97, description: "Organic and fresh produce specialist. Top contributor to the cooperative fund.", banner: storeFreshMart },
+  s3: { name: "Kumar Groceries", location: "Main Bazaar, Shop 14", rating: 4.3, orders: 2100, avgTime: "25 min", contribution: 85, description: "Wholesale and retail grocery store. Longest-running member in the network.", banner: storeGroceries },
+  s4: { name: "Lakshmi Dairy", location: "Dairy Colony, Lane 3", rating: 4.7, orders: 560, avgTime: "15 min", contribution: 94, description: "Fresh dairy products delivered daily. All products sourced from local farms.", banner: storeDairy },
+  s5: { name: "Ahmed Provisions", location: "Old Town, Circle Road", rating: 4.4, orders: 1580, avgTime: "28 min", contribution: 88, description: "Large inventory provisions store. Known for bulk order handling.", banner: storeProvisions },
 };
 
 const products = [
-  { name: "Rice (5kg)", price: 280, image: "🍚" },
-  { name: "Wheat Flour (2kg)", price: 95, image: "🌾" },
-  { name: "Cooking Oil (1L)", price: 180, image: "🫒" },
-  { name: "Sugar (1kg)", price: 45, image: "🍬" },
-  { name: "Tea (250g)", price: 120, image: "🍵" },
-  { name: "Salt (1kg)", price: 20, image: "🧂" },
+  { name: "Rice (5kg)", price: 280, image: imgRice },
+  { name: "Wheat Flour (2kg)", price: 95, image: imgWheatFlour },
+  { name: "Cooking Oil (1L)", price: 180, image: imgCookingOil },
+  { name: "Sugar (1kg)", price: 45, image: imgSugar },
+  { name: "Whole Milk (1L)", price: 56, image: imgMilk },
+  { name: "Fresh Paneer", price: 90, image: imgPaneer },
 ];
 
 export default function CustomerSellerProfile() {
@@ -28,11 +41,11 @@ export default function CustomerSellerProfile() {
     <div className="space-y-4">
       {/* Banner */}
       <div className="relative">
-        <div className="h-36 bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center text-6xl">
-          {seller.banner}
+        <div className="h-44 overflow-hidden">
+          <img src={seller.banner} alt={seller.name} className="h-full w-full object-cover" width={768} height={176} />
         </div>
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="absolute top-3 left-3 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm"
         >
           <ArrowLeft className="h-4 w-4 text-gray-700" />
@@ -75,7 +88,7 @@ export default function CustomerSellerProfile() {
           </div>
         </div>
 
-        {/* Fair Distribution - subtle */}
+        {/* Fair Distribution */}
         <div className="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-100">
           <p className="text-[11px] font-bold text-emerald-800 mb-1">💚 Fair Distribution</p>
           <p className="text-[11px] text-emerald-700">
@@ -88,20 +101,22 @@ export default function CustomerSellerProfile() {
           <h3 className="text-[15px] font-bold text-gray-900 mb-3">Products</h3>
           <div className="grid grid-cols-2 gap-3">
             {products.map((p) => (
-              <div key={p.name} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
-                <div className="h-16 rounded-xl bg-gray-50 flex items-center justify-center text-3xl mb-2">
-                  {p.image}
+              <div key={p.name} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+                <div className="h-24 overflow-hidden">
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={96} />
                 </div>
-                <p className="text-[13px] font-bold text-gray-900">{p.name}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[15px] font-bold text-gray-900">₹{p.price}</span>
-                  <Button 
-                    size="sm" 
-                    className="h-8 w-8 p-0 rounded-xl bg-emerald-500 hover:bg-emerald-600"
-                    onClick={() => navigate("/customer/cart")}
-                  >
-                    <Plus className="h-4 w-4 text-white" />
-                  </Button>
+                <div className="p-3">
+                  <p className="text-[13px] font-bold text-gray-900">{p.name}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-[15px] font-bold text-gray-900">₹{p.price}</span>
+                    <Button
+                      size="sm"
+                      className="h-8 w-8 p-0 rounded-xl bg-emerald-500 hover:bg-emerald-600"
+                      onClick={() => navigate("/customer/cart")}
+                    >
+                      <Plus className="h-4 w-4 text-white" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

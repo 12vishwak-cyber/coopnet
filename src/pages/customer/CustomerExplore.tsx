@@ -1,32 +1,50 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star, MapPin, Shield, Truck, Search, SlidersHorizontal, Plus, Clock } from "lucide-react";
+import { Star, MapPin, Clock, Search, SlidersHorizontal, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import imgTomatoes from "@/assets/products/tomatoes.jpg";
+import imgMilk from "@/assets/products/milk.jpg";
+import imgChips from "@/assets/products/chips.jpg";
+import imgRice from "@/assets/products/rice.jpg";
+import imgPaneer from "@/assets/products/paneer.jpg";
+import imgCookingOil from "@/assets/products/cooking-oil.jpg";
+import imgWheatFlour from "@/assets/products/wheat-flour.jpg";
+import imgSugar from "@/assets/products/sugar.jpg";
+import imgJaggery from "@/assets/products/jaggery.jpg";
+import imgIdliBatter from "@/assets/products/idli-batter.jpg";
+import imgPickle from "@/assets/products/pickle.jpg";
+
+import storeGeneral from "@/assets/stores/general-store.jpg";
+import storeFreshMart from "@/assets/stores/fresh-mart.jpg";
+import storeGroceries from "@/assets/stores/groceries.jpg";
+import storeDairy from "@/assets/stores/dairy.jpg";
+import storeProvisions from "@/assets/stores/provisions.jpg";
+
 const sellers = [
-  { id: "s1", name: "Ravi General Store", distance: "0.8 km", rating: 4.6, tags: ["Fast delivery", "Trusted"], items: 48, deliveryTime: "22 min", banner: "🏪" },
-  { id: "s2", name: "Priya Fresh Mart", distance: "1.2 km", rating: 4.8, tags: ["Organic", "Top rated"], items: 35, deliveryTime: "18 min", banner: "🌿" },
-  { id: "s3", name: "Kumar Groceries", distance: "0.5 km", rating: 4.3, tags: ["Nearest"], items: 62, deliveryTime: "25 min", banner: "🛒" },
-  { id: "s4", name: "Lakshmi Dairy", distance: "1.5 km", rating: 4.7, tags: ["Fresh daily"], items: 22, deliveryTime: "15 min", banner: "🥛" },
-  { id: "s5", name: "Ahmed Provisions", distance: "2.1 km", rating: 4.4, tags: ["Bulk orders"], items: 55, deliveryTime: "28 min", banner: "📦" },
+  { id: "s1", name: "Ravi General Store", distance: "0.8 km", rating: 4.6, tags: ["Fast delivery", "Trusted"], items: 48, deliveryTime: "22 min", banner: storeGeneral },
+  { id: "s2", name: "Priya Fresh Mart", distance: "1.2 km", rating: 4.8, tags: ["Organic", "Top rated"], items: 35, deliveryTime: "18 min", banner: storeFreshMart },
+  { id: "s3", name: "Kumar Groceries", distance: "0.5 km", rating: 4.3, tags: ["Nearest"], items: 62, deliveryTime: "25 min", banner: storeGroceries },
+  { id: "s4", name: "Lakshmi Dairy", distance: "1.5 km", rating: 4.7, tags: ["Fresh daily"], items: 22, deliveryTime: "15 min", banner: storeDairy },
+  { id: "s5", name: "Ahmed Provisions", distance: "2.1 km", rating: 4.4, tags: ["Bulk orders"], items: 55, deliveryTime: "28 min", banner: storeProvisions },
 ];
 
 const products = [
-  { name: "Fresh Tomatoes", price: 20, unit: "1 kg", seller: "Priya Fresh Mart", image: "🍅", tag: "🔥" },
-  { name: "Whole Milk", price: 30, unit: "500 ml", seller: "Lakshmi Dairy", image: "🥛", tag: "" },
-  { name: "Masala Chips", price: 10, unit: "Pack", seller: "Ravi General Store", image: "🍟", tag: "⚡" },
-  { name: "Basmati Rice", price: 85, unit: "1 kg", seller: "Kumar Groceries", image: "🍚", tag: "" },
-  { name: "Fresh Paneer", price: 90, unit: "200g", seller: "Lakshmi Dairy", image: "🧀", tag: "🔥" },
-  { name: "Cooking Oil", price: 180, unit: "1 L", seller: "Ravi General Store", image: "🫒", tag: "" },
-  { name: "Wheat Flour", price: 48, unit: "1 kg", seller: "Ahmed Provisions", image: "🌾", tag: "" },
-  { name: "Sugar", price: 45, unit: "1 kg", seller: "Kumar Groceries", image: "🍬", tag: "" },
+  { name: "Fresh Tomatoes", price: 20, unit: "1 kg", seller: "Priya Fresh Mart", image: imgTomatoes, tag: "🔥" },
+  { name: "Whole Milk", price: 30, unit: "500 ml", seller: "Lakshmi Dairy", image: imgMilk, tag: "" },
+  { name: "Masala Chips", price: 10, unit: "Pack", seller: "Ravi General Store", image: imgChips, tag: "⚡" },
+  { name: "Basmati Rice", price: 85, unit: "1 kg", seller: "Kumar Groceries", image: imgRice, tag: "" },
+  { name: "Fresh Paneer", price: 90, unit: "200g", seller: "Lakshmi Dairy", image: imgPaneer, tag: "🔥" },
+  { name: "Cooking Oil", price: 180, unit: "1 L", seller: "Ravi General Store", image: imgCookingOil, tag: "" },
+  { name: "Wheat Flour", price: 48, unit: "1 kg", seller: "Ahmed Provisions", image: imgWheatFlour, tag: "" },
+  { name: "Sugar", price: 45, unit: "1 kg", seller: "Kumar Groceries", image: imgSugar, tag: "" },
 ];
 
 const localSpecials = [
-  { name: "Organic Jaggery", price: 65, unit: "500g", seller: "Priya Fresh Mart", image: "🍯", badge: "Local Favorite" },
-  { name: "Fresh Idli Batter", price: 40, unit: "1 L", seller: "Lakshmi Dairy", image: "🫓", badge: "Made Today" },
-  { name: "Pickle (Mango)", price: 120, unit: "250g", seller: "Kumar Groceries", image: "🥭", badge: "Homemade" },
+  { name: "Organic Jaggery", price: 65, unit: "500g", seller: "Priya Fresh Mart", image: imgJaggery, badge: "Local Favorite" },
+  { name: "Fresh Idli Batter", price: 40, unit: "1 L", seller: "Lakshmi Dairy", image: imgIdliBatter, badge: "Made Today" },
+  { name: "Pickle (Mango)", price: 120, unit: "250g", seller: "Kumar Groceries", image: imgPickle, badge: "Homemade" },
 ];
 
 const filters = ["Fast delivery", "Lowest price", "High trust", "Nearest"];
@@ -46,7 +64,7 @@ export default function CustomerExplore() {
             placeholder="Search products, stores..."
             className="pl-10 pr-12 h-12 rounded-2xl bg-white border-gray-100 shadow-sm text-sm font-medium placeholder:text-gray-400"
           />
-          <button className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-gray-50 flex items-center justify-center active:bg-gray-100 transition-colors">
+          <button className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-gray-50 flex items-center justify-center">
             <SlidersHorizontal className="h-4 w-4 text-gray-500" />
           </button>
         </div>
@@ -91,13 +109,13 @@ export default function CustomerExplore() {
           <div className="grid grid-cols-2 gap-3">
             {products.map((p) => (
               <div key={p.name} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50">
-                <div className="relative h-24 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-5xl">
+                <div className="relative h-28 overflow-hidden">
                   {p.tag && (
-                    <span className="absolute top-2 left-2 text-[9px] font-bold bg-white/90 px-1.5 py-0.5 rounded-full">
+                    <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 px-1.5 py-0.5 rounded-full">
                       {p.tag}
                     </span>
                   )}
-                  {p.image}
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
                 </div>
                 <div className="p-3">
                   <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
@@ -107,7 +125,6 @@ export default function CustomerExplore() {
                     <Button
                       size="sm"
                       className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
-                      onClick={(e) => { e.stopPropagation(); }}
                     >
                       <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
                     </Button>
@@ -130,8 +147,8 @@ export default function CustomerExplore() {
               onClick={() => navigate(`/customer/seller/${s.id}`)}
               className="w-full text-left bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 active:scale-[0.98] transition-transform"
             >
-              <div className="h-20 bg-gradient-to-r from-emerald-50 to-teal-50 flex items-center justify-center text-4xl">
-                {s.banner}
+              <div className="h-28 overflow-hidden">
+                <img src={s.banner} alt={s.name} className="h-full w-full object-cover" loading="lazy" width={400} height={112} />
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between mb-2">
@@ -174,8 +191,8 @@ export default function CustomerExplore() {
           </div>
           {localSpecials.map((p) => (
             <div key={p.name} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center gap-4">
-              <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-3xl shrink-0">
-                {p.image}
+              <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0">
+                <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={64} height={64} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
