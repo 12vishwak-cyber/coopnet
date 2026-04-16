@@ -3,10 +3,14 @@ import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, ChevronDown, ChevronU
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
+import imgRice from "@/assets/products/rice.jpg";
+import imgCookingOil from "@/assets/products/cooking-oil.jpg";
+import imgMilk from "@/assets/products/milk.jpg";
+
 const cartItems = [
-  { name: "Rice (5kg)", price: 280, qty: 1, seller: "Kumar Groceries", image: "🍚" },
-  { name: "Cooking Oil (1L)", price: 180, qty: 1, seller: "Ravi General Store", image: "🫒" },
-  { name: "Milk (1L)", price: 56, qty: 2, seller: "Lakshmi Dairy", image: "🥛" },
+  { name: "Rice (5kg)", price: 280, qty: 1, seller: "Kumar Groceries", image: imgRice },
+  { name: "Cooking Oil (1L)", price: 180, qty: 1, seller: "Ravi General Store", image: imgCookingOil },
+  { name: "Milk (1L)", price: 56, qty: 2, seller: "Lakshmi Dairy", image: imgMilk },
 ];
 
 export default function CustomerCart() {
@@ -19,7 +23,7 @@ export default function CustomerCart() {
   const systemCost = subtotal - sellerEarnings - workerEarnings - cooperativeFund;
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div className="min-h-screen bg-[#f8f8f8]">
       {/* Header */}
       <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
         <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
@@ -36,8 +40,8 @@ export default function CustomerCart() {
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
           {cartItems.map((item, i) => (
             <div key={i} className={`flex items-center gap-3 p-4 ${i < cartItems.length - 1 ? "border-b border-gray-50" : ""}`}>
-              <div className="h-14 w-14 rounded-xl bg-gray-50 flex items-center justify-center text-2xl shrink-0">
-                {item.image}
+              <div className="h-14 w-14 rounded-xl overflow-hidden shrink-0">
+                <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-gray-900">{item.name}</p>
@@ -61,8 +65,8 @@ export default function CustomerCart() {
 
         {/* Breakdown */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <button 
-            onClick={() => setShowBreakdown(!showBreakdown)} 
+          <button
+            onClick={() => setShowBreakdown(!showBreakdown)}
             className="w-full flex items-center justify-between"
           >
             <div className="flex items-center gap-2">
@@ -120,8 +124,8 @@ export default function CustomerCart() {
             <span className="text-[15px] font-bold text-gray-900">Total</span>
             <span className="text-xl font-bold text-gray-900">₹{subtotal}</span>
           </div>
-          <Button 
-            className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200" 
+          <Button
+            className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200"
             onClick={() => navigate("/customer/order/track")}
           >
             Place Order · ₹{subtotal}
