@@ -50,6 +50,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CartProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/seller" replace />} />
           <Route path="/login" element={<Login />} />
@@ -77,17 +78,18 @@ const App = () => (
           <Route path="/profile" element={<DashboardLayout><Profile /></DashboardLayout>} />
           <Route path="/settings" element={<DashboardLayout><SettingsPage /></DashboardLayout>} />
           <Route path="/help" element={<DashboardLayout><Help /></DashboardLayout>} />
-          <Route path="/customer" element={<CartProvider><CustomerLayout><CustomerHome /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/explore" element={<CartProvider><CustomerLayout><CustomerExplore /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/seller/:id" element={<CartProvider><CustomerLayout><CustomerSellerProfile /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/cart" element={<CartProvider><CustomerLayout><CustomerCart /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/orders" element={<CartProvider><CustomerLayout><CustomerOrders /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/order/track" element={<CartProvider><CustomerLayout><CustomerOrderTracking /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/order/impact" element={<CartProvider><CustomerLayout><CustomerPostOrder /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/network" element={<CartProvider><CustomerLayout><CustomerNetwork /></CustomerLayout></CartProvider>} />
-          <Route path="/customer/profile" element={<CartProvider><CustomerLayout><CustomerProfile /></CustomerLayout></CartProvider>} />
+          <Route path="/customer" element={<CustomerLayout><CustomerHome /></CustomerLayout>} />
+          <Route path="/customer/explore" element={<CustomerLayout><CustomerExplore /></CustomerLayout>} />
+          <Route path="/customer/seller/:id" element={<CustomerLayout><CustomerSellerProfile /></CustomerLayout>} />
+          <Route path="/customer/cart" element={<CustomerLayout><CustomerCart /></CustomerLayout>} />
+          <Route path="/customer/orders" element={<CustomerLayout><CustomerOrders /></CustomerLayout>} />
+          <Route path="/customer/order/track" element={<CustomerLayout><CustomerOrderTracking /></CustomerLayout>} />
+          <Route path="/customer/order/impact" element={<CustomerLayout><CustomerPostOrder /></CustomerLayout>} />
+          <Route path="/customer/network" element={<CustomerLayout><CustomerNetwork /></CustomerLayout>} />
+          <Route path="/customer/profile" element={<CustomerLayout><CustomerProfile /></CustomerLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
