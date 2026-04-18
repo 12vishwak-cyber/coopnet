@@ -35,6 +35,7 @@ import CustomerHome from "@/pages/customer/CustomerHome";
 import CustomerExplore from "@/pages/customer/CustomerExplore";
 import CustomerSellerProfile from "@/pages/customer/CustomerSellerProfile";
 import CustomerCart from "@/pages/customer/CustomerCart";
+import CustomerProductDetail from "@/pages/customer/CustomerProductDetail";
 import CustomerOrders from "@/pages/customer/CustomerOrders";
 import CustomerOrderTracking from "@/pages/customer/CustomerOrderTracking";
 import CustomerPostOrder from "@/pages/customer/CustomerPostOrder";
@@ -82,6 +83,7 @@ const App = () => (
           <Route path="/customer/explore" element={<CustomerLayout><CustomerExplore /></CustomerLayout>} />
           <Route path="/customer/seller/:id" element={<CustomerLayout><CustomerSellerProfile /></CustomerLayout>} />
           <Route path="/customer/cart" element={<CustomerLayout><CustomerCart /></CustomerLayout>} />
+          <Route path="/customer/product/:id" element={<CustomerLayout><CustomerProductDetail /></CustomerLayout>} />
           <Route path="/customer/orders" element={<CustomerLayout><CustomerOrders /></CustomerLayout>} />
           <Route path="/customer/order/track" element={<CustomerLayout><CustomerOrderTracking /></CustomerLayout>} />
           <Route path="/customer/order/impact" element={<CustomerLayout><CustomerPostOrder /></CustomerLayout>} />

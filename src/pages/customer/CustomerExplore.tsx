@@ -5,17 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 
-import imgTomatoes from "@/assets/products/tomatoes.jpg";
-import imgMilk from "@/assets/products/milk.jpg";
-import imgChips from "@/assets/products/chips.jpg";
-import imgRice from "@/assets/products/rice.jpg";
-import imgPaneer from "@/assets/products/paneer.jpg";
-import imgCookingOil from "@/assets/products/cooking-oil.jpg";
-import imgWheatFlour from "@/assets/products/wheat-flour.jpg";
-import imgSugar from "@/assets/products/sugar.jpg";
-import imgJaggery from "@/assets/products/jaggery.jpg";
-import imgIdliBatter from "@/assets/products/idli-batter.jpg";
-import imgPickle from "@/assets/products/pickle.jpg";
+import { PRODUCTS, discountPct } from "@/data/products";
 
 import storeGeneral from "@/assets/stores/general-store.jpg";
 import storeFreshMart from "@/assets/stores/fresh-mart.jpg";
@@ -31,22 +21,8 @@ const sellers = [
   { id: "s5", name: "Ahmed Provisions", distance: "2.1 km", rating: 4.4, tags: ["Bulk orders"], items: 55, deliveryTime: "28 min", banner: storeProvisions },
 ];
 
-const products = [
-  { name: "Fresh Tomatoes", price: 20, unit: "1 kg", seller: "Priya Fresh Mart", image: imgTomatoes, tag: "🔥" },
-  { name: "Whole Milk", price: 30, unit: "500 ml", seller: "Lakshmi Dairy", image: imgMilk, tag: "" },
-  { name: "Masala Chips", price: 10, unit: "Pack", seller: "Ravi General Store", image: imgChips, tag: "⚡" },
-  { name: "Basmati Rice", price: 85, unit: "1 kg", seller: "Kumar Groceries", image: imgRice, tag: "" },
-  { name: "Fresh Paneer", price: 90, unit: "200g", seller: "Lakshmi Dairy", image: imgPaneer, tag: "🔥" },
-  { name: "Cooking Oil", price: 180, unit: "1 L", seller: "Ravi General Store", image: imgCookingOil, tag: "" },
-  { name: "Wheat Flour", price: 48, unit: "1 kg", seller: "Ahmed Provisions", image: imgWheatFlour, tag: "" },
-  { name: "Sugar", price: 45, unit: "1 kg", seller: "Kumar Groceries", image: imgSugar, tag: "" },
-];
-
-const localSpecials = [
-  { name: "Organic Jaggery", price: 65, unit: "500g", seller: "Priya Fresh Mart", image: imgJaggery, badge: "Local Favorite" },
-  { name: "Fresh Idli Batter", price: 40, unit: "1 L", seller: "Lakshmi Dairy", image: imgIdliBatter, badge: "Made Today" },
-  { name: "Pickle (Mango)", price: 120, unit: "250g", seller: "Kumar Groceries", image: imgPickle, badge: "Homemade" },
-];
+const products = PRODUCTS.slice(0, 10);
+const localSpecials = PRODUCTS.filter((p) => ["p11", "p12", "p13"].includes(p.id));
 
 const filters = ["Fast delivery", "Lowest price", "High trust", "Nearest"];
 
@@ -109,32 +85,52 @@ export default function CustomerExplore() {
       {tab === "products" && (
         <div className="px-4 pb-4">
           <div className="grid grid-cols-2 gap-3">
-            {products.map((p) => (
-              <div key={p.name} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50">
-                <div className="relative h-28 overflow-hidden">
-                  {p.tag && (
-                    <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 px-1.5 py-0.5 rounded-full">
-                      {p.tag}
-                    </span>
-                  )}
-                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
-                </div>
-                <div className="p-3">
-                  <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
-                    <Button
-                      size="sm"
-                      onClick={() => addItem({ id: `prod-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
-                    </Button>
+            {products.map((p) => {
+              const pct = discountPct(p);
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => navigate(`/customer/product/${p.id}`)}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 cursor-pointer active:scale-[0.98] transition-transform"
+                >
+                  <div className="relative h-28 overflow-hidden">
+                    {pct > 0 && (
+                      <span className="absolute top-2 left-2 z-10 text-[9px] font-extrabold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-sm">
+                        {pct}% OFF
+                      </span>
+                    )}
+                    {pct === 0 && p.tag && (
+                      <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 px-1.5 py-0.5 rounded-full">
+                        {p.tag}
+                      </span>
+                    )}
+                    <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
+                  </div>
+                  <div className="p-3">
+                    <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
+                        {p.originalPrice && (
+                          <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
+                        }}
+                        className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
+                      >
+                        <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <p className="text-[11px] text-gray-400 text-center mt-4 font-medium">
             Prices set by sellers · No platform markup
@@ -192,30 +188,52 @@ export default function CustomerExplore() {
             <p className="text-sm font-bold text-gray-900">🌟 Local Specials</p>
             <p className="text-xs text-gray-500 mt-0.5">Unique products from your neighborhood</p>
           </div>
-          {localSpecials.map((p) => (
-            <div key={p.name} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center gap-4">
-              <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0">
-                <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={64} height={64} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-bold text-gray-900">{p.name}</p>
-                  <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">{p.badge}</span>
+          {localSpecials.map((p) => {
+            const pct = discountPct(p);
+            return (
+              <div
+                key={p.id}
+                onClick={() => navigate(`/customer/product/${p.id}`)}
+                className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 relative">
+                  {pct > 0 && (
+                    <span className="absolute top-1 left-1 z-10 text-[8px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full shadow-sm">
+                      {pct}%
+                    </span>
+                  )}
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={64} height={64} />
                 </div>
-                <p className="text-[11px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
-                  <Button
-                    size="sm"
-                    onClick={() => addItem({ id: `spec-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                    className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
-                  >
-                    <Plus className="h-3 w-3 mr-0.5" /> ADD
-                  </Button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-gray-900">{p.name}</p>
+                    {p.tag && (
+                      <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">{p.tag}</span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
+                      {p.originalPrice && (
+                        <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
+                      }}
+                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
+                    >
+                      <Plus className="h-3 w-3 mr-0.5" /> ADD
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
