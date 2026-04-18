@@ -1,19 +1,38 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, ChevronDown, ChevronUp, Trash2, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, ChevronDown, ChevronUp, Trash2, ShoppingBag, Tag, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useCart } from "@/contexts/CartContext";
+import { useCart, PROMO_CODES } from "@/contexts/CartContext";
 
 export default function CustomerCart() {
   const navigate = useNavigate();
   const [showBreakdown, setShowBreakdown] = useState(false);
-  const { items, totalPrice, addItem, decrementItem, removeItem, clearCart } = useCart();
+  const [promoInput, setPromoInput] = useState("");
+  const {
+    items,
+    subtotal,
+    discount,
+    deliveryFee,
+    totalPrice,
+    appliedPromo,
+    applyPromo,
+    removePromo,
+    addItem,
+    decrementItem,
+    removeItem,
+    clearCart,
+  } = useCart();
 
-  const subtotal = totalPrice;
   const sellerEarnings = Math.round(subtotal * 0.78);
   const workerEarnings = Math.round(subtotal * 0.12);
   const cooperativeFund = Math.round(subtotal * 0.06);
   const systemCost = subtotal - sellerEarnings - workerEarnings - cooperativeFund;
+
+  const handleApply = () => {
+    if (!promoInput.trim()) return;
+    if (applyPromo(promoInput)) setPromoInput("");
+  };
 
   if (items.length === 0) {
     return (
@@ -104,6 +123,97 @@ export default function CustomerCart() {
           ))}
         </div>
 
+        {/* Promo Code */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
+            <Tag className="h-4 w-4 text-emerald-500" />
+            <span className="text-sm font-bold text-gray-900">Apply Promo Code</span>
+          </div>
+
+          {appliedPromo ? (
+            <div className="flex items-center justify-between gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5">
+              <div className="flex items-center gap-2 min-w-0">
+                <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-[13px] font-extrabold text-emerald-700 truncate">{appliedPromo.code}</p>
+                  <p className="text-[11px] text-emerald-600 truncate">{appliedPromo.label}</p>
+                </div>
+              </div>
+              <button
+                onClick={removePromo}
+                className="h-7 w-7 rounded-full bg-white flex items-center justify-center text-emerald-700 active:scale-90 transition-transform"
+                aria-label="Remove promo"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Input
+                value={promoInput}
+                onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === "Enter" && handleApply()}
+                placeholder="Enter code"
+                className="h-11 rounded-xl text-sm font-semibold uppercase tracking-wide border-gray-200 placeholder:text-gray-400 placeholder:normal-case placeholder:tracking-normal placeholder:font-medium"
+              />
+              <Button
+                onClick={handleApply}
+                disabled={!promoInput.trim()}
+                className="h-11 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-600 font-bold text-sm shrink-0"
+              >
+                Apply
+              </Button>
+            </div>
+          )}
+
+          {!appliedPromo && (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {PROMO_CODES.map((p) => (
+                <button
+                  key={p.code}
+                  onClick={() => applyPromo(p.code)}
+                  className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 active:scale-95 transition-transform"
+                >
+                  {p.code} · {p.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Bill summary */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2">
+          <div className="flex justify-between text-[13px]">
+            <span className="text-gray-600">Item total</span>
+            <span className="font-semibold text-gray-900">₹{subtotal}</span>
+          </div>
+          {discount > 0 && (
+            <div className="flex justify-between text-[13px]">
+              <span className="text-emerald-600 font-medium">Promo discount</span>
+              <span className="font-semibold text-emerald-600">−₹{discount}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-[13px]">
+            <span className="text-gray-600">Delivery fee</span>
+            <span className="font-semibold text-gray-900">
+              {deliveryFee === 0 ? (
+                <span className="text-emerald-600">FREE</span>
+              ) : (
+                `₹${deliveryFee}`
+              )}
+            </span>
+          </div>
+          <div className="border-t border-gray-100 pt-2 flex justify-between">
+            <span className="text-sm font-bold text-gray-900">To Pay</span>
+            <span className="text-base font-extrabold text-gray-900">₹{totalPrice}</span>
+          </div>
+          {discount + (subtotal > 0 && deliveryFee === 0 && appliedPromo?.type === "freeDelivery" ? 25 : 0) > 0 && (
+            <p className="text-[11px] font-semibold text-emerald-600 text-center pt-1">
+              🎉 You saved ₹{discount + (appliedPromo?.type === "freeDelivery" ? 25 : 0)} on this order
+            </p>
+          )}
+        </div>
+
         {/* Breakdown */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <button
@@ -161,10 +271,6 @@ export default function CustomerCart() {
 
         {/* Total + CTA */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <div className="flex justify-between mb-4">
-            <span className="text-[15px] font-bold text-gray-900">Total</span>
-            <span className="text-xl font-bold text-gray-900">₹{subtotal}</span>
-          </div>
           <Button
             className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200"
             onClick={() => {
@@ -172,7 +278,7 @@ export default function CustomerCart() {
               navigate("/customer/order/track");
             }}
           >
-            Place Order · ₹{subtotal}
+            Place Order · ₹{totalPrice}
           </Button>
         </div>
       </div>
