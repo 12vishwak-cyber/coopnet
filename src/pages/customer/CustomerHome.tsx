@@ -146,32 +146,52 @@ export default function CustomerHome() {
           </button>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {popularProducts.map((p) => (
-            <div key={p.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 flex flex-col">
-              <div className="relative h-28 overflow-hidden">
-                {p.tag && (
-                  <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm">
-                    {p.tag}
-                  </span>
-                )}
-                <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
-              </div>
-              <div className="p-3 flex flex-col flex-1">
-                <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
-                <div className="flex items-center justify-between mt-auto pt-2">
-                  <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
-                  <Button
-                    size="sm"
-                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                    className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-sm text-xs font-bold active:scale-95 transition-transform"
-                  >
-                    <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
-                  </Button>
+          {popularProducts.map((p) => {
+            const pct = discountPct(p);
+            return (
+              <div
+                key={p.id}
+                onClick={() => navigate(`/customer/product/${p.id}`)}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 flex flex-col cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                <div className="relative h-28 overflow-hidden">
+                  {pct > 0 && (
+                    <span className="absolute top-2 left-2 z-10 text-[9px] font-extrabold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-sm">
+                      {pct}% OFF
+                    </span>
+                  )}
+                  {pct === 0 && p.tag && (
+                    <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm">
+                      {p.tag}
+                    </span>
+                  )}
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
+                </div>
+                <div className="p-3 flex flex-col flex-1">
+                  <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                  <div className="flex items-center justify-between mt-auto pt-2">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
+                      {p.originalPrice && (
+                        <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
+                      }}
+                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-sm text-xs font-bold active:scale-95 transition-transform"
+                    >
+                      <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
