@@ -85,32 +85,52 @@ export default function CustomerExplore() {
       {tab === "products" && (
         <div className="px-4 pb-4">
           <div className="grid grid-cols-2 gap-3">
-            {products.map((p) => (
-              <div key={p.name} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50">
-                <div className="relative h-28 overflow-hidden">
-                  {p.tag && (
-                    <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 px-1.5 py-0.5 rounded-full">
-                      {p.tag}
-                    </span>
-                  )}
-                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
-                </div>
-                <div className="p-3">
-                  <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
-                    <Button
-                      size="sm"
-                      onClick={() => addItem({ id: `prod-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
-                    </Button>
+            {products.map((p) => {
+              const pct = discountPct(p);
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => navigate(`/customer/product/${p.id}`)}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 cursor-pointer active:scale-[0.98] transition-transform"
+                >
+                  <div className="relative h-28 overflow-hidden">
+                    {pct > 0 && (
+                      <span className="absolute top-2 left-2 z-10 text-[9px] font-extrabold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-sm">
+                        {pct}% OFF
+                      </span>
+                    )}
+                    {pct === 0 && p.tag && (
+                      <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 px-1.5 py-0.5 rounded-full">
+                        {p.tag}
+                      </span>
+                    )}
+                    <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
+                  </div>
+                  <div className="p-3">
+                    <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
+                        {p.originalPrice && (
+                          <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
+                        }}
+                        className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
+                      >
+                        <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <p className="text-[11px] text-gray-400 text-center mt-4 font-medium">
             Prices set by sellers · No platform markup
@@ -168,30 +188,52 @@ export default function CustomerExplore() {
             <p className="text-sm font-bold text-gray-900">🌟 Local Specials</p>
             <p className="text-xs text-gray-500 mt-0.5">Unique products from your neighborhood</p>
           </div>
-          {localSpecials.map((p) => (
-            <div key={p.name} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center gap-4">
-              <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0">
-                <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={64} height={64} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-bold text-gray-900">{p.name}</p>
-                  <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">{p.badge}</span>
+          {localSpecials.map((p) => {
+            const pct = discountPct(p);
+            return (
+              <div
+                key={p.id}
+                onClick={() => navigate(`/customer/product/${p.id}`)}
+                className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 relative">
+                  {pct > 0 && (
+                    <span className="absolute top-1 left-1 z-10 text-[8px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full shadow-sm">
+                      {pct}%
+                    </span>
+                  )}
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={64} height={64} />
                 </div>
-                <p className="text-[11px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
-                  <Button
-                    size="sm"
-                    onClick={() => addItem({ id: `spec-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                    className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
-                  >
-                    <Plus className="h-3 w-3 mr-0.5" /> ADD
-                  </Button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-gray-900">{p.name}</p>
+                    {p.tag && (
+                      <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">{p.tag}</span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
+                      {p.originalPrice && (
+                        <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
+                      }}
+                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
+                    >
+                      <Plus className="h-3 w-3 mr-0.5" /> ADD
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
