@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Star, MapPin, Clock, Search, SlidersHorizontal, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/contexts/CartContext";
 
 import imgTomatoes from "@/assets/products/tomatoes.jpg";
 import imgMilk from "@/assets/products/milk.jpg";
@@ -53,6 +54,7 @@ export default function CustomerExplore() {
   const [tab, setTab] = useState<"products" | "sellers" | "specials">("products");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { addItem } = useCart();
 
   return (
     <div className="space-y-4">
@@ -124,6 +126,7 @@ export default function CustomerExplore() {
                     <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
                     <Button
                       size="sm"
+                      onClick={() => addItem({ id: `prod-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
                       className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
                     >
                       <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
@@ -204,6 +207,7 @@ export default function CustomerExplore() {
                   <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
                   <Button
                     size="sm"
+                    onClick={() => addItem({ id: `spec-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
                     className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
                   >
                     <Plus className="h-3 w-3 mr-0.5" /> ADD

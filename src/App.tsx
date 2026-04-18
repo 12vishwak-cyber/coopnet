@@ -30,6 +30,7 @@ import Profile from "@/pages/Profile";
 import SettingsPage from "@/pages/SettingsPage";
 import Help from "@/pages/Help";
 import CustomerLayout from "@/components/CustomerLayout";
+import { CartProvider } from "@/contexts/CartContext";
 import CustomerHome from "@/pages/customer/CustomerHome";
 import CustomerExplore from "@/pages/customer/CustomerExplore";
 import CustomerSellerProfile from "@/pages/customer/CustomerSellerProfile";
@@ -49,6 +50,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CartProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/seller" replace />} />
           <Route path="/login" element={<Login />} />
@@ -87,6 +89,7 @@ const App = () => (
           <Route path="/customer/profile" element={<CustomerLayout><CustomerProfile /></CustomerLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

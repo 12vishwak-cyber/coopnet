@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Search, Star, Plus, ChevronRight, Clock, Flame, TrendingUp, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/contexts/CartContext";
 
 // Product images
 import imgTomatoes from "@/assets/products/tomatoes.jpg";
@@ -74,8 +75,23 @@ const smartPicks = [
   { name: "Pickle (Mango)", price: 120, unit: "250g", seller: "Kumar Groceries", image: imgPickle, reason: "Community favorite" },
 ];
 
+const buyAgain = [
+  { id: "ba1", name: "Whole Milk", price: 30, unit: "500 ml", seller: "Lakshmi Dairy", image: imgMilk },
+  { id: "ba2", name: "Bananas", price: 40, unit: "6 pcs", seller: "Priya Fresh Mart", image: imgBananas },
+  { id: "ba3", name: "Curd", price: 25, unit: "400g", seller: "Lakshmi Dairy", image: imgCurd },
+  { id: "ba4", name: "Masala Chips", price: 10, unit: "Pack", seller: "Ravi General Store", image: imgChips },
+];
+
+const trending = [
+  { id: "tr1", name: "Fresh Paneer", price: 90, unit: "200g", seller: "Lakshmi Dairy", image: imgPaneer, badge: "🔥 Hot" },
+  { id: "tr2", name: "Basmati Rice", price: 85, unit: "1 kg", seller: "Kumar Groceries", image: imgRice, badge: "🔥 Hot" },
+  { id: "tr3", name: "Cooking Oil", price: 180, unit: "1 L", seller: "Ravi General Store", image: imgCookingOil, badge: "⚡ Fast" },
+  { id: "tr4", name: "Fresh Tomatoes", price: 20, unit: "1 kg", seller: "Priya Fresh Mart", image: imgTomatoes, badge: "🔥 Hot" },
+];
+
 export default function CustomerHome() {
   const navigate = useNavigate();
+  const { addItem } = useCart();
 
   return (
     <div className="space-y-5 pb-6">
@@ -154,9 +170,75 @@ export default function CustomerHome() {
                   <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
                   <Button
                     size="sm"
+                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
                     className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-sm text-xs font-bold active:scale-95 transition-transform"
                   >
                     <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Buy Again */}
+      <div className="px-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
+          <h2 className="text-base font-extrabold text-gray-900">Buy Again</h2>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {buyAgain.map((p) => (
+            <div key={p.id} className="min-w-[140px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 flex flex-col">
+              <div className="h-24 overflow-hidden">
+                <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={140} height={96} />
+              </div>
+              <div className="p-2.5 flex flex-col flex-1">
+                <p className="text-[12px] font-bold text-gray-900 leading-snug truncate">{p.name}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
+                <div className="flex items-center justify-between mt-auto pt-1.5">
+                  <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
+                  <Button
+                    size="sm"
+                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
+                    className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Trending */}
+      <div className="px-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Flame className="h-4 w-4 text-orange-500" />
+          <h2 className="text-base font-extrabold text-gray-900">Trending in your area</h2>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {trending.map((p) => (
+            <div key={p.id} className="min-w-[140px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 flex flex-col">
+              <div className="relative h-24 overflow-hidden">
+                <span className="absolute top-1.5 left-1.5 z-10 text-[9px] font-bold bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded-full shadow-sm">
+                  {p.badge}
+                </span>
+                <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={140} height={96} />
+              </div>
+              <div className="p-2.5 flex flex-col flex-1">
+                <p className="text-[12px] font-bold text-gray-900 leading-snug truncate">{p.name}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
+                <div className="flex items-center justify-between mt-auto pt-1.5">
+                  <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
+                  <Button
+                    size="sm"
+                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
+                    className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
+                  >
+                    <Plus className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
@@ -226,7 +308,11 @@ export default function CustomerHome() {
                   <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
                   <p className="text-[9px] font-medium text-emerald-600 mt-0.5">✨ {p.reason}</p>
                 </div>
-                <Button size="sm" className="h-7 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold">
+                <Button
+                  size="sm"
+                  onClick={() => addItem({ id: `pick-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
+                  className="h-7 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold"
+                >
                   <Plus className="h-3 w-3 mr-0.5" /> ADD
                 </Button>
               </div>
