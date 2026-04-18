@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Search, Star, Plus, ChevronRight, Clock, Flame, TrendingUp, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/contexts/CartContext";
 
 // Product images
 import imgTomatoes from "@/assets/products/tomatoes.jpg";
@@ -76,6 +77,7 @@ const smartPicks = [
 
 export default function CustomerHome() {
   const navigate = useNavigate();
+  const { addItem } = useCart();
 
   return (
     <div className="space-y-5 pb-6">
@@ -154,6 +156,7 @@ export default function CustomerHome() {
                   <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
                   <Button
                     size="sm"
+                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
                     className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-sm text-xs font-bold active:scale-95 transition-transform"
                   >
                     <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
@@ -226,7 +229,11 @@ export default function CustomerHome() {
                   <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
                   <p className="text-[9px] font-medium text-emerald-600 mt-0.5">✨ {p.reason}</p>
                 </div>
-                <Button size="sm" className="h-7 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold">
+                <Button
+                  size="sm"
+                  onClick={() => addItem({ id: `pick-${p.name}`, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
+                  className="h-7 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold"
+                >
                   <Plus className="h-3 w-3 mr-0.5" /> ADD
                 </Button>
               </div>
