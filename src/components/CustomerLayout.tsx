@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, Search, ShoppingBag, Heart, User, MapPin, ChevronDown } from "lucide-react";
+import StickyCartBar from "@/components/StickyCartBar";
 
 const tabs = [
   { label: "Home", icon: Home, path: "/customer" },
@@ -44,6 +45,9 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
       <main className="flex-1 overflow-auto pb-20">
         {children}
       </main>
+
+      {/* Sticky cart bar */}
+      <StickyCartBar />
 
       {/* Bottom Nav */}
       <nav className="fixed bottom-0 left-0 right-0 h-[68px] bg-white border-t border-gray-100 flex items-center justify-around px-2 z-50">
