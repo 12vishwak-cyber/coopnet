@@ -51,16 +51,9 @@ const categories = [
   { name: "Specials", image: catSpecials },
 ];
 
-const popularProducts = [
-  { id: "p1", name: "Fresh Tomatoes", price: 20, unit: "1 kg", seller: "Priya Fresh Mart", image: imgTomatoes, tag: "🔥 Hot" },
-  { id: "p2", name: "Whole Milk", price: 30, unit: "500 ml", seller: "Lakshmi Dairy", image: imgMilk, tag: "" },
-  { id: "p3", name: "Masala Chips", price: 10, unit: "Pack", seller: "Ravi General Store", image: imgChips, tag: "⚡ Fast" },
-  { id: "p4", name: "Basmati Rice", price: 85, unit: "1 kg", seller: "Kumar Groceries", image: imgRice, tag: "" },
-  { id: "p5", name: "Fresh Paneer", price: 90, unit: "200g", seller: "Lakshmi Dairy", image: imgPaneer, tag: "🔥 Hot" },
-  { id: "p6", name: "Cooking Oil", price: 180, unit: "1 L", seller: "Ravi General Store", image: imgCookingOil, tag: "" },
-  { id: "p7", name: "Bananas", price: 40, unit: "6 pcs", seller: "Priya Fresh Mart", image: imgBananas, tag: "⚡ Fast" },
-  { id: "p8", name: "Curd", price: 25, unit: "400g", seller: "Lakshmi Dairy", image: imgCurd, tag: "" },
-];
+import { PRODUCTS, discountPct } from "@/data/products";
+
+const popularProducts = PRODUCTS.slice(0, 8);
 
 const featuredStores = [
   { id: "s2", name: "Priya Fresh Mart", distance: "1.2 km", rating: 4.8, deliveryTime: "18 min", image: storeFreshMart, tag: "Organic" },
