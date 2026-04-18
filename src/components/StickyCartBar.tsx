@@ -4,7 +4,7 @@ import { useCart } from "@/contexts/CartContext";
 
 export default function StickyCartBar() {
   const navigate = useNavigate();
-  const { totalItems, totalPrice } = useCart();
+  const { totalItems, subtotal } = useCart();
 
   if (totalItems === 0) return null;
 
@@ -25,7 +25,7 @@ export default function StickyCartBar() {
             <p className="text-[11px] font-medium opacity-90 leading-tight">
               {totalItems} {totalItems === 1 ? "item" : "items"} · Free delivery
             </p>
-            <p className="text-sm font-extrabold leading-tight">₹{totalPrice}</p>
+            <p className="text-sm font-extrabold leading-tight">₹{subtotal}</p>
           </div>
         </div>
         <div className="flex items-center gap-1 text-sm font-bold">
