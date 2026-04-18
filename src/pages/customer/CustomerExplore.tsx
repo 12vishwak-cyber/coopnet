@@ -5,17 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 
-import imgTomatoes from "@/assets/products/tomatoes.jpg";
-import imgMilk from "@/assets/products/milk.jpg";
-import imgChips from "@/assets/products/chips.jpg";
-import imgRice from "@/assets/products/rice.jpg";
-import imgPaneer from "@/assets/products/paneer.jpg";
-import imgCookingOil from "@/assets/products/cooking-oil.jpg";
-import imgWheatFlour from "@/assets/products/wheat-flour.jpg";
-import imgSugar from "@/assets/products/sugar.jpg";
-import imgJaggery from "@/assets/products/jaggery.jpg";
-import imgIdliBatter from "@/assets/products/idli-batter.jpg";
-import imgPickle from "@/assets/products/pickle.jpg";
+import { PRODUCTS, discountPct } from "@/data/products";
 
 import storeGeneral from "@/assets/stores/general-store.jpg";
 import storeFreshMart from "@/assets/stores/fresh-mart.jpg";
@@ -31,22 +21,8 @@ const sellers = [
   { id: "s5", name: "Ahmed Provisions", distance: "2.1 km", rating: 4.4, tags: ["Bulk orders"], items: 55, deliveryTime: "28 min", banner: storeProvisions },
 ];
 
-const products = [
-  { name: "Fresh Tomatoes", price: 20, unit: "1 kg", seller: "Priya Fresh Mart", image: imgTomatoes, tag: "🔥" },
-  { name: "Whole Milk", price: 30, unit: "500 ml", seller: "Lakshmi Dairy", image: imgMilk, tag: "" },
-  { name: "Masala Chips", price: 10, unit: "Pack", seller: "Ravi General Store", image: imgChips, tag: "⚡" },
-  { name: "Basmati Rice", price: 85, unit: "1 kg", seller: "Kumar Groceries", image: imgRice, tag: "" },
-  { name: "Fresh Paneer", price: 90, unit: "200g", seller: "Lakshmi Dairy", image: imgPaneer, tag: "🔥" },
-  { name: "Cooking Oil", price: 180, unit: "1 L", seller: "Ravi General Store", image: imgCookingOil, tag: "" },
-  { name: "Wheat Flour", price: 48, unit: "1 kg", seller: "Ahmed Provisions", image: imgWheatFlour, tag: "" },
-  { name: "Sugar", price: 45, unit: "1 kg", seller: "Kumar Groceries", image: imgSugar, tag: "" },
-];
-
-const localSpecials = [
-  { name: "Organic Jaggery", price: 65, unit: "500g", seller: "Priya Fresh Mart", image: imgJaggery, badge: "Local Favorite" },
-  { name: "Fresh Idli Batter", price: 40, unit: "1 L", seller: "Lakshmi Dairy", image: imgIdliBatter, badge: "Made Today" },
-  { name: "Pickle (Mango)", price: 120, unit: "250g", seller: "Kumar Groceries", image: imgPickle, badge: "Homemade" },
-];
+const products = PRODUCTS.slice(0, 10);
+const localSpecials = PRODUCTS.filter((p) => ["p11", "p12", "p13"].includes(p.id));
 
 const filters = ["Fast delivery", "Lowest price", "High trust", "Nearest"];
 
