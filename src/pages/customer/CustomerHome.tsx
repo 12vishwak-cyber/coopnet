@@ -75,6 +75,20 @@ const smartPicks = [
   { name: "Pickle (Mango)", price: 120, unit: "250g", seller: "Kumar Groceries", image: imgPickle, reason: "Community favorite" },
 ];
 
+const buyAgain = [
+  { id: "ba1", name: "Whole Milk", price: 30, unit: "500 ml", seller: "Lakshmi Dairy", image: imgMilk },
+  { id: "ba2", name: "Bananas", price: 40, unit: "6 pcs", seller: "Priya Fresh Mart", image: imgBananas },
+  { id: "ba3", name: "Curd", price: 25, unit: "400g", seller: "Lakshmi Dairy", image: imgCurd },
+  { id: "ba4", name: "Masala Chips", price: 10, unit: "Pack", seller: "Ravi General Store", image: imgChips },
+];
+
+const trending = [
+  { id: "tr1", name: "Fresh Paneer", price: 90, unit: "200g", seller: "Lakshmi Dairy", image: imgPaneer, badge: "🔥 Hot" },
+  { id: "tr2", name: "Basmati Rice", price: 85, unit: "1 kg", seller: "Kumar Groceries", image: imgRice, badge: "🔥 Hot" },
+  { id: "tr3", name: "Cooking Oil", price: 180, unit: "1 L", seller: "Ravi General Store", image: imgCookingOil, badge: "⚡ Fast" },
+  { id: "tr4", name: "Fresh Tomatoes", price: 20, unit: "1 kg", seller: "Priya Fresh Mart", image: imgTomatoes, badge: "🔥 Hot" },
+];
+
 export default function CustomerHome() {
   const navigate = useNavigate();
   const { addItem } = useCart();
