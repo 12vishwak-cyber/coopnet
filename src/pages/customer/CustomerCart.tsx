@@ -1,60 +1,101 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, ChevronDown, ChevronUp, Trash2, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
-import imgRice from "@/assets/products/rice.jpg";
-import imgCookingOil from "@/assets/products/cooking-oil.jpg";
-import imgMilk from "@/assets/products/milk.jpg";
-
-const cartItems = [
-  { name: "Rice (5kg)", price: 280, qty: 1, seller: "Kumar Groceries", image: imgRice },
-  { name: "Cooking Oil (1L)", price: 180, qty: 1, seller: "Ravi General Store", image: imgCookingOil },
-  { name: "Milk (1L)", price: 56, qty: 2, seller: "Lakshmi Dairy", image: imgMilk },
-];
+import { useCart } from "@/contexts/CartContext";
 
 export default function CustomerCart() {
   const navigate = useNavigate();
   const [showBreakdown, setShowBreakdown] = useState(false);
-  const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
+  const { items, totalPrice, addItem, decrementItem, removeItem, clearCart } = useCart();
+
+  const subtotal = totalPrice;
   const sellerEarnings = Math.round(subtotal * 0.78);
   const workerEarnings = Math.round(subtotal * 0.12);
   const cooperativeFund = Math.round(subtotal * 0.06);
   const systemCost = subtotal - sellerEarnings - workerEarnings - cooperativeFund;
 
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#f8f8f8]">
+        <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+          <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+            <ArrowLeft className="h-4 w-4 text-gray-600" />
+          </button>
+          <h1 className="text-[15px] font-bold text-gray-900">Your Cart</h1>
+        </div>
+        <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
+          <div className="h-20 w-20 rounded-3xl bg-emerald-50 flex items-center justify-center mb-4">
+            <ShoppingBag className="h-9 w-9 text-emerald-500" />
+          </div>
+          <p className="text-base font-extrabold text-gray-900">Your cart is empty</p>
+          <p className="text-[13px] text-gray-500 mt-1">Add fresh items from local sellers</p>
+          <Button
+            onClick={() => navigate("/customer")}
+            className="mt-6 h-12 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 font-bold"
+          >
+            Start Shopping
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#f8f8f8]">
       {/* Header */}
-      <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
-        <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
-          <ArrowLeft className="h-4 w-4 text-gray-600" />
-        </button>
-        <div>
-          <h1 className="text-[15px] font-bold text-gray-900">Your Cart</h1>
-          <p className="text-[11px] text-gray-400">{cartItems.length} items · Transparent checkout</p>
+      <div className="bg-white px-4 py-3 flex items-center justify-between gap-3 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
+            <ArrowLeft className="h-4 w-4 text-gray-600" />
+          </button>
+          <div>
+            <h1 className="text-[15px] font-bold text-gray-900">Your Cart</h1>
+            <p className="text-[11px] text-gray-400">{items.length} items · Transparent checkout</p>
+          </div>
         </div>
+        <button
+          onClick={clearCart}
+          className="text-[11px] font-bold text-gray-400 hover:text-rose-500 transition-colors"
+        >
+          Clear all
+        </button>
       </div>
 
       <div className="p-4 space-y-3">
         {/* Cart Items */}
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-          {cartItems.map((item, i) => (
-            <div key={i} className={`flex items-center gap-3 p-4 ${i < cartItems.length - 1 ? "border-b border-gray-50" : ""}`}>
+          {items.map((item, i) => (
+            <div key={item.id} className={`flex items-center gap-3 p-4 ${i < items.length - 1 ? "border-b border-gray-50" : ""}`}>
               <div className="h-14 w-14 rounded-xl overflow-hidden shrink-0">
                 <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-gray-900">{item.name}</p>
-                <p className="text-[11px] text-gray-400">{item.seller}</p>
+                <p className="text-sm font-bold text-gray-900 truncate">{item.name}</p>
+                <p className="text-[11px] text-gray-400 truncate">{item.unit} · {item.seller}</p>
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="text-[10px] font-semibold text-rose-500 mt-0.5 flex items-center gap-1 active:scale-95 transition-transform"
+                >
+                  <Trash2 className="h-3 w-3" /> Remove
+                </button>
               </div>
               <div className="flex flex-col items-end gap-1.5">
-                <span className="text-sm font-bold text-gray-900">₹{item.price * item.qty}</span>
+                <span className="text-sm font-bold text-gray-900">₹{item.price * item.quantity}</span>
                 <div className="flex items-center gap-2 bg-emerald-50 rounded-lg px-1">
-                  <button className="h-6 w-6 flex items-center justify-center text-emerald-600">
+                  <button
+                    onClick={() => decrementItem(item.id)}
+                    className="h-6 w-6 flex items-center justify-center text-emerald-600 active:scale-90 transition-transform"
+                    aria-label="Decrease"
+                  >
                     <Minus className="h-3 w-3" />
                   </button>
-                  <span className="text-xs font-bold text-emerald-700 w-4 text-center">{item.qty}</span>
-                  <button className="h-6 w-6 flex items-center justify-center text-emerald-600">
+                  <span className="text-xs font-bold text-emerald-700 w-4 text-center">{item.quantity}</span>
+                  <button
+                    onClick={() => addItem({ id: item.id, name: item.name, price: item.price, unit: item.unit, seller: item.seller, image: item.image })}
+                    className="h-6 w-6 flex items-center justify-center text-emerald-600 active:scale-90 transition-transform"
+                    aria-label="Increase"
+                  >
                     <Plus className="h-3 w-3" />
                   </button>
                 </div>
@@ -126,7 +167,10 @@ export default function CustomerCart() {
           </div>
           <Button
             className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200"
-            onClick={() => navigate("/customer/order/track")}
+            onClick={() => {
+              clearCart();
+              navigate("/customer/order/track");
+            }}
           >
             Place Order · ₹{subtotal}
           </Button>
