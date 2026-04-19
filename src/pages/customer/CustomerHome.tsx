@@ -289,6 +289,57 @@ export default function CustomerHome() {
         </div>
       </div>
 
+      {/* Recommended for you */}
+      <div className="px-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="h-4 w-4 text-violet-500" />
+          <h2 className="text-base font-extrabold text-gray-900">Recommended for you</h2>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {recommended.map((p) => {
+            const pct = discountPct(p);
+            return (
+              <div
+                key={`rec-${p.id}`}
+                onClick={() => navigate(`/customer/product/${p.id}`)}
+                className="min-w-[140px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 flex flex-col cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                <div className="relative h-24 overflow-hidden">
+                  {pct > 0 && (
+                    <span className="absolute top-1.5 left-1.5 z-10 text-[9px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full shadow-sm">
+                      {pct}% OFF
+                    </span>
+                  )}
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={140} height={96} />
+                </div>
+                <div className="p-2.5 flex flex-col flex-1">
+                  <p className="text-[12px] font-bold text-gray-900 leading-snug truncate">{p.name}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
+                  <div className="flex items-center justify-between mt-auto pt-1.5">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
+                      {p.originalPrice && (
+                        <span className="text-[9px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
+                      }}
+                      className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Featured Local Stores */}
       <div className="px-4">
         <div className="flex items-center justify-between mb-3">
