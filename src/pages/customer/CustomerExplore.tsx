@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Star, MapPin, Clock, Search, SlidersHorizontal, Plus, X, PackageSearch } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 
-import { PRODUCTS, discountPct } from "@/data/products";
+import { PRODUCTS, discountPct, CATEGORIES, Category } from "@/data/products";
 
 import storeGeneral from "@/assets/stores/general-store.jpg";
 import storeFreshMart from "@/assets/stores/fresh-mart.jpg";
