@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Star, MapPin, Clock, Search, SlidersHorizontal, Plus, X, PackageSearch } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 
-import { PRODUCTS, discountPct } from "@/data/products";
+import { PRODUCTS, discountPct, CATEGORIES, Category } from "@/data/products";
 
 import storeGeneral from "@/assets/stores/general-store.jpg";
 import storeFreshMart from "@/assets/stores/fresh-mart.jpg";
@@ -27,33 +27,74 @@ const localSpecials = PRODUCTS.filter((p) => ["p11", "p12", "p13"].includes(p.id
 const filters = ["Fast delivery", "Lowest price", "High trust", "Nearest"];
 
 export default function CustomerExplore() {
-  const [tab, setTab] = useState<"products" | "sellers" | "specials">("products");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialCategory = searchParams.get("category") as Category | null;
+  const validInitial = initialCategory && (CATEGORIES as string[]).includes(initialCategory) ? initialCategory : null;
+
+  const [tab, setTab] = useState<"products" | "sellers" | "specials">(
+    validInitial === "Specials" ? "specials" : "products"
+  );
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<Category | null>(validInitial);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const { addItem } = useCart();
 
+  // Sync category state if URL changes (e.g. tapping another pill from Home)
+  useEffect(() => {
+    const c = searchParams.get("category") as Category | null;
+    if (c && (CATEGORIES as string[]).includes(c)) {
+      setActiveCategory(c);
+      if (c === "Specials") setTab("specials");
+      else setTab("products");
+    }
+  }, [searchParams]);
+
+  const clearCategory = () => {
+    setActiveCategory(null);
+    const next = new URLSearchParams(searchParams);
+    next.delete("category");
+    setSearchParams(next, { replace: true });
+  };
+
   const q = query.trim().toLowerCase();
   const isSearching = q.length > 0;
 
+  const matchesCategory = (p: typeof PRODUCTS[number]) =>
+    !activeCategory || p.category === activeCategory;
+
   const filteredProducts = useMemo(() => {
-    if (!isSearching) return products;
+    const base = activeCategory ? PRODUCTS.filter(matchesCategory) : products;
+    if (!isSearching) return base;
     return PRODUCTS.filter(
-      (p) => p.name.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q)
+      (p) =>
+        matchesCategory(p) &&
+        (p.name.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q))
     );
-  }, [q, isSearching]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, isSearching, activeCategory]);
 
   const filteredSellers = useMemo(() => {
+    if (activeCategory) {
+      // when a category is active, only show sellers that have items in that category
+      const sellerIdsInCat = new Set(PRODUCTS.filter((p) => p.category === activeCategory).map((p) => p.sellerId));
+      const base = sellers.filter((s) => sellerIdsInCat.has(s.id));
+      if (!isSearching) return base;
+      return base.filter((s) => s.name.toLowerCase().includes(q));
+    }
     if (!isSearching) return sellers;
     return sellers.filter((s) => s.name.toLowerCase().includes(q));
-  }, [q, isSearching]);
+  }, [q, isSearching, activeCategory]);
 
   const filteredSpecials = useMemo(() => {
-    if (!isSearching) return localSpecials;
-    return localSpecials.filter(
+    const base = activeCategory && activeCategory !== "Specials"
+      ? localSpecials.filter((p) => p.category === activeCategory)
+      : localSpecials;
+    if (!isSearching) return base;
+    return base.filter(
       (p) => p.name.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q)
     );
-  }, [q, isSearching]);
+  }, [q, isSearching, activeCategory]);
 
   const totalResults = filteredProducts.length + filteredSellers.length;
 
@@ -88,6 +129,52 @@ export default function CustomerExplore() {
             {totalResults} result{totalResults === 1 ? "" : "s"} for{" "}
             <span className="font-bold text-gray-700">"{query}"</span>
           </p>
+        )}
+      </div>
+
+      {/* Category chips */}
+      <div className="px-4">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {CATEGORIES.map((c) => {
+            const active = activeCategory === c;
+            return (
+              <button
+                key={c}
+                onClick={() => {
+                  if (active) {
+                    clearCategory();
+                  } else {
+                    setActiveCategory(c);
+                    const next = new URLSearchParams(searchParams);
+                    next.set("category", c);
+                    setSearchParams(next, { replace: true });
+                    if (c === "Specials") setTab("specials");
+                    else if (tab === "specials") setTab("products");
+                  }
+                }}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
+                  active
+                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                    : "bg-white text-gray-600 border-gray-200"
+                }`}
+              >
+                {c}
+              </button>
+            );
+          })}
+        </div>
+        {activeCategory && (
+          <div className="flex items-center gap-2 mt-2 px-1">
+            <p className="text-[11px] text-gray-500 font-medium">
+              Showing <span className="font-extrabold text-gray-800">{activeCategory}</span>
+            </p>
+            <button
+              onClick={clearCategory}
+              className="inline-flex items-center gap-0.5 text-[11px] font-bold text-rose-500 active:scale-95"
+            >
+              <X className="h-3 w-3" /> Clear
+            </button>
+          </div>
         )}
       </div>
 
