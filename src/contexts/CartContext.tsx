@@ -38,6 +38,7 @@ type CartContextValue = {
   applyPromo: (code: string) => boolean;
   removePromo: () => void;
   addItem: (item: Omit<CartItem, "quantity">) => void;
+  addItems: (items: Omit<CartItem, "quantity">[]) => void;
   removeItem: (id: string) => void;
   decrementItem: (id: string) => void;
   clearCart: () => void;
@@ -104,6 +105,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prev, { ...item, quantity: 1 }];
     });
     toast.success(`${item.name} added 🛒`, { duration: 1500 });
+  }, []);
+
+  const addItems = useCallback((newItems: Omit<CartItem, "quantity">[]) => {
+    if (!newItems.length) return;
+    setItems((prev) => {
+      const map = new Map(prev.map((i) => [i.id, { ...i }]));
+      for (const it of newItems) {
+        const existing = map.get(it.id);
+        if (existing) existing.quantity += 1;
+        else map.set(it.id, { ...it, quantity: 1 });
+      }
+      return Array.from(map.values());
+    });
+    toast.success(`${newItems.length} item${newItems.length > 1 ? "s" : ""} added to cart 🛒`, { duration: 1800 });
   }, []);
 
   const removeItem = useCallback((id: string) => {
@@ -183,11 +198,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       applyPromo,
       removePromo,
       addItem,
+      addItems,
       removeItem,
       decrementItem,
       clearCart,
     };
-  }, [items, appliedPromo, addItem, removeItem, decrementItem, clearCart, applyPromo, removePromo]);
+  }, [items, appliedPromo, addItem, addItems, removeItem, decrementItem, clearCart, applyPromo, removePromo]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

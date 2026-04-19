@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Search, Star, Plus, ChevronRight, Clock, Flame, TrendingUp, Heart } from "lucide-react";
+import { Search, Star, Plus, ChevronRight, Clock, Flame, TrendingUp, Heart, Tag, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 
@@ -54,6 +54,13 @@ const categories = [
 import { PRODUCTS, discountPct } from "@/data/products";
 
 const popularProducts = PRODUCTS.slice(0, 8);
+// Static "selling fast" hints for urgency on a couple of trending cards
+const urgencyById: Record<string, string> = {
+  p1: "Selling fast 🔥",
+  p5: "Only 4 left",
+};
+// "Recommended for you" — different slice for behavioral depth
+const recommended = [...PRODUCTS].slice(8, 13).concat(PRODUCTS.slice(0, 1));
 
 const featuredStores = [
   { id: "s2", name: "Priya Fresh Mart", distance: "1.2 km", rating: 4.8, deliveryTime: "18 min", image: storeFreshMart, tag: "Organic" },
@@ -96,6 +103,25 @@ export default function CustomerHome() {
         >
           <Search className="h-5 w-5 text-gray-400" />
           <span className="text-sm text-gray-400 font-medium">Search for milk, fruits, snacks...</span>
+        </button>
+      </div>
+
+      {/* Promo code banner */}
+      <div className="px-4">
+        <button
+          onClick={() => navigate("/customer/cart")}
+          className="w-full flex items-center gap-2.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl px-3.5 py-2.5 active:scale-[0.99] transition-transform"
+        >
+          <div className="h-7 w-7 rounded-lg bg-amber-500 flex items-center justify-center shrink-0">
+            <Tag className="h-3.5 w-3.5 text-white" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-[12px] font-extrabold text-amber-900 leading-tight">
+              Use <span className="font-mono">WELCOME10</span> for 10% off
+            </p>
+            <p className="text-[10px] text-amber-700">Or try FREEDEL · SAVE50 at checkout</p>
+          </div>
+          <ChevronRight className="h-4 w-4 text-amber-600" />
         </button>
       </div>
 
@@ -170,6 +196,9 @@ export default function CustomerHome() {
                 <div className="p-3 flex flex-col flex-1">
                   <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
                   <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                  {urgencyById[p.id] && (
+                    <p className="text-[10px] font-extrabold text-rose-500 mt-0.5">{urgencyById[p.id]}</p>
+                  )}
                   <div className="flex items-center justify-between mt-auto pt-2">
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
@@ -257,6 +286,57 @@ export default function CustomerHome() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Recommended for you */}
+      <div className="px-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="h-4 w-4 text-violet-500" />
+          <h2 className="text-base font-extrabold text-gray-900">Recommended for you</h2>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {recommended.map((p) => {
+            const pct = discountPct(p);
+            return (
+              <div
+                key={`rec-${p.id}`}
+                onClick={() => navigate(`/customer/product/${p.id}`)}
+                className="min-w-[140px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 flex flex-col cursor-pointer active:scale-[0.98] transition-transform"
+              >
+                <div className="relative h-24 overflow-hidden">
+                  {pct > 0 && (
+                    <span className="absolute top-1.5 left-1.5 z-10 text-[9px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full shadow-sm">
+                      {pct}% OFF
+                    </span>
+                  )}
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={140} height={96} />
+                </div>
+                <div className="p-2.5 flex flex-col flex-1">
+                  <p className="text-[12px] font-bold text-gray-900 leading-snug truncate">{p.name}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
+                  <div className="flex items-center justify-between mt-auto pt-1.5">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
+                      {p.originalPrice && (
+                        <span className="text-[9px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
+                      }}
+                      className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
