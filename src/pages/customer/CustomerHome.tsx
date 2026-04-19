@@ -150,7 +150,11 @@ export default function CustomerHome() {
       <div className="px-4">
         <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide">
           {categories.map((cat) => (
-            <button key={cat.name} className="flex flex-col items-center gap-1.5 min-w-[60px] active:scale-95 transition-transform">
+            <button
+              key={cat.name}
+              onClick={() => navigate(`/customer/explore?category=${encodeURIComponent(cat.name)}`)}
+              className="flex flex-col items-center gap-1.5 min-w-[60px] active:scale-95 transition-transform"
+            >
               <div className="h-14 w-14 rounded-2xl overflow-hidden shadow-sm">
                 <img src={cat.image} alt={cat.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
               </div>
