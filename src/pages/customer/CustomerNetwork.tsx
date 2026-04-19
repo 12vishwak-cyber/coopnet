@@ -1,12 +1,18 @@
 import { useState } from "react";
-import { Heart, Scale, Vote, Activity, Check, Clock, TrendingUp, Users, PiggyBank } from "lucide-react";
+import { Heart, Activity, Check, Clock, Sparkles, Users, PiggyBank, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
 const impactStats = [
-  { label: "Your Contribution", value: "₹420", icon: PiggyBank, color: "text-emerald-500", bg: "bg-emerald-50" },
-  { label: "Orders Placed", value: "12", icon: TrendingUp, color: "text-blue-500", bg: "bg-blue-50" },
-  { label: "Sellers Supported", value: "4", icon: Users, color: "text-amber-500", bg: "bg-amber-50" },
+  { label: "Local sellers supported", value: "4", icon: Users, color: "text-rose-500", bg: "bg-rose-50" },
+  { label: "Earned by workers", value: "₹84", icon: Sparkles, color: "text-amber-500", bg: "bg-amber-50" },
+  { label: "Added to community fund", value: "₹42", icon: PiggyBank, color: "text-emerald-500", bg: "bg-emerald-50" },
+];
+
+const proposals = [
+  { title: "Increase contribution to 7%", proposer: "Member-14", votesFor: 28, votesAgainst: 12, status: "voting" as const },
+  { title: "Add customer loyalty rewards", proposer: "Seller-23", votesFor: 35, votesAgainst: 5, status: "voting" as const },
+  { title: "Reduce system cost allocation", proposer: "Worker-07", votesFor: 40, votesAgainst: 3, status: "approved" as const },
 ];
 
 const rules = [
@@ -16,85 +22,136 @@ const rules = [
   { name: "Voting Rule", value: "60% majority required" },
 ];
 
-const proposals = [
-  { title: "Increase contribution to 7%", proposer: "Member-14", votesFor: 28, votesAgainst: 12, total: 48, status: "voting" },
-  { title: "Add customer loyalty rewards", proposer: "Seller-23", votesFor: 35, votesAgainst: 5, total: 48, status: "voting" },
-  { title: "Reduce system cost allocation", proposer: "Worker-07", votesFor: 40, votesAgainst: 3, total: 48, status: "approved" },
-];
-
 const events = [
-  { text: "Order ORD-1847 delivered", time: "2m ago" },
-  { text: "₹34 added to community fund", time: "2m ago" },
-  { text: "New proposal submitted", time: "1h ago" },
-  { text: "42 orders processed today", time: "5h ago" },
+  { text: "Your order ORD-1847 delivered", time: "2m ago", emoji: "📦" },
+  { text: "₹34 from your order added to the community fund", time: "2m ago", emoji: "💚" },
+  { text: "Priya Fresh Mart thanked you for shopping local", time: "1h ago", emoji: "🌟" },
+  { text: "Your 12 orders supported 4 local sellers this month", time: "5h ago", emoji: "❤️" },
 ];
 
 export default function CustomerNetwork() {
-  const [tab, setTab] = useState<"impact" | "proposals" | "activity">("impact");
+  const [tab, setTab] = useState<"impact" | "activity" | "coop">("impact");
 
   return (
     <div className="p-4 space-y-4">
-      <div>
-        <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-          <Heart className="h-5 w-5 text-emerald-500" /> Community & Impact
-        </h1>
-        <p className="text-xs text-gray-400 font-medium">See your contribution to the network</p>
+      {/* Hero — emotional */}
+      <div className="bg-gradient-to-br from-rose-400 via-pink-500 to-rose-500 rounded-3xl p-5 text-white shadow-xl shadow-rose-200">
+        <div className="flex items-center gap-2 mb-1">
+          <Heart className="h-4 w-4 fill-white" />
+          <p className="text-[11px] font-bold uppercase tracking-wider opacity-90">Your impact this month</p>
+        </div>
+        <p className="text-2xl font-extrabold leading-tight">
+          You supported 4 local sellers ❤️
+        </p>
+        <p className="text-xs font-medium opacity-90 mt-1">
+          Every order you place keeps your neighborhood thriving.
+        </p>
       </div>
 
-      {/* Impact Stats */}
+      {/* Impact stats */}
       <div className="grid grid-cols-3 gap-3">
-        {impactStats.map(s => (
+        {impactStats.map((s) => (
           <div key={s.label} className="bg-white rounded-2xl p-3 text-center shadow-sm border border-gray-100">
-            <div className={`h-8 w-8 rounded-xl ${s.bg} flex items-center justify-center mx-auto mb-1.5`}>
+            <div className={`h-9 w-9 rounded-2xl ${s.bg} flex items-center justify-center mx-auto mb-1.5`}>
               <s.icon className={`h-4 w-4 ${s.color}`} />
             </div>
-            <p className="text-[15px] font-bold text-gray-900">{s.value}</p>
-            <p className="text-[10px] text-gray-400 font-medium">{s.label}</p>
+            <p className="text-base font-extrabold text-gray-900">{s.value}</p>
+            <p className="text-[10px] text-gray-400 font-medium leading-tight">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 rounded-2xl p-1">
-        {(["impact", "proposals", "activity"] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`flex-1 text-sm py-2.5 rounded-xl transition-all font-semibold capitalize ${
-              tab === t ? "bg-white text-gray-900 shadow-sm" : "text-gray-400"
+        {([
+          { key: "impact", label: "Impact" },
+          { key: "activity", label: "Activity" },
+          { key: "coop", label: "Co-op" },
+        ] as const).map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`flex-1 text-sm py-2.5 rounded-xl transition-all font-semibold ${
+              tab === t.key ? "bg-white text-gray-900 shadow-sm" : "text-gray-400"
             }`}
-          >{t}</button>
+          >
+            {t.label}
+          </button>
         ))}
       </div>
 
       {tab === "impact" && (
         <div className="space-y-3">
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <Scale className="h-4 w-4 text-emerald-500" /> Network Rules
-            </h3>
-            {rules.map(r => (
-              <div key={r.name} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
-                <span className="text-sm font-medium text-gray-700">{r.name}</span>
-                <span className="text-[11px] text-gray-400 font-medium text-right max-w-[55%]">{r.value}</span>
-              </div>
-            ))}
+            <div className="flex items-center gap-2 mb-3">
+              <Leaf className="h-4 w-4 text-emerald-500" />
+              <h3 className="text-sm font-extrabold text-gray-900">Your contribution story</h3>
+            </div>
+            <div className="space-y-3">
+              {[
+                { label: "🛍️ Spent on local sellers", value: "₹4,820" },
+                { label: "🚴 Helped riders earn", value: "₹84" },
+                { label: "🌱 Built community fund", value: "₹42" },
+                { label: "🏪 Sellers you've helped", value: "4 stores" },
+              ].map((row) => (
+                <div key={row.label} className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700 font-medium">{row.label}</span>
+                  <span className="text-sm font-extrabold text-gray-900">{row.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
-            <p className="text-[11px] font-bold text-emerald-800">🏛️ Cooperative Governance</p>
-            <p className="text-[11px] text-emerald-700 mt-1">
-              Rules are decided by members. You have voting rights after 5+ orders.
-            </p>
+          <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3">
+            <div className="h-9 w-9 rounded-2xl bg-emerald-500 flex items-center justify-center shrink-0">
+              <Heart className="h-4 w-4 text-white fill-white" />
+            </div>
+            <div>
+              <p className="text-[13px] font-extrabold text-emerald-900">Powered by your neighborhood</p>
+              <p className="text-[11px] text-emerald-700 mt-0.5 leading-relaxed">
+                CoopNet is owned by the people who use it. No middlemen. No platform markup. Just your local economy, working together.
+              </p>
+            </div>
           </div>
         </div>
       )}
 
-      {tab === "proposals" && (
+      {tab === "activity" && (
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
+            <Activity className="h-4 w-4 text-emerald-500" />
+            <span className="text-sm font-extrabold text-gray-900">Recent activity</span>
+          </div>
+          {events.map((e, i) => (
+            <div key={i} className="flex items-start gap-3 py-3 border-b border-gray-50 last:border-0">
+              <span className="text-lg shrink-0">{e.emoji}</span>
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-gray-800 leading-snug">{e.text}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{e.time}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === "coop" && (
         <div className="space-y-3">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-2">How CoopNet works</p>
+            {rules.map((r) => (
+              <div key={r.name} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+                <span className="text-xs font-medium text-gray-600">{r.name}</span>
+                <span className="text-[11px] text-gray-900 font-semibold text-right max-w-[55%]">{r.value}</span>
+              </div>
+            ))}
+          </div>
+
           <div className="bg-emerald-50 rounded-2xl p-3 border border-emerald-100">
-            <p className="text-xs font-bold text-emerald-700">✅ You are eligible to vote</p>
+            <p className="text-xs font-bold text-emerald-700">✅ You're eligible to vote</p>
             <p className="text-[10px] text-emerald-600">12 orders completed · Governance rights active</p>
           </div>
-          {proposals.map(p => {
+
+          {proposals.map((p) => {
             const approval = Math.round((p.votesFor / (p.votesFor + p.votesAgainst)) * 100);
             return (
               <div key={p.title} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
@@ -126,24 +183,6 @@ export default function CustomerNetwork() {
               </div>
             );
           })}
-        </div>
-      )}
-
-      {tab === "activity" && (
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-2 mb-3">
-            <Activity className="h-4 w-4 text-emerald-500" />
-            <span className="text-sm font-bold text-gray-900">Recent Activity</span>
-          </div>
-          {events.map((e, i) => (
-            <div key={i} className="flex items-start gap-2.5 py-2.5 border-b border-gray-50 last:border-0">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
-              <div>
-                <p className="text-xs font-medium text-gray-700">{e.text}</p>
-                <p className="text-[10px] text-gray-400">{e.time}</p>
-              </div>
-            </div>
-          ))}
         </div>
       )}
     </div>
