@@ -132,6 +132,52 @@ export default function CustomerExplore() {
         )}
       </div>
 
+      {/* Category chips */}
+      <div className="px-4">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {CATEGORIES.map((c) => {
+            const active = activeCategory === c;
+            return (
+              <button
+                key={c}
+                onClick={() => {
+                  if (active) {
+                    clearCategory();
+                  } else {
+                    setActiveCategory(c);
+                    const next = new URLSearchParams(searchParams);
+                    next.set("category", c);
+                    setSearchParams(next, { replace: true });
+                    if (c === "Specials") setTab("specials");
+                    else if (tab === "specials") setTab("products");
+                  }
+                }}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
+                  active
+                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                    : "bg-white text-gray-600 border-gray-200"
+                }`}
+              >
+                {c}
+              </button>
+            );
+          })}
+        </div>
+        {activeCategory && (
+          <div className="flex items-center gap-2 mt-2 px-1">
+            <p className="text-[11px] text-gray-500 font-medium">
+              Showing <span className="font-extrabold text-gray-800">{activeCategory}</span>
+            </p>
+            <button
+              onClick={clearCategory}
+              className="inline-flex items-center gap-0.5 text-[11px] font-bold text-rose-500 active:scale-95"
+            >
+              <X className="h-3 w-3" /> Clear
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Tabs */}
       <div className="px-4">
         <div className="flex gap-1 bg-gray-100 rounded-2xl p-1">
