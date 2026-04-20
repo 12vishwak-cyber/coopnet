@@ -94,7 +94,9 @@ const App = () => (
           <Route path="/customer/product/:id" element={<CustomerLayout><CustomerProductDetail /></CustomerLayout>} />
           <Route path="/customer/orders" element={<CustomerLayout><CustomerOrders /></CustomerLayout>} />
           <Route path="/customer/order/track" element={<CustomerLayout><CustomerOrderTracking /></CustomerLayout>} />
+          <Route path="/customer/order/track/:id" element={<CustomerLayout><CustomerOrderTracking /></CustomerLayout>} />
           <Route path="/customer/order/impact" element={<CustomerLayout><CustomerPostOrder /></CustomerLayout>} />
+          <Route path="/customer/order/impact/:id" element={<CustomerLayout><CustomerPostOrder /></CustomerLayout>} />
           <Route path="/customer/network" element={<CustomerLayout><CustomerNetwork /></CustomerLayout>} />
           <Route path="/customer/profile" element={<CustomerLayout><CustomerProfile /></CustomerLayout>} />
           <Route path="/customer/membership" element={<CustomerMembership />} />

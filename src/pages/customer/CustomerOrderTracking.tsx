@@ -106,24 +106,19 @@ export default function CustomerOrderTracking() {
                 strokeWidth="3"
                 strokeLinecap="round"
               />
-              {/* completed segment */}
+              {/* completed segment (length-based dash) */}
               <path
                 d="M60,60 Q140,90 200,80 Q260,70 340,140"
                 fill="none"
                 stroke="#10b981"
                 strokeWidth="3"
-                strokeDasharray="6,4"
                 strokeLinecap="round"
                 pathLength={1}
-                strokeDashoffset={0}
                 style={{
-                  strokeDasharray: `${stageIdx >= 3 ? order.workerProgress : stageIdx >= 4 ? 1 : 0} 1`,
+                  strokeDasharray: `${stageIdx >= 4 ? 1 : stageIdx >= 3 ? order.workerProgress : 0} 1`,
                   transition: "stroke-dasharray 0.4s linear",
-                  pathLength: 1,
-                }as React.CSSProperties}
-              >
-                <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite" />
-              </path>
+                }}
+              />
 
               {/* Seller pin */}
               <circle cx="60" cy="60" r="11" fill="#d1fae5" />
