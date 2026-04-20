@@ -276,9 +276,9 @@ export default function CustomerCart() {
           <Button
             className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200"
             onClick={() => {
-              placeOrder({ items, subtotal, discount, deliveryFee, total: totalPrice });
+              const o = placeOrder({ items, subtotal, discount, deliveryFee, total: totalPrice });
               clearCart();
-              navigate("/customer/order/track");
+              navigate(`/customer/order/track/${o.id}`);
             }}
           >
             Place Order · ₹{totalPrice}

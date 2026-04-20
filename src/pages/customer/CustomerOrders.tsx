@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Truck, RotateCcw, Check, Package, ShoppingBag } from "lucide-react";
 import { useCart, CartItem } from "@/contexts/CartContext";
-import { useOrders, Order } from "@/contexts/OrdersContext";
+import { useOrders, Order, ORDER_STAGES } from "@/contexts/OrdersContext";
 import { Button } from "@/components/ui/button";
 
 export default function CustomerOrders() {
@@ -54,7 +54,7 @@ export default function CustomerOrders() {
       {/* Active order — hero card */}
       {activeOrder && (
         <button
-          onClick={() => navigate("/customer/order/track")}
+          onClick={() => navigate(`/customer/order/track/${activeOrder.id}`)}
           className="w-full text-left bg-gradient-to-br from-emerald-500 via-emerald-500 to-teal-600 rounded-3xl p-5 shadow-xl shadow-emerald-200 active:scale-[0.99] transition-transform"
         >
           <div className="flex items-center gap-3 mb-4">
@@ -62,28 +62,35 @@ export default function CustomerOrders() {
               <Truck className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">Arriving in</p>
-              <p className="text-2xl font-extrabold text-white leading-none">{activeOrder.etaMin} mins</p>
+              <p className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">{activeOrder.status}</p>
+              <p className="text-2xl font-extrabold text-white leading-none">
+                {activeOrder.etaMin > 0 ? `${activeOrder.etaMin} mins` : "Arrived"}
+              </p>
             </div>
             <ChevronRight className="h-5 w-5 text-white/70" />
           </div>
 
-          <div className="flex items-center gap-1 mb-3">
-            {[1, 2, 3].map((s) => (
-              <div
-                key={s}
-                className={`h-1.5 flex-1 rounded-full ${
-                  (activeOrder.step ?? 1) >= s ? "bg-white" : "bg-white/25"
-                }`}
-              />
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between text-[10px] font-bold text-white/90">
-            <span className={(activeOrder.step ?? 1) >= 1 ? "" : "opacity-50"}>✓ Packed</span>
-            <span className={(activeOrder.step ?? 1) >= 2 ? "" : "opacity-50"}>● Out for delivery</span>
-            <span className={(activeOrder.step ?? 1) >= 3 ? "" : "opacity-50"}>○ Delivered</span>
-          </div>
+          {(() => {
+            const stepIdx = ORDER_STAGES.indexOf(activeOrder.status); // 0..4
+            return (
+              <>
+                <div className="flex items-center gap-1 mb-3">
+                  {[0, 1, 2, 3].map((s) => (
+                    <div
+                      key={s}
+                      className={`h-1.5 flex-1 rounded-full ${stepIdx > s ? "bg-white" : "bg-white/25"}`}
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center justify-between text-[10px] font-bold text-white/90">
+                  <span className={stepIdx >= 1 ? "" : "opacity-50"}>✓ Packed</span>
+                  <span className={stepIdx >= 2 ? "" : "opacity-50"}>◉ Assigned</span>
+                  <span className={stepIdx >= 3 ? "" : "opacity-50"}>● Out</span>
+                  <span className={stepIdx >= 4 ? "" : "opacity-50"}>○ Delivered</span>
+                </div>
+              </>
+            );
+          })()}
 
           <div className="mt-4 pt-3 border-t border-white/20 flex items-center gap-3">
             <div className="flex -space-x-2">
@@ -119,7 +126,7 @@ export default function CustomerOrders() {
                     ))}
                   </div>
                   <button
-                    onClick={() => navigate("/customer/order/impact")}
+                    onClick={() => navigate(`/customer/order/impact/${o.id}`)}
                     className="flex-1 min-w-0 text-left"
                   >
                     <p className="text-sm font-bold text-gray-900 truncate">{o.seller}</p>
