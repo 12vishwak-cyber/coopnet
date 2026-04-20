@@ -32,6 +32,10 @@ import Help from "@/pages/Help";
 import CustomerLayout from "@/components/CustomerLayout";
 import { CartProvider } from "@/contexts/CartContext";
 import { OrdersProvider } from "@/contexts/OrdersContext";
+import { MembershipProvider } from "@/contexts/MembershipContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import CustomerMembership from "@/pages/customer/CustomerMembership";
+import CustomerWelcome from "@/pages/customer/CustomerWelcome";
 import CustomerHome from "@/pages/customer/CustomerHome";
 import CustomerExplore from "@/pages/customer/CustomerExplore";
 import CustomerSellerProfile from "@/pages/customer/CustomerSellerProfile";
@@ -48,12 +52,14 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
         <CartProvider>
         <OrdersProvider>
+        <MembershipProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/seller" replace />} />
           <Route path="/login" element={<Login />} />
@@ -91,12 +97,16 @@ const App = () => (
           <Route path="/customer/order/impact" element={<CustomerLayout><CustomerPostOrder /></CustomerLayout>} />
           <Route path="/customer/network" element={<CustomerLayout><CustomerNetwork /></CustomerLayout>} />
           <Route path="/customer/profile" element={<CustomerLayout><CustomerProfile /></CustomerLayout>} />
+          <Route path="/customer/membership" element={<CustomerMembership />} />
+          <Route path="/customer/welcome" element={<CustomerWelcome />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </MembershipProvider>
         </OrdersProvider>
         </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

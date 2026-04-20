@@ -65,18 +65,21 @@ export default function CustomerPostOrder() {
         </div>
 
         {/* Membership CTA */}
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 shadow-lg shadow-emerald-200">
+        <button
+          onClick={() => navigate("/customer/membership")}
+          className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 shadow-lg shadow-emerald-200 active:scale-[0.99] transition-transform text-left"
+        >
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
               <Heart className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold text-white">Become a Cooperative Member</p>
-              <p className="text-[11px] text-white/80 mt-0.5">12 orders done! Vote on rules & shape the network.</p>
+              <p className="text-[11px] text-white/80 mt-0.5">Vote on rules & shape the network.</p>
             </div>
-            <ArrowRight className="h-5 w-5 text-white/60" />
+            <ArrowRight className="h-5 w-5 text-white/80" />
           </div>
-        </div>
+        </button>
 
         <Button 
           className="w-full h-12 rounded-2xl font-bold bg-gray-900 hover:bg-gray-800"
