@@ -250,3 +250,49 @@ export default function CustomerOrderTracking() {
     </div>
   );
 }
+
+const WAIT_GRACE_S = 180;
+const WAIT_RATE = 5; // ₹/min after grace, paid to driver
+
+function CustomerWaitWarning({ arrivedAt, penalty }: { arrivedAt: string; penalty: number }) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const i = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(i);
+  }, []);
+  const elapsed = Math.floor((now - new Date(arrivedAt).getTime()) / 1000);
+  const remaining = Math.max(0, WAIT_GRACE_S - elapsed);
+  const inGrace = remaining > 0;
+  const m = Math.floor(remaining / 60);
+  const s = (remaining % 60).toString().padStart(2, "0");
+
+  return (
+    <div
+      className={`rounded-2xl border-2 p-3.5 ${
+        inGrace ? "bg-amber-50 border-amber-200" : "bg-rose-50 border-rose-200"
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
+            inGrace ? "bg-amber-100" : "bg-rose-100"
+          }`}
+        >
+          <Hourglass className={`h-5 w-5 ${inGrace ? "text-amber-700" : "text-rose-700"}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className={`text-[13px] font-extrabold ${inGrace ? "text-amber-900" : "text-rose-900"}`}>
+            {inGrace
+              ? `Driver has arrived — collect within ${m}:${s}`
+              : `+₹${penalty} wait charge added`}
+          </p>
+          <p className="text-[11px] text-gray-600 mt-0.5">
+            {inGrace
+              ? `Please come down to avoid ₹${WAIT_RATE}/min charge after the 3-minute grace.`
+              : `Charged for late pickup — paid 100% to your driver as fair compensation.`}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
