@@ -331,12 +331,52 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     setOrders([]);
   }, []);
 
+  const markArrived = useCallback((id: string) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === id && !o.arrivedAt
+          ? { ...o, arrivedAt: new Date().toISOString(), waitPenalty: 0 }
+          : o,
+      ),
+    );
+  }, []);
+
+  const confirmPickup = useCallback((id: string) => {
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== id) return o;
+        const now = new Date();
+        const events: OrderEvent[] = [
+          ...o.events,
+          { status: "Delivered", at: now.toISOString(), message: messageFor("Delivered", o) },
+        ];
+        return { ...o, status: "Delivered", etaMin: 0, workerProgress: 1, stopsAhead: 0, events };
+      }),
+    );
+  }, []);
+
+  const tickWaitPenalty = useCallback((id: string, penalty: number) => {
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, waitPenalty: penalty } : o)));
+  }, []);
+
   const value = useMemo<OrdersContextValue>(() => {
-    const activeOrder = orders.find((o) => o.status !== "Delivered") ?? null;
-    const pastOrders = orders.filter((o) => o.status === "Delivered");
-    const getOrder = (id: string) => orders.find((o) => o.id === id);
-    return { orders, activeOrder, pastOrders, getOrder, placeOrder, clearOrders };
-  }, [orders, placeOrder, clearOrders]);
+    // Backfill distanceKm for legacy orders.
+    const safe = orders.map((o) => (o.distanceKm == null ? { ...o, distanceKm: 1.8 } : o));
+    const activeOrder = safe.find((o) => o.status !== "Delivered") ?? null;
+    const pastOrders = safe.filter((o) => o.status === "Delivered");
+    const getOrder = (id: string) => safe.find((o) => o.id === id);
+    return {
+      orders: safe,
+      activeOrder,
+      pastOrders,
+      getOrder,
+      placeOrder,
+      clearOrders,
+      markArrived,
+      confirmPickup,
+      tickWaitPenalty,
+    };
+  }, [orders, placeOrder, clearOrders, markArrived, confirmPickup, tickWaitPenalty]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;
 }
