@@ -210,16 +210,10 @@ export default function CustomerHome() {
                         <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
                       )}
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
-                      }}
-                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-sm text-xs font-bold active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
-                    </Button>
+                    <QtyButton
+                      item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
+                      size="md"
+                    />
                   </div>
                 </div>
               </div>
@@ -245,13 +239,10 @@ export default function CustomerHome() {
                 <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
                 <div className="flex items-center justify-between mt-auto pt-1.5">
                   <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
-                  <Button
+                  <QtyButton
+                    item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
                     size="sm"
-                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                    className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
+                  />
                 </div>
               </div>
             </div>
@@ -279,13 +270,10 @@ export default function CustomerHome() {
                 <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
                 <div className="flex items-center justify-between mt-auto pt-1.5">
                   <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
-                  <Button
+                  <QtyButton
+                    item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
                     size="sm"
-                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                    className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
+                  />
                 </div>
               </div>
             </div>
@@ -326,16 +314,10 @@ export default function CustomerHome() {
                         <span className="text-[9px] text-gray-400 line-through">₹{p.originalPrice}</span>
                       )}
                     </div>
-                    <Button
+                    <QtyButton
+                      item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
-                      }}
-                      className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
+                    />
                   </div>
                 </div>
               </div>
