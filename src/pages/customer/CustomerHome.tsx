@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Search, Star, Plus, ChevronRight, Clock, Flame, TrendingUp, Heart, Tag, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import PromoCarousel from "@/components/PromoCarousel";
+import QtyButton from "@/components/QtyButton";
 
 // Product images
 import imgTomatoes from "@/assets/products/tomatoes.jpg";
@@ -35,20 +37,21 @@ import imgIdliBatter from "@/assets/products/idli-batter.jpg";
 import imgPickle from "@/assets/products/pickle.jpg";
 
 const promoBanners = [
-  { title: "₹0 Delivery", subtitle: "On your first 3 orders", bg: "from-emerald-500 to-teal-500", emoji: "🚚" },
+  { title: "₹0 Delivery", subtitle: "On orders above ₹199", bg: "from-emerald-500 to-teal-500", emoji: "🚚" },
   { title: "Fresh Veggies under ₹20", subtitle: "Farm to door daily", bg: "from-orange-400 to-amber-500", emoji: "🥬" },
+  { title: "Delivered in 10 mins", subtitle: "Your nearest store, optimized", bg: "from-violet-500 to-fuchsia-500", emoji: "⚡" },
   { title: "Support Local Stores ❤️", subtitle: "Every order helps your community", bg: "from-rose-400 to-pink-500", emoji: "🏪" },
 ];
 
 const categories = [
-  { name: "Vegetables", image: catVegetables },
-  { name: "Fruits", image: catFruits },
-  { name: "Dairy", image: catDairy },
-  { name: "Snacks", image: catSnacks },
-  { name: "Essentials", image: catEssentials },
-  { name: "Bakery", image: catBakery },
-  { name: "Beverages", image: catBeverages },
-  { name: "Specials", image: catSpecials },
+  { name: "Vegetables", image: catVegetables, label: "Fresh", labelClass: "bg-emerald-500" },
+  { name: "Fruits", image: catFruits, label: "Daily", labelClass: "bg-orange-500" },
+  { name: "Dairy", image: catDairy, label: "Daily", labelClass: "bg-blue-500" },
+  { name: "Snacks", image: catSnacks, label: "Quick", labelClass: "bg-amber-500" },
+  { name: "Essentials", image: catEssentials, label: "10 min", labelClass: "bg-violet-500" },
+  { name: "Bakery", image: catBakery, label: "Hot", labelClass: "bg-rose-500" },
+  { name: "Beverages", image: catBeverages, label: "Cold", labelClass: "bg-cyan-500" },
+  { name: "Specials", image: catSpecials, label: "Local", labelClass: "bg-fuchsia-500" },
 ];
 
 import { PRODUCTS, discountPct } from "@/data/products";
@@ -57,7 +60,9 @@ const popularProducts = PRODUCTS.slice(0, 8);
 // Static "selling fast" hints for urgency on a couple of trending cards
 const urgencyById: Record<string, string> = {
   p1: "Selling fast 🔥",
+  p3: "Bestseller ⭐",
   p5: "Only 4 left",
+  p7: "Fresh today 🌿",
 };
 // "Recommended for you" — different slice for behavioral depth
 const recommended = [...PRODUCTS].slice(8, 13).concat(PRODUCTS.slice(0, 1));
@@ -125,40 +130,35 @@ export default function CustomerHome() {
         </button>
       </div>
 
-      {/* Promo Banners */}
+      {/* Promo Banners — auto-rotating */}
       <div className="px-4">
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-          {promoBanners.map((b, i) => (
-            <div
-              key={i}
-              className={`min-w-[280px] snap-center bg-gradient-to-r ${b.bg} rounded-2xl p-5 text-white flex items-center justify-between shadow-lg`}
-            >
-              <div>
-                <p className="text-lg font-extrabold leading-tight">{b.title}</p>
-                <p className="text-xs font-medium opacity-90 mt-1">{b.subtitle}</p>
-                <button className="mt-3 bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full">
-                  Shop Now →
-                </button>
-              </div>
-              <span className="text-5xl ml-2">{b.emoji}</span>
-            </div>
-          ))}
-        </div>
+        <PromoCarousel
+          banners={promoBanners}
+          onTap={(i) => {
+            // Tap-through: free delivery banner → cart, fresh veggies → vegetables
+            if (i === 0) navigate("/customer/cart");
+            else if (i === 1) navigate("/customer/explore?category=Vegetables");
+            else navigate("/customer/explore");
+          }}
+        />
       </div>
 
-      {/* Categories */}
+      {/* Categories — bigger, with overlay label */}
       <div className="px-4">
-        <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-3.5 overflow-x-auto pb-1 scrollbar-hide">
           {categories.map((cat) => (
             <button
               key={cat.name}
               onClick={() => navigate(`/customer/explore?category=${encodeURIComponent(cat.name)}`)}
-              className="flex flex-col items-center gap-1.5 min-w-[60px] active:scale-95 transition-transform"
+              className="flex flex-col items-center gap-1.5 min-w-[64px] active:scale-95 transition-transform"
             >
-              <div className="h-14 w-14 rounded-2xl overflow-hidden shadow-sm">
-                <img src={cat.image} alt={cat.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
+              <div className="relative h-16 w-16 rounded-2xl overflow-hidden shadow-md ring-1 ring-black/5">
+                <img src={cat.image} alt={cat.name} className="h-full w-full object-cover" loading="lazy" width={64} height={64} />
+                <span className={`absolute top-1 right-1 ${cat.labelClass} text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm leading-none`}>
+                  {cat.label}
+                </span>
               </div>
-              <span className="text-[10px] font-semibold text-gray-600 text-center leading-tight">{cat.name}</span>
+              <span className="text-[10px] font-bold text-gray-700 text-center leading-tight">{cat.name}</span>
             </button>
           ))}
         </div>
@@ -210,16 +210,10 @@ export default function CustomerHome() {
                         <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
                       )}
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
-                      }}
-                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 shadow-sm text-xs font-bold active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
-                    </Button>
+                    <QtyButton
+                      item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
+                      size="md"
+                    />
                   </div>
                 </div>
               </div>
@@ -245,13 +239,10 @@ export default function CustomerHome() {
                 <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
                 <div className="flex items-center justify-between mt-auto pt-1.5">
                   <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
-                  <Button
+                  <QtyButton
+                    item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
                     size="sm"
-                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                    className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
+                  />
                 </div>
               </div>
             </div>
@@ -279,13 +270,10 @@ export default function CustomerHome() {
                 <p className="text-[10px] text-gray-400 mt-0.5">{p.unit}</p>
                 <div className="flex items-center justify-between mt-auto pt-1.5">
                   <span className="text-sm font-extrabold text-gray-900">₹{p.price}</span>
-                  <Button
+                  <QtyButton
+                    item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
                     size="sm"
-                    onClick={() => addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image })}
-                    className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
+                  />
                 </div>
               </div>
             </div>
@@ -326,16 +314,10 @@ export default function CustomerHome() {
                         <span className="text-[9px] text-gray-400 line-through">₹{p.originalPrice}</span>
                       )}
                     </div>
-                    <Button
+                    <QtyButton
+                      item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
-                      }}
-                      className="h-7 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-[11px] font-bold active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
+                    />
                   </div>
                 </div>
               </div>

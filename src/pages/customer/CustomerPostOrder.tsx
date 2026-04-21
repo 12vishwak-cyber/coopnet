@@ -1,37 +1,79 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Heart, Star, Users, PiggyBank, Truck, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useOrders } from "@/contexts/OrdersContext";
+import MoneyBreakdown from "@/components/MoneyBreakdown";
 
 export default function CustomerPostOrder() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { getOrder } = useOrders();
+  const order = id ? getOrder(id) : undefined;
   const [sellerRating, setSellerRating] = useState(4);
   const [workerRating, setWorkerRating] = useState(5);
+  const [confetti, setConfetti] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setConfetti(false), 2400);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Derived impact figures from the real order (or sensible fallbacks)
+  const orderId = order?.id ?? "ORD-1847";
+  const sellerName = order?.seller ?? "Kumar Groceries";
+  const workerName = order?.worker?.name ?? "Arun K.";
+  const orderTotal = order?.total ?? 547;
+  const orderSubtotal = order?.subtotal ?? 510;
+  const orderDiscount = order?.discount ?? 0;
+  const community = Math.round((orderSubtotal - orderDiscount) * 0.06);
+  const sellerPaid = orderSubtotal - orderDiscount - community;
+  const workerPaid = order?.worker?.earnings ?? Math.round(orderTotal * 0.12);
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
-      <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+    <div className="min-h-screen bg-[#f5f5f5] relative overflow-hidden">
+      {/* Confetti */}
+      {confetti && (
+        <div className="pointer-events-none absolute inset-0 z-20">
+          {Array.from({ length: 24 }).map((_, i) => {
+            const left = (i * 37) % 100;
+            const delay = (i % 6) * 0.08;
+            const colors = ["bg-emerald-400", "bg-amber-400", "bg-rose-400", "bg-blue-400", "bg-violet-400"];
+            const color = colors[i % colors.length];
+            return (
+              <span
+                key={i}
+                className={`absolute top-0 h-2 w-2 ${color} rounded-sm opacity-90 animate-[fall_2.2s_ease-in_forwards]`}
+                style={{ left: `${left}%`, animationDelay: `${delay}s` }}
+              />
+            );
+          })}
+          <style>{`@keyframes fall { 0%{transform:translateY(-40px) rotate(0);opacity:0} 10%{opacity:1} 100%{transform:translateY(120vh) rotate(540deg);opacity:0} }`}</style>
+        </div>
+      )}
+
+      <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100 relative z-10">
         <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
           <ArrowLeft className="h-4 w-4 text-gray-600" />
         </button>
         <span className="text-[15px] font-bold text-gray-900">Order Complete</span>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 relative z-10">
         {/* Success */}
         <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
-          <div className="h-16 w-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3">
+          <div className="h-16 w-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3 animate-scale-in">
             <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
           <h1 className="text-lg font-bold text-gray-900">Order Delivered!</h1>
-          <p className="text-xs text-gray-400 mt-1">ORD-1847 · Here's your impact</p>
+          <p className="text-xs text-gray-400 mt-1">{orderId} · Here's your impact</p>
         </div>
 
         {/* Impact Cards */}
         {[
-          { icon: PiggyBank, color: "bg-emerald-50", iconColor: "text-emerald-500", title: "₹34 contributed to community fund", desc: "Supports routing, infrastructure, and shared intelligence" },
-          { icon: Users, color: "bg-blue-50", iconColor: "text-blue-500", title: "Supported a local seller", desc: "Kumar Groceries received ₹445 directly — no commission" },
-          { icon: Truck, color: "bg-amber-50", iconColor: "text-amber-500", title: "Fair worker earnings", desc: "Arun K. earned ₹68 — based on cooperative rules" },
+          { icon: PiggyBank, color: "bg-emerald-50", iconColor: "text-emerald-500", title: `₹${community} contributed to community fund`, desc: "Supports routing, infrastructure, and shared intelligence" },
+          { icon: Users, color: "bg-blue-50", iconColor: "text-blue-500", title: "Supported a local seller", desc: `${sellerName} received ₹${sellerPaid} directly — no commission` },
+          { icon: Truck, color: "bg-amber-50", iconColor: "text-amber-500", title: "Fair worker earnings", desc: `${workerName} earned ₹${workerPaid} — based on cooperative rules` },
         ].map(({ icon: Icon, color, iconColor, title, desc }) => (
           <div key={title} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
             <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center shrink-0`}>
@@ -44,12 +86,25 @@ export default function CustomerPostOrder() {
           </div>
         ))}
 
+        {/* Detailed money breakdown with infographics */}
+        <MoneyBreakdown
+          input={{
+            subtotal: orderSubtotal,
+            discount: orderDiscount,
+            distanceKm: 1.8,
+            freeDelivery: order?.deliveryFee === 0,
+          }}
+          variant="full"
+          defaultOpen
+          showInfographics
+        />
+
         {/* Ratings */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Rate Your Experience</h3>
           {[
-            { label: "Seller", rating: sellerRating, setRating: setSellerRating },
-            { label: "Worker", rating: workerRating, setRating: setWorkerRating },
+            { label: `Seller · ${sellerName}`, rating: sellerRating, setRating: setSellerRating },
+            { label: `Worker · ${workerName}`, rating: workerRating, setRating: setWorkerRating },
           ].map(({ label, rating, setRating }) => (
             <div key={label} className="flex items-center justify-between mb-3 last:mb-0">
               <span className="text-sm font-medium text-gray-700">{label}</span>
@@ -81,7 +136,7 @@ export default function CustomerPostOrder() {
           </div>
         </button>
 
-        <Button 
+        <Button
           className="w-full h-12 rounded-2xl font-bold bg-gray-900 hover:bg-gray-800"
           onClick={() => navigate("/customer")}
         >
