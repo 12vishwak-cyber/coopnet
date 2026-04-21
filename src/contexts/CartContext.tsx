@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useCallback, useMemo, useEffect } from "react";
 import { toast } from "sonner";
+import { computePricing, DEFAULT_DISTANCE_KM } from "@/lib/pricing";
 
 export type CartItem = {
   id: string;
@@ -25,8 +26,6 @@ export const PROMO_CODES: Promo[] = [
   { code: "SAVE50", label: "₹50 off above ₹300", type: "flat", value: 50, minOrder: 300 },
 ];
 
-const DEFAULT_DELIVERY = 25;
-
 type CartContextValue = {
   items: CartItem[];
   totalItems: number;
@@ -34,6 +33,9 @@ type CartContextValue = {
   totalPrice: number; // final after promo + delivery
   deliveryFee: number;
   discount: number;
+  platformFee: number;
+  communityFund: number;
+  distanceKm: number;
   appliedPromo: Promo | null;
   applyPromo: (code: string) => boolean;
   removePromo: () => void;
@@ -167,33 +169,39 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const totalItems = items.reduce((s, i) => s + i.quantity, 0);
     const subtotal = items.reduce((s, i) => s + i.quantity * i.price, 0);
 
-    let deliveryFee = subtotal > 0 ? DEFAULT_DELIVERY : 0;
     let discount = 0;
+    let freeDelivery = false;
 
     if (appliedPromo && subtotal > 0) {
-      // Re-validate min order in case items changed after applying
-      if (appliedPromo.minOrder && subtotal < appliedPromo.minOrder) {
-        // skip applying but keep code stored; user will see warning UI
-      } else {
+      const minOk = !appliedPromo.minOrder || subtotal >= appliedPromo.minOrder;
+      if (minOk) {
         if (appliedPromo.type === "percent") {
           discount = Math.round((subtotal * appliedPromo.value) / 100);
         } else if (appliedPromo.type === "flat") {
           discount = Math.min(appliedPromo.value, subtotal);
         } else if (appliedPromo.type === "freeDelivery") {
-          deliveryFee = 0;
+          freeDelivery = true;
         }
       }
     }
 
-    const totalPrice = Math.max(0, subtotal - discount + deliveryFee);
+    const pricing = computePricing({
+      subtotal,
+      discount,
+      distanceKm: DEFAULT_DISTANCE_KM,
+      freeDelivery,
+    });
 
     return {
       items,
       totalItems,
       subtotal,
-      totalPrice,
-      deliveryFee,
-      discount,
+      totalPrice: pricing.total,
+      deliveryFee: pricing.deliveryFee,
+      discount: pricing.discount,
+      platformFee: pricing.platformFee,
+      communityFund: pricing.communityFund,
+      distanceKm: DEFAULT_DISTANCE_KM,
       appliedPromo,
       applyPromo,
       removePromo,
