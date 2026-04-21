@@ -130,6 +130,12 @@ type OrdersContextValue = {
     deliveryFee: number;
     total: number;
   }) => Order;
+  /** Driver app: mark arrival at customer doorstep — starts the 3-min wait clock. */
+  markArrived: (id: string) => void;
+  /** Driver app: confirm pickup completed (no penalty, advances to delivered). */
+  confirmPickup: (id: string) => void;
+  /** Updated wait penalty (₹/min after grace). */
+  tickWaitPenalty: (id: string, penalty: number) => void;
   clearOrders: () => void;
 };
 
