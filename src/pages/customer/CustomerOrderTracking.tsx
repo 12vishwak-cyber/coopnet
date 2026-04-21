@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Check, Star, Truck, User, Phone, MessageCircle, Package, MapPin, Bike } from "lucide-react";
+import { ArrowLeft, Check, Star, Truck, User, Phone, MessageCircle, Package, MapPin, Bike, Hourglass } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useOrders, ORDER_STAGES, OrderStatus, timeLabel } from "@/contexts/OrdersContext";
 
@@ -227,9 +227,14 @@ export default function CustomerOrderTracking() {
           </div>
         </div>
 
-        {/* Why this worker */}
+        {/* Wait warning — appears when driver has marked arrival */}
+        {order.arrivedAt && order.status !== "Delivered" && (
+          <CustomerWaitWarning arrivedAt={order.arrivedAt} penalty={order.waitPenalty ?? 0} />
+        )}
+
+        {/* Why this driver */}
         <div className="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-100">
-          <p className="text-[11px] font-bold text-emerald-800 mb-1">🤖 Why this worker?</p>
+          <p className="text-[11px] font-bold text-emerald-800 mb-1">🤖 Why this driver?</p>
           <p className="text-[11px] text-emerald-700 leading-relaxed">
             Assigned by proximity, load capacity, and cooperative rules — not surge pricing.
           </p>
