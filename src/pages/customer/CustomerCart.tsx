@@ -265,7 +265,3 @@ export default function CustomerCart() {
     </div>
   );
 }
-      </div>
-    </div>
-  );
-}
