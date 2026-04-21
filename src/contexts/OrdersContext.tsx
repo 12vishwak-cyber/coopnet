@@ -275,10 +275,15 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         image: i.image,
         qty: i.quantity,
       }));
-      const seller = items[0]?.seller ?? "Local seller";
+      const distanceKm = +(0.8 + Math.random() * 2.4).toFixed(1); // 0.8–3.2 km realistic
+      const baseFare = 20;
+      const perKmRate = 12;
+      const tripPay = Math.max(25, Math.round(baseFare + distanceKm * perKmRate));
       const worker = {
         ...WORKERS[Math.floor(Math.random() * WORKERS.length)],
-        earnings: Math.round(input.total * 0.12),
+        earnings: tripPay,
+        baseFare,
+        perKmRate,
       };
       const order: Order = {
         id,
