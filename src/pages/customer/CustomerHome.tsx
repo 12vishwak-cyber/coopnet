@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Search, Star, Plus, ChevronRight, Clock, Flame, TrendingUp, Heart, Tag, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import PromoCarousel from "@/components/PromoCarousel";
+import QtyButton from "@/components/QtyButton";
 
 // Product images
 import imgTomatoes from "@/assets/products/tomatoes.jpg";
@@ -35,20 +37,21 @@ import imgIdliBatter from "@/assets/products/idli-batter.jpg";
 import imgPickle from "@/assets/products/pickle.jpg";
 
 const promoBanners = [
-  { title: "₹0 Delivery", subtitle: "On your first 3 orders", bg: "from-emerald-500 to-teal-500", emoji: "🚚" },
+  { title: "₹0 Delivery", subtitle: "On orders above ₹199", bg: "from-emerald-500 to-teal-500", emoji: "🚚" },
   { title: "Fresh Veggies under ₹20", subtitle: "Farm to door daily", bg: "from-orange-400 to-amber-500", emoji: "🥬" },
+  { title: "Delivered in 10 mins", subtitle: "Your nearest store, optimized", bg: "from-violet-500 to-fuchsia-500", emoji: "⚡" },
   { title: "Support Local Stores ❤️", subtitle: "Every order helps your community", bg: "from-rose-400 to-pink-500", emoji: "🏪" },
 ];
 
 const categories = [
-  { name: "Vegetables", image: catVegetables },
-  { name: "Fruits", image: catFruits },
-  { name: "Dairy", image: catDairy },
-  { name: "Snacks", image: catSnacks },
-  { name: "Essentials", image: catEssentials },
-  { name: "Bakery", image: catBakery },
-  { name: "Beverages", image: catBeverages },
-  { name: "Specials", image: catSpecials },
+  { name: "Vegetables", image: catVegetables, label: "Fresh", labelClass: "bg-emerald-500" },
+  { name: "Fruits", image: catFruits, label: "Daily", labelClass: "bg-orange-500" },
+  { name: "Dairy", image: catDairy, label: "Daily", labelClass: "bg-blue-500" },
+  { name: "Snacks", image: catSnacks, label: "Quick", labelClass: "bg-amber-500" },
+  { name: "Essentials", image: catEssentials, label: "10 min", labelClass: "bg-violet-500" },
+  { name: "Bakery", image: catBakery, label: "Hot", labelClass: "bg-rose-500" },
+  { name: "Beverages", image: catBeverages, label: "Cold", labelClass: "bg-cyan-500" },
+  { name: "Specials", image: catSpecials, label: "Local", labelClass: "bg-fuchsia-500" },
 ];
 
 import { PRODUCTS, discountPct } from "@/data/products";
@@ -57,7 +60,9 @@ const popularProducts = PRODUCTS.slice(0, 8);
 // Static "selling fast" hints for urgency on a couple of trending cards
 const urgencyById: Record<string, string> = {
   p1: "Selling fast 🔥",
+  p3: "Bestseller ⭐",
   p5: "Only 4 left",
+  p7: "Fresh today 🌿",
 };
 // "Recommended for you" — different slice for behavioral depth
 const recommended = [...PRODUCTS].slice(8, 13).concat(PRODUCTS.slice(0, 1));
