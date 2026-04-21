@@ -275,6 +275,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         image: i.image,
         qty: i.quantity,
       }));
+      const seller = items[0]?.seller ?? "Local seller";
       const distanceKm = +(0.8 + Math.random() * 2.4).toFixed(1); // 0.8–3.2 km realistic
       const baseFare = 20;
       const perKmRate = 12;
@@ -307,6 +308,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         ],
         workerProgress: 0,
         stopsAhead: 3,
+        distanceKm,
       };
       setOrders((prev) => [order, ...prev]);
       scheduleLifecycle(order);
