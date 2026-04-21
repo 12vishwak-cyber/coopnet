@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { useMembership } from "@/contexts/MembershipContext";
 import { useTheme } from "@/contexts/ThemeContext";
 
-const complaintTypes = ["Order issue", "Seller issue", "Worker issue", "System issue", "Payment issue"];
+const complaintTypes = ["Order issue", "Seller issue", "Delivery driver issue", "System issue", "Payment issue"];
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
@@ -154,7 +154,7 @@ export default function CustomerProfile() {
               {[
                 { id: "customer", label: "Customer", icon: ShoppingBag, path: "/customer", active: true },
                 { id: "seller", label: "Seller", icon: Store, path: "/seller", active: false },
-                { id: "worker", label: "Worker", icon: Bike, path: "/worker", active: false },
+                { id: "worker", label: "Driver", icon: Bike, path: "/worker", active: false },
               ].map((r) => (
                 <button
                   key={r.id}

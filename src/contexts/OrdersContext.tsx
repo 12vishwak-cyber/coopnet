@@ -32,6 +32,8 @@ export type Worker = {
   rating: number;
   earnings: number;
   vehicle: string;
+  baseFare?: number;
+  perKmRate?: number;
 };
 
 export type Order = {
@@ -50,6 +52,9 @@ export type Order = {
   events: OrderEvent[];
   workerProgress: number; // 0..1 along route, only meaningful while Out for Delivery
   stopsAhead: number; // visible during Out for Delivery
+  distanceKm: number;
+  arrivedAt?: string; // ISO when driver arrived at doorstep — starts wait clock
+  waitPenalty?: number; // INR accrued, paid to driver
 };
 
 const STORAGE_KEY = "coopnet:orders:v2";
@@ -125,6 +130,12 @@ type OrdersContextValue = {
     deliveryFee: number;
     total: number;
   }) => Order;
+  /** Driver app: mark arrival at customer doorstep — starts the 3-min wait clock. */
+  markArrived: (id: string) => void;
+  /** Driver app: confirm pickup completed (no penalty, advances to delivered). */
+  confirmPickup: (id: string) => void;
+  /** Updated wait penalty (₹/min after grace). */
+  tickWaitPenalty: (id: string, penalty: number) => void;
   clearOrders: () => void;
 };
 
@@ -271,9 +282,15 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         qty: i.quantity,
       }));
       const seller = items[0]?.seller ?? "Local seller";
+      const distanceKm = +(0.8 + Math.random() * 2.4).toFixed(1); // 0.8–3.2 km realistic
+      const baseFare = 20;
+      const perKmRate = 12;
+      const tripPay = Math.max(25, Math.round(baseFare + distanceKm * perKmRate));
       const worker = {
         ...WORKERS[Math.floor(Math.random() * WORKERS.length)],
-        earnings: Math.round(input.total * 0.12),
+        earnings: tripPay,
+        baseFare,
+        perKmRate,
       };
       const order: Order = {
         id,
@@ -297,6 +314,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         ],
         workerProgress: 0,
         stopsAhead: 3,
+        distanceKm,
       };
       setOrders((prev) => [order, ...prev]);
       scheduleLifecycle(order);
@@ -313,12 +331,52 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     setOrders([]);
   }, []);
 
+  const markArrived = useCallback((id: string) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === id && !o.arrivedAt
+          ? { ...o, arrivedAt: new Date().toISOString(), waitPenalty: 0 }
+          : o,
+      ),
+    );
+  }, []);
+
+  const confirmPickup = useCallback((id: string) => {
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== id) return o;
+        const now = new Date();
+        const events: OrderEvent[] = [
+          ...o.events,
+          { status: "Delivered", at: now.toISOString(), message: messageFor("Delivered", o) },
+        ];
+        return { ...o, status: "Delivered", etaMin: 0, workerProgress: 1, stopsAhead: 0, events };
+      }),
+    );
+  }, []);
+
+  const tickWaitPenalty = useCallback((id: string, penalty: number) => {
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, waitPenalty: penalty } : o)));
+  }, []);
+
   const value = useMemo<OrdersContextValue>(() => {
-    const activeOrder = orders.find((o) => o.status !== "Delivered") ?? null;
-    const pastOrders = orders.filter((o) => o.status === "Delivered");
-    const getOrder = (id: string) => orders.find((o) => o.id === id);
-    return { orders, activeOrder, pastOrders, getOrder, placeOrder, clearOrders };
-  }, [orders, placeOrder, clearOrders]);
+    // Backfill distanceKm for legacy orders.
+    const safe = orders.map((o) => (o.distanceKm == null ? { ...o, distanceKm: 1.8 } : o));
+    const activeOrder = safe.find((o) => o.status !== "Delivered") ?? null;
+    const pastOrders = safe.filter((o) => o.status === "Delivered");
+    const getOrder = (id: string) => safe.find((o) => o.id === id);
+    return {
+      orders: safe,
+      activeOrder,
+      pastOrders,
+      getOrder,
+      placeOrder,
+      clearOrders,
+      markArrived,
+      confirmPickup,
+      tickWaitPenalty,
+    };
+  }, [orders, placeOrder, clearOrders, markArrived, confirmPickup, tickWaitPenalty]);
 
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;
 }
