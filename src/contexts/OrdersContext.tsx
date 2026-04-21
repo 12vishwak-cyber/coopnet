@@ -32,6 +32,8 @@ export type Worker = {
   rating: number;
   earnings: number;
   vehicle: string;
+  baseFare?: number;
+  perKmRate?: number;
 };
 
 export type Order = {
@@ -50,6 +52,9 @@ export type Order = {
   events: OrderEvent[];
   workerProgress: number; // 0..1 along route, only meaningful while Out for Delivery
   stopsAhead: number; // visible during Out for Delivery
+  distanceKm: number;
+  arrivedAt?: string; // ISO when driver arrived at doorstep — starts wait clock
+  waitPenalty?: number; // INR accrued, paid to driver
 };
 
 const STORAGE_KEY = "coopnet:orders:v2";
