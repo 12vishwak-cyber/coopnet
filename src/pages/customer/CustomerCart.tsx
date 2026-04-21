@@ -1,22 +1,27 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, ChevronDown, ChevronUp, Trash2, ShoppingBag, Tag, X, Sparkles } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, Trash2, ShoppingBag, Tag, X, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart, PROMO_CODES } from "@/contexts/CartContext";
 import { useOrders } from "@/contexts/OrdersContext";
+import MoneyBreakdown from "@/components/MoneyBreakdown";
+import { freeDeliveryProgress } from "@/lib/pricing";
 
 export default function CustomerCart() {
   const navigate = useNavigate();
   const { placeOrder } = useOrders();
-  const [showBreakdown, setShowBreakdown] = useState(false);
   const [promoInput, setPromoInput] = useState("");
+  const [countdown, setCountdown] = useState(180); // 3-min "fastest delivery" urgency
   const {
     items,
     subtotal,
     discount,
     deliveryFee,
     totalPrice,
+    platformFee,
+    communityFund,
+    distanceKm,
     appliedPromo,
     applyPromo,
     removePromo,
@@ -26,15 +31,20 @@ export default function CustomerCart() {
     clearCart,
   } = useCart();
 
-  const sellerEarnings = Math.round(subtotal * 0.78);
-  const workerEarnings = Math.round(subtotal * 0.12);
-  const cooperativeFund = Math.round(subtotal * 0.06);
-  const systemCost = subtotal - sellerEarnings - workerEarnings - cooperativeFund;
+  useEffect(() => {
+    if (items.length === 0) return;
+    const t = window.setInterval(() => setCountdown((c) => (c > 0 ? c - 1 : 0)), 1000);
+    return () => window.clearInterval(t);
+  }, [items.length]);
+
+  const fdp = freeDeliveryProgress(subtotal - discount);
 
   const handleApply = () => {
     if (!promoInput.trim()) return;
     if (applyPromo(promoInput)) setPromoInput("");
   };
+
+  const fmtCountdown = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   if (items.length === 0) {
     return (
