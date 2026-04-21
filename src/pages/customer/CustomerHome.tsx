@@ -130,40 +130,35 @@ export default function CustomerHome() {
         </button>
       </div>
 
-      {/* Promo Banners */}
+      {/* Promo Banners — auto-rotating */}
       <div className="px-4">
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-          {promoBanners.map((b, i) => (
-            <div
-              key={i}
-              className={`min-w-[280px] snap-center bg-gradient-to-r ${b.bg} rounded-2xl p-5 text-white flex items-center justify-between shadow-lg`}
-            >
-              <div>
-                <p className="text-lg font-extrabold leading-tight">{b.title}</p>
-                <p className="text-xs font-medium opacity-90 mt-1">{b.subtitle}</p>
-                <button className="mt-3 bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full">
-                  Shop Now →
-                </button>
-              </div>
-              <span className="text-5xl ml-2">{b.emoji}</span>
-            </div>
-          ))}
-        </div>
+        <PromoCarousel
+          banners={promoBanners}
+          onTap={(i) => {
+            // Tap-through: free delivery banner → cart, fresh veggies → vegetables
+            if (i === 0) navigate("/customer/cart");
+            else if (i === 1) navigate("/customer/explore?category=Vegetables");
+            else navigate("/customer/explore");
+          }}
+        />
       </div>
 
-      {/* Categories */}
+      {/* Categories — bigger, with overlay label */}
       <div className="px-4">
-        <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-3.5 overflow-x-auto pb-1 scrollbar-hide">
           {categories.map((cat) => (
             <button
               key={cat.name}
               onClick={() => navigate(`/customer/explore?category=${encodeURIComponent(cat.name)}`)}
-              className="flex flex-col items-center gap-1.5 min-w-[60px] active:scale-95 transition-transform"
+              className="flex flex-col items-center gap-1.5 min-w-[64px] active:scale-95 transition-transform"
             >
-              <div className="h-14 w-14 rounded-2xl overflow-hidden shadow-sm">
-                <img src={cat.image} alt={cat.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
+              <div className="relative h-16 w-16 rounded-2xl overflow-hidden shadow-md ring-1 ring-black/5">
+                <img src={cat.image} alt={cat.name} className="h-full w-full object-cover" loading="lazy" width={64} height={64} />
+                <span className={`absolute top-1 right-1 ${cat.labelClass} text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm leading-none`}>
+                  {cat.label}
+                </span>
               </div>
-              <span className="text-[10px] font-semibold text-gray-600 text-center leading-tight">{cat.name}</span>
+              <span className="text-[10px] font-bold text-gray-700 text-center leading-tight">{cat.name}</span>
             </button>
           ))}
         </div>
