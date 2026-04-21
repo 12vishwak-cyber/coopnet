@@ -193,79 +193,46 @@ export default function CustomerCart() {
           )}
         </div>
 
-        {/* Bill summary */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2">
-          <div className="flex justify-between text-[13px]">
-            <span className="text-gray-600">Item total</span>
-            <span className="font-semibold text-gray-900">₹{subtotal}</span>
-          </div>
-          {discount > 0 && (
-            <div className="flex justify-between text-[13px]">
-              <span className="text-emerald-600 font-medium">Promo discount</span>
-              <span className="font-semibold text-emerald-600">−₹{discount}</span>
-            </div>
-          )}
-          <div className="flex justify-between text-[13px]">
-            <span className="text-gray-600">Delivery fee</span>
-            <span className="font-semibold text-gray-900">
-              {deliveryFee === 0 ? (
-                <span className="text-emerald-600">FREE</span>
-              ) : (
-                `₹${deliveryFee}`
-              )}
-            </span>
-          </div>
-          <div className="border-t border-gray-100 pt-2 flex justify-between">
-            <span className="text-sm font-bold text-gray-900">To Pay</span>
-            <span className="text-base font-extrabold text-gray-900">₹{totalPrice}</span>
-          </div>
-          {discount + (subtotal > 0 && deliveryFee === 0 && appliedPromo?.type === "freeDelivery" ? 25 : 0) > 0 && (
-            <p className="text-[11px] font-semibold text-emerald-600 text-center pt-1">
-              🎉 You saved ₹{discount + (appliedPromo?.type === "freeDelivery" ? 25 : 0)} on this order
+        {/* Free-delivery progress + urgency countdown */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+          {!fdp.unlocked ? (
+            <>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="font-bold text-gray-900">
+                  Add ₹{fdp.remaining} more for <span className="text-emerald-600">FREE delivery</span>
+                </span>
+                <span className="text-[10px] font-extrabold text-gray-400">{fdp.pct}%</span>
+              </div>
+              <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all" style={{ width: `${fdp.pct}%` }} />
+              </div>
+            </>
+          ) : (
+            <p className="text-[12px] font-extrabold text-emerald-600 flex items-center gap-1.5">
+              🎉 Free delivery unlocked!
             </p>
           )}
+          <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+            <Clock className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+            <p className="text-[11px] font-semibold text-amber-800">
+              Order in next <span className="font-mono font-extrabold">{fmtCountdown(countdown)}</span> for fastest delivery
+            </p>
+          </div>
         </div>
 
-        {/* Breakdown */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <button
-            onClick={() => setShowBreakdown(!showBreakdown)}
-            className="w-full flex items-center justify-between"
-          >
-            <div className="flex items-center gap-2">
-              <Leaf className="h-4 w-4 text-emerald-500" />
-              <span className="text-sm font-bold text-gray-900">Where Your Money Goes</span>
-            </div>
-            {showBreakdown ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
-          </button>
+        {/* Money breakdown — single source of truth */}
+        <MoneyBreakdown
+          input={{ subtotal, discount, distanceKm, freeDelivery: appliedPromo?.type === "freeDelivery" }}
+          variant="compact"
+          defaultOpen={false}
+        />
 
-          {showBreakdown && (
-            <div className="mt-4 space-y-3">
-              {[
-                { label: "Seller Earnings", amount: sellerEarnings, pct: 78, color: "bg-emerald-500" },
-                { label: "Worker Earnings", amount: workerEarnings, pct: 12, color: "bg-amber-500" },
-                { label: "Community Fund", amount: cooperativeFund, pct: 6, color: "bg-blue-500" },
-                { label: "System Cost", amount: systemCost, pct: 4, color: "bg-gray-300" },
-              ].map(item => (
-                <div key={item.label}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-600 font-medium">{item.label}</span>
-                    <span className="font-bold text-gray-900">₹{item.amount}</span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div className={`${item.color} h-2 rounded-full transition-all`} style={{ width: `${item.pct}%` }} />
-                  </div>
-                </div>
-              ))}
-
-              <div className="mt-3 p-3 bg-emerald-50 rounded-xl text-[11px] text-emerald-700 space-y-1 border border-emerald-100">
-                <p><strong>No hidden fees.</strong> Sellers set their own prices.</p>
-                <p><strong>Workers earn fairly</strong> — based on cooperative rules, not surge pricing.</p>
-                <p><strong>Community fund</strong> supports local infrastructure & routing.</p>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Saved banner */}
+        {(discount > 0 || appliedPromo?.type === "freeDelivery") && (
+          <p className="text-[11px] font-semibold text-emerald-600 text-center">
+            🎉 You saved ₹{discount + (appliedPromo?.type === "freeDelivery" ? 25 : 0)} on this order
+          </p>
+        )}
 
         {/* Trust Signals */}
         <div className="flex items-center gap-3 px-1">
@@ -281,7 +248,7 @@ export default function CustomerCart() {
           ))}
         </div>
 
-        {/* Total + CTA */}
+        {/* CTA */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <Button
             className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200"
@@ -294,6 +261,10 @@ export default function CustomerCart() {
             Place Order · ₹{totalPrice}
           </Button>
         </div>
+      </div>
+    </div>
+  );
+}
       </div>
     </div>
   );
