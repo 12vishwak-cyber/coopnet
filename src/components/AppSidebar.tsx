@@ -61,7 +61,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-sidebar-primary font-semibold tracking-wider text-[10px] uppercase">
-            {isWorker ? "Worker" : "Seller"}
+            {isWorker ? "Delivery Driver" : "Seller"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -128,7 +128,7 @@ export function AppSidebar() {
           onClick={() => navigate(isWorker ? "/seller" : "/worker")}
         >
           <ArrowLeftRight className="h-4 w-4" />
-          {!collapsed && <span className="text-xs">Switch to {isWorker ? "Seller" : "Worker"}</span>}
+          {!collapsed && <span className="text-xs">Switch to {isWorker ? "Seller" : "Driver"}</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>

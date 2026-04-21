@@ -92,7 +92,7 @@ export default function CustomerSellerProfile() {
         <div className="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-100">
           <p className="text-[11px] font-bold text-emerald-800 mb-1">💚 Fair Distribution</p>
           <p className="text-[11px] text-emerald-700">
-            78% to seller · 12% to workers · 6% to community fund
+            78% to seller · 12% to delivery driver · 6% to community fund
           </p>
         </div>
 

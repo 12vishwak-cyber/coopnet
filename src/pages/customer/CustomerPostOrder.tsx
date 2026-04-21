@@ -73,7 +73,7 @@ export default function CustomerPostOrder() {
         {[
           { icon: PiggyBank, color: "bg-emerald-50", iconColor: "text-emerald-500", title: `₹${community} contributed to community fund`, desc: "Supports routing, infrastructure, and shared intelligence" },
           { icon: Users, color: "bg-blue-50", iconColor: "text-blue-500", title: "Supported a local seller", desc: `${sellerName} received ₹${sellerPaid} directly — no commission` },
-          { icon: Truck, color: "bg-amber-50", iconColor: "text-amber-500", title: "Fair worker earnings", desc: `${workerName} earned ₹${workerPaid} — based on cooperative rules` },
+          { icon: Truck, color: "bg-amber-50", iconColor: "text-amber-500", title: "Fair driver earnings", desc: `${workerName} earned ₹${workerPaid} — based on cooperative rules` },
         ].map(({ icon: Icon, color, iconColor, title, desc }) => (
           <div key={title} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
             <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center shrink-0`}>
@@ -104,7 +104,7 @@ export default function CustomerPostOrder() {
           <h3 className="text-sm font-bold text-gray-900 mb-4">Rate Your Experience</h3>
           {[
             { label: `Seller · ${sellerName}`, rating: sellerRating, setRating: setSellerRating },
-            { label: `Worker · ${workerName}`, rating: workerRating, setRating: setWorkerRating },
+            { label: `Driver · ${workerName}`, rating: workerRating, setRating: setWorkerRating },
           ].map(({ label, rating, setRating }) => (
             <div key={label} className="flex items-center justify-between mb-3 last:mb-0">
               <span className="text-sm font-medium text-gray-700">{label}</span>

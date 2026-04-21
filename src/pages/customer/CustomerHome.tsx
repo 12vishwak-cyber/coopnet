@@ -409,7 +409,7 @@ export default function CustomerHome() {
           <div className="flex-1">
             <p className="text-[13px] font-bold text-gray-900">Your orders make a difference</p>
             <p className="text-[11px] text-gray-500 mt-0.5">
-              Supports <strong>3 local sellers</strong> · ₹12 to workers · ₹4 to community
+              Supports <strong>3 local sellers</strong> · ₹12 to delivery drivers · ₹4 to community
             </p>
           </div>
           <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />

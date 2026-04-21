@@ -28,7 +28,7 @@ export default function MoneyBreakdown({
 
   const rows = [
     { key: "seller", label: "Seller earnings", amount: p.sellerEarnings, icon: Store, color: "bg-emerald-500", text: "text-emerald-700", soft: "bg-emerald-50" },
-    { key: "worker", label: "Worker earnings", amount: p.workerEarnings, icon: Truck, color: "bg-amber-500", text: "text-amber-700", soft: "bg-amber-50" },
+    { key: "worker", label: "Delivery driver", amount: p.workerEarnings, icon: Truck, color: "bg-amber-500", text: "text-amber-700", soft: "bg-amber-50" },
     { key: "community", label: "Community fund", amount: p.communityFund, icon: Users, color: "bg-blue-500", text: "text-blue-700", soft: "bg-blue-50" },
     { key: "system", label: "Platform overhead", amount: p.systemCost, icon: Server, color: "bg-gray-400", text: "text-gray-700", soft: "bg-gray-50" },
   ];
@@ -106,7 +106,7 @@ export default function MoneyBreakdown({
           <p className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 flex items-start gap-2">
             <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
             <span>
-              <strong>No hidden commissions.</strong> Sellers set prices. Workers get fair per-trip pay.
+              <strong>No hidden commissions.</strong> Sellers set prices. Delivery drivers get fair per-trip pay.
               The community fund supports shared infrastructure.
             </span>
           </p>
@@ -119,7 +119,7 @@ export default function MoneyBreakdown({
                 onToggle={(id) => setOpenInfo(openInfo === id ? null : id)}
                 icon={Truck}
                 accent="bg-amber-50 text-amber-700"
-                title="Day in the life of a worker"
+                title="Day in the life of a driver"
                 subtitle="Why ₹{worker} per trip is fair"
                 workerEarnings={p.workerEarnings}
               >
@@ -128,8 +128,8 @@ export default function MoneyBreakdown({
                 <Stat label="Daily take-home" value="₹520–₹780" />
                 <Stat label="No surge penalty" value="Guaranteed" />
                 <p className="text-[11px] text-gray-600 mt-2">
-                  CoopNet floors trip pay at ₹22 and adds ₹8/km. No deductions for cancellations
-                  outside the worker's control.
+                  CoopNet floors trip pay at ₹25 and adds ₹12/km. Customer wait charges (after a
+                  3-min grace) go 100% to the driver — no deductions.
                 </p>
               </Infographic>
 
