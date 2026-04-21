@@ -1,12 +1,23 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Heart, Star, Users, PiggyBank, Truck, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useOrders } from "@/contexts/OrdersContext";
+import MoneyBreakdown from "@/components/MoneyBreakdown";
 
 export default function CustomerPostOrder() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { getOrder } = useOrders();
+  const order = id ? getOrder(id) : undefined;
   const [sellerRating, setSellerRating] = useState(4);
   const [workerRating, setWorkerRating] = useState(5);
+  const [confetti, setConfetti] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setConfetti(false), 2400);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
