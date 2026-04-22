@@ -34,6 +34,8 @@ import { CartProvider } from "@/contexts/CartContext";
 import { OrdersProvider } from "@/contexts/OrdersContext";
 import { MembershipProvider } from "@/contexts/MembershipContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { FlyToCartProvider } from "@/contexts/FlyToCartContext";
+import SplashScreen from "@/components/SplashScreen";
 import CustomerMembership from "@/pages/customer/CustomerMembership";
 import CustomerWelcome from "@/pages/customer/CustomerWelcome";
 import CustomerHome from "@/pages/customer/CustomerHome";
@@ -56,10 +58,12 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <SplashScreen />
       <BrowserRouter>
         <CartProvider>
         <OrdersProvider>
         <MembershipProvider>
+        <FlyToCartProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/seller" replace />} />
           <Route path="/login" element={<Login />} />
@@ -103,6 +107,7 @@ const App = () => (
           <Route path="/customer/welcome" element={<CustomerWelcome />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </FlyToCartProvider>
         </MembershipProvider>
         </OrdersProvider>
         </CartProvider>

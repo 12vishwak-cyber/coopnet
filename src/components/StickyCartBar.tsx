@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, ChevronRight } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { freeDeliveryProgress } from "@/lib/pricing";
+import { FlyToCartTarget } from "@/contexts/FlyToCartContext";
 
 export default function StickyCartBar() {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ export default function StickyCartBar() {
               <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 rounded-full bg-white text-emerald-600 text-[10px] font-extrabold flex items-center justify-center">
                 {totalItems}
               </span>
+              {/* Fallback fly-to target if cart-icon nav anchor is offscreen */}
+              <FlyToCartTarget id="sticky-cart" />
             </div>
             <div className="text-left">
               <p className="text-[11px] font-medium opacity-90 leading-tight">

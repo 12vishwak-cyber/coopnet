@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Star, MapPin, Clock, Search, SlidersHorizontal, Plus, X, PackageSearch } from "lucide-react";
+import { Star, MapPin, Clock, Search, SlidersHorizontal, X, PackageSearch } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useCart } from "@/contexts/CartContext";
+import QtyButton from "@/components/QtyButton";
+import { ProductGridSkeleton } from "@/components/CustomerSkeletons";
 
 import { PRODUCTS, discountPct, CATEGORIES, Category } from "@/data/products";
 
@@ -13,15 +13,24 @@ import storeGroceries from "@/assets/stores/groceries.jpg";
 import storeDairy from "@/assets/stores/dairy.jpg";
 import storeProvisions from "@/assets/stores/provisions.jpg";
 
+const u = (id: string) => `https://images.unsplash.com/${id}?w=400&q=75&auto=format&fit=crop`;
+
 const sellers = [
   { id: "s1", name: "Ravi General Store", distance: "0.8 km", rating: 4.6, tags: ["Fast delivery", "Trusted"], items: 48, deliveryTime: "22 min", banner: storeGeneral },
   { id: "s2", name: "Priya Fresh Mart", distance: "1.2 km", rating: 4.8, tags: ["Organic", "Top rated"], items: 35, deliveryTime: "18 min", banner: storeFreshMart },
   { id: "s3", name: "Kumar Groceries", distance: "0.5 km", rating: 4.3, tags: ["Nearest"], items: 62, deliveryTime: "25 min", banner: storeGroceries },
   { id: "s4", name: "Lakshmi Dairy", distance: "1.5 km", rating: 4.7, tags: ["Fresh daily"], items: 22, deliveryTime: "15 min", banner: storeDairy },
   { id: "s5", name: "Ahmed Provisions", distance: "2.1 km", rating: 4.4, tags: ["Bulk orders"], items: 55, deliveryTime: "28 min", banner: storeProvisions },
+  // New stores backing the new categories
+  { id: "s6", name: "Sweet Crumb Bakers", distance: "1.7 km", rating: 4.9, tags: ["Bakery", "Fresh today"], items: 18, deliveryTime: "20 min", banner: u("photo-1509440159596-0249088772ff") },
+  { id: "s7", name: "MediCare Plus", distance: "0.9 km", rating: 4.7, tags: ["Pharmacy", "24×7"], items: 240, deliveryTime: "18 min", banner: u("photo-1576602976047-174e57a47881") },
+  { id: "s8", name: "Threadline Studio", distance: "2.4 km", rating: 4.6, tags: ["Fashion"], items: 96, deliveryTime: "35 min", banner: u("photo-1483985988355-763728e1935b") },
+  { id: "s9", name: "TechHub Express", distance: "1.4 km", rating: 4.5, tags: ["Electronics"], items: 72, deliveryTime: "25 min", banner: u("photo-1498049794561-7780e7231661") },
+  { id: "s10", name: "HomeStyle Bazaar", distance: "1.8 km", rating: 4.6, tags: ["Home", "Cozy"], items: 120, deliveryTime: "28 min", banner: u("photo-1556909114-f6e7ad7d3136") },
+  { id: "s11", name: "GlowKart", distance: "1.1 km", rating: 4.7, tags: ["Personal Care"], items: 80, deliveryTime: "22 min", banner: u("photo-1556228453-efd6c1ff04f6") },
 ];
 
-const products = PRODUCTS.slice(0, 10);
+const products = PRODUCTS.slice(0, 12);
 const localSpecials = PRODUCTS.filter((p) => ["p11", "p12", "p13"].includes(p.id));
 
 const filters = ["Fast delivery", "Lowest price", "High trust", "Nearest"];
@@ -37,10 +46,14 @@ export default function CustomerExplore() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<Category | null>(validInitial);
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { addItem } = useCart();
 
-  // Sync category state if URL changes (e.g. tapping another pill from Home)
+  useEffect(() => {
+    const t = window.setTimeout(() => setLoading(false), 350);
+    return () => window.clearTimeout(t);
+  }, []);
+
   useEffect(() => {
     const c = searchParams.get("category") as Category | null;
     if (c && (CATEGORIES as string[]).includes(c)) {
@@ -76,7 +89,6 @@ export default function CustomerExplore() {
 
   const filteredSellers = useMemo(() => {
     if (activeCategory) {
-      // when a category is active, only show sellers that have items in that category
       const sellerIdsInCat = new Set(PRODUCTS.filter((p) => p.category === activeCategory).map((p) => p.sellerId));
       const base = sellers.filter((s) => sellerIdsInCat.has(s.id));
       if (!isSearching) return base;
@@ -103,31 +115,31 @@ export default function CustomerExplore() {
       {/* Search */}
       <div className="px-4 pt-3">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products, stores..."
-            className="pl-10 pr-12 h-12 rounded-2xl bg-white border-gray-100 shadow-sm text-sm font-medium placeholder:text-gray-400"
+            className="pl-10 pr-12 h-12 rounded-2xl bg-card border-border shadow-sm text-sm font-medium placeholder:text-muted-foreground"
           />
           {query ? (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-gray-100 flex items-center justify-center active:scale-95 transition-transform"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-muted flex items-center justify-center active:scale-95 transition-transform"
               aria-label="Clear search"
             >
-              <X className="h-4 w-4 text-gray-500" />
+              <X className="h-4 w-4 text-muted-foreground" />
             </button>
           ) : (
-            <button className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-gray-50 flex items-center justify-center">
-              <SlidersHorizontal className="h-4 w-4 text-gray-500" />
+            <button className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
             </button>
           )}
         </div>
         {isSearching && (
-          <p className="text-[11px] text-gray-500 mt-2 px-1 font-medium">
+          <p className="text-[11px] text-muted-foreground mt-2 px-1 font-medium">
             {totalResults} result{totalResults === 1 ? "" : "s"} for{" "}
-            <span className="font-bold text-gray-700">"{query}"</span>
+            <span className="font-bold text-foreground">"{query}"</span>
           </p>
         )}
       </div>
@@ -154,8 +166,8 @@ export default function CustomerExplore() {
                 }}
                 className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all active:scale-95 ${
                   active
-                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
-                    : "bg-white text-gray-600 border-gray-200"
+                    ? "bg-foreground text-background border-foreground shadow-sm"
+                    : "bg-card text-muted-foreground border-border"
                 }`}
               >
                 {c}
@@ -165,8 +177,8 @@ export default function CustomerExplore() {
         </div>
         {activeCategory && (
           <div className="flex items-center gap-2 mt-2 px-1">
-            <p className="text-[11px] text-gray-500 font-medium">
-              Showing <span className="font-extrabold text-gray-800">{activeCategory}</span>
+            <p className="text-[11px] text-muted-foreground font-medium">
+              Showing <span className="font-extrabold text-foreground">{activeCategory}</span>
             </p>
             <button
               onClick={clearCategory}
@@ -180,13 +192,13 @@ export default function CustomerExplore() {
 
       {/* Tabs */}
       <div className="px-4">
-        <div className="flex gap-1 bg-gray-100 rounded-2xl p-1">
+        <div className="flex gap-1 bg-muted rounded-2xl p-1">
           {(["products", "sellers", "specials"] as const).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 text-sm py-2.5 rounded-xl transition-all font-semibold capitalize ${
-                tab === t ? "bg-white text-gray-900 shadow-sm" : "text-gray-400"
+                tab === t ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
               }`}
             >
               {t === "specials" ? "Local ⭐" : t}
@@ -204,7 +216,7 @@ export default function CustomerExplore() {
             className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border active:scale-95 ${
               activeFilter === f
                 ? "bg-emerald-500 text-white border-emerald-500 shadow-sm"
-                : "bg-white text-gray-600 border-gray-200"
+                : "bg-card text-muted-foreground border-border"
             }`}
           >
             {f}
@@ -214,11 +226,13 @@ export default function CustomerExplore() {
 
       {tab === "products" && (
         <div className="px-4 pb-4">
-          {filteredProducts.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center">
-              <PackageSearch className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-sm font-bold text-gray-700">No products found</p>
-              <p className="text-xs text-gray-400 mt-1">Try a different word or browse sellers</p>
+          {loading ? (
+            <ProductGridSkeleton count={6} />
+          ) : filteredProducts.length === 0 ? (
+            <div className="bg-card rounded-2xl p-8 border border-border text-center">
+              <PackageSearch className="h-10 w-10 text-muted-foreground/50 mx-auto mb-2" />
+              <p className="text-sm font-bold text-foreground">No products found</p>
+              <p className="text-xs text-muted-foreground mt-1">Try a different word or browse sellers</p>
             </div>
           ) : (
           <div className="grid grid-cols-2 gap-3">
@@ -228,41 +242,35 @@ export default function CustomerExplore() {
                 <div
                   key={p.id}
                   onClick={() => navigate(`/customer/product/${p.id}`)}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 cursor-pointer active:scale-[0.98] transition-transform"
+                  className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border cursor-pointer active:scale-[0.98] transition-transform"
                 >
-                  <div className="relative h-28 overflow-hidden">
+                  <div className="relative h-28 overflow-hidden bg-muted">
                     {pct > 0 && (
                       <span className="absolute top-2 left-2 z-10 text-[9px] font-extrabold bg-rose-500 text-white px-2 py-0.5 rounded-full shadow-sm">
                         {pct}% OFF
                       </span>
                     )}
                     {pct === 0 && p.tag && (
-                      <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-white/90 px-1.5 py-0.5 rounded-full">
+                      <span className="absolute top-2 left-2 z-10 text-[9px] font-bold bg-card/90 text-foreground px-1.5 py-0.5 rounded-full">
                         {p.tag}
                       </span>
                     )}
                     <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
                   </div>
                   <div className="p-3">
-                    <p className="text-[13px] font-bold text-gray-900 leading-snug">{p.name}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                    <p className="text-[13px] font-bold text-foreground leading-snug">{p.name}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{p.unit} · {p.seller}</p>
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
+                        <span className="text-base font-extrabold text-foreground">₹{p.price}</span>
                         {p.originalPrice && (
-                          <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                          <span className="text-[10px] text-muted-foreground line-through">₹{p.originalPrice}</span>
                         )}
                       </div>
-                      <Button
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
-                        }}
-                        className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
-                      >
-                        <Plus className="h-3.5 w-3.5 mr-0.5" /> ADD
-                      </Button>
+                      <QtyButton
+                        item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
+                        size="md"
+                      />
                     </div>
                   </div>
                 </div>
@@ -270,8 +278,8 @@ export default function CustomerExplore() {
             })}
           </div>
           )}
-          {filteredProducts.length > 0 && (
-            <p className="text-[11px] text-gray-400 text-center mt-4 font-medium">
+          {!loading && filteredProducts.length > 0 && (
+            <p className="text-[11px] text-muted-foreground text-center mt-4 font-medium">
               Prices set by sellers · No platform markup
             </p>
           )}
@@ -281,43 +289,43 @@ export default function CustomerExplore() {
       {tab === "sellers" && (
         <div className="px-4 space-y-3 pb-4">
           {filteredSellers.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center">
-              <PackageSearch className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-sm font-bold text-gray-700">No sellers found</p>
-              <p className="text-xs text-gray-400 mt-1">Try a different name</p>
+            <div className="bg-card rounded-2xl p-8 border border-border text-center">
+              <PackageSearch className="h-10 w-10 text-muted-foreground/50 mx-auto mb-2" />
+              <p className="text-sm font-bold text-foreground">No sellers found</p>
+              <p className="text-xs text-muted-foreground mt-1">Try a different name</p>
             </div>
           ) : filteredSellers.map((s) => (
             <button
               key={s.id}
               onClick={() => navigate(`/customer/seller/${s.id}`)}
-              className="w-full text-left bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-50 active:scale-[0.98] transition-transform"
+              className="w-full text-left bg-card rounded-2xl overflow-hidden shadow-sm border border-border active:scale-[0.98] transition-transform"
             >
-              <div className="h-28 overflow-hidden">
+              <div className="h-28 overflow-hidden bg-muted">
                 <img src={s.banner} alt={s.name} className="h-full w-full object-cover" loading="lazy" width={400} height={112} />
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <p className="text-[15px] font-bold text-gray-900">{s.name}</p>
+                    <p className="text-[15px] font-bold text-foreground">{s.name}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="flex items-center gap-0.5 text-xs font-semibold text-gray-700">
+                      <span className="flex items-center gap-0.5 text-xs font-semibold text-foreground">
                         <Star className="h-3 w-3 text-amber-400 fill-amber-400" />{s.rating}
                       </span>
-                      <span className="text-gray-300">·</span>
-                      <span className="text-xs text-gray-500 flex items-center gap-0.5">
+                      <span className="text-muted-foreground/50">·</span>
+                      <span className="text-xs text-muted-foreground flex items-center gap-0.5">
                         <MapPin className="h-3 w-3" />{s.distance}
                       </span>
-                      <span className="text-gray-300">·</span>
-                      <span className="text-xs text-gray-500">{s.items} items</span>
+                      <span className="text-muted-foreground/50">·</span>
+                      <span className="text-xs text-muted-foreground">{s.items} items</span>
                     </div>
                   </div>
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-2.5 py-1 rounded-full flex items-center gap-1">
                     <Clock className="h-3 w-3" /> {s.deliveryTime}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {s.tags.map((t) => (
-                    <span key={t} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-50 text-gray-500">
+                    <span key={t} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                       {t}
                     </span>
                   ))}
@@ -330,14 +338,14 @@ export default function CustomerExplore() {
 
       {tab === "specials" && (
         <div className="px-4 space-y-3 pb-4">
-          <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
-            <p className="text-sm font-bold text-gray-900">🌟 Local Specials</p>
-            <p className="text-xs text-gray-500 mt-0.5">Unique products from your neighborhood</p>
+          <div className="bg-gradient-to-r from-amber-500/15 to-orange-500/15 dark:from-amber-500/20 dark:to-orange-500/20 rounded-2xl p-4 border border-amber-500/30">
+            <p className="text-sm font-bold text-foreground">🌟 Local Specials</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Unique products from your neighborhood</p>
           </div>
           {filteredSpecials.length === 0 && (
-            <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center">
-              <PackageSearch className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-sm font-bold text-gray-700">No specials match</p>
+            <div className="bg-card rounded-2xl p-8 border border-border text-center">
+              <PackageSearch className="h-10 w-10 text-muted-foreground/50 mx-auto mb-2" />
+              <p className="text-sm font-bold text-foreground">No specials match</p>
             </div>
           )}
           {filteredSpecials.map((p) => {
@@ -346,9 +354,9 @@ export default function CustomerExplore() {
               <div
                 key={p.id}
                 onClick={() => navigate(`/customer/product/${p.id}`)}
-                className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform"
+                className="bg-card rounded-2xl p-4 shadow-sm border border-border flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform"
               >
-                <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 relative">
+                <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 relative bg-muted">
                   {pct > 0 && (
                     <span className="absolute top-1 left-1 z-10 text-[8px] font-extrabold bg-rose-500 text-white px-1.5 py-0.5 rounded-full shadow-sm">
                       {pct}%
@@ -358,29 +366,23 @@ export default function CustomerExplore() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-gray-900">{p.name}</p>
+                    <p className="text-sm font-bold text-foreground">{p.name}</p>
                     {p.tag && (
-                      <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">{p.tag}</span>
+                      <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full">{p.tag}</span>
                     )}
                   </div>
-                  <p className="text-[11px] text-gray-400 mt-0.5">{p.unit} · {p.seller}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{p.unit} · {p.seller}</p>
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-base font-extrabold text-gray-900">₹{p.price}</span>
+                      <span className="text-base font-extrabold text-foreground">₹{p.price}</span>
                       {p.originalPrice && (
-                        <span className="text-[10px] text-gray-400 line-through">₹{p.originalPrice}</span>
+                        <span className="text-[10px] text-muted-foreground line-through">₹{p.originalPrice}</span>
                       )}
                     </div>
-                    <Button
+                    <QtyButton
+                      item={{ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image }}
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addItem({ id: p.id, name: p.name, price: p.price, unit: p.unit, seller: p.seller, image: p.image });
-                      }}
-                      className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-xs font-bold active:scale-95 transition-transform"
-                    >
-                      <Plus className="h-3 w-3 mr-0.5" /> ADD
-                    </Button>
+                    />
                   </div>
                 </div>
               </div>

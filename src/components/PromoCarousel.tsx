@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
 
-type Banner = {
+export type Banner = {
   title: string;
   subtitle: string;
-  bg: string;
-  emoji: string;
+  /** Background image URL (Unsplash or asset). Drives the visual richness. */
+  image: string;
+  /** Tailwind gradient overlay classes — e.g. "from-emerald-600/95 to-teal-700/40" */
+  overlay: string;
+  /** Optional CTA pill label */
+  cta?: string;
+  /** Optional badge (top-right ribbon, e.g. "FLAT ₹50 OFF") */
+  badge?: string;
 };
 
 type Props = {
@@ -14,10 +21,10 @@ type Props = {
 };
 
 /**
- * Auto-rotating promo carousel with snap-aware indicator and tap support.
- * Pauses while the user is interacting (touchstart) for a few seconds.
+ * Zepto-style hero carousel — banners with real product imagery, gradient overlays,
+ * bold typography, and a CTA pill. Auto-rotates and pauses on user scroll.
  */
-export default function PromoCarousel({ banners, onTap, intervalMs = 3800 }: Props) {
+export default function PromoCarousel({ banners, onTap, intervalMs = 4200 }: Props) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const pauseUntil = useRef(0);
@@ -38,9 +45,8 @@ export default function PromoCarousel({ banners, onTap, intervalMs = 3800 }: Pro
     return () => window.clearInterval(id);
   }, [banners.length, intervalMs]);
 
-  // Track manual scroll → update indicator + pause auto-rotation briefly.
   const onScroll = () => {
-    pauseUntil.current = Date.now() + 4500;
+    pauseUntil.current = Date.now() + 5000;
     const el = scrollerRef.current;
     if (!el) return;
     const center = el.scrollLeft + el.clientWidth / 2;
@@ -69,16 +75,38 @@ export default function PromoCarousel({ banners, onTap, intervalMs = 3800 }: Pro
           <button
             key={i}
             onClick={() => onTap?.(i)}
-            className={`min-w-[280px] snap-center bg-gradient-to-r ${b.bg} rounded-2xl p-5 text-white flex items-center justify-between shadow-lg active:scale-[0.99] transition-transform text-left`}
+            className="relative min-w-[300px] snap-center rounded-2xl overflow-hidden shadow-lg active:scale-[0.99] transition-transform text-left h-[150px]"
           >
-            <div>
-              <p className="text-lg font-extrabold leading-tight">{b.title}</p>
-              <p className="text-xs font-medium opacity-90 mt-1">{b.subtitle}</p>
-              <span className="mt-3 inline-block bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full">
-                Shop Now →
+            {/* Background image */}
+            <img
+              src={b.image}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              aria-hidden
+            />
+            {/* Gradient overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-r ${b.overlay}`} aria-hidden />
+
+            {/* Badge ribbon */}
+            {b.badge && (
+              <span className="absolute top-3 right-3 z-10 text-[10px] font-extrabold bg-white text-rose-600 px-2.5 py-1 rounded-full shadow-md tracking-wide">
+                {b.badge}
+              </span>
+            )}
+
+            {/* Content */}
+            <div className="relative z-10 h-full flex flex-col justify-end p-4 text-white">
+              <p className="text-[20px] font-extrabold leading-[1.15] drop-shadow-sm">
+                {b.title}
+              </p>
+              <p className="text-[12px] font-medium opacity-95 mt-0.5 drop-shadow-sm">
+                {b.subtitle}
+              </p>
+              <span className="mt-2.5 inline-flex items-center gap-1 self-start bg-white text-gray-900 text-[11px] font-extrabold px-3 py-1.5 rounded-full shadow-md">
+                {b.cta ?? "Shop Now"} <ChevronRight className="h-3 w-3" />
               </span>
             </div>
-            <span className="text-5xl ml-2">{b.emoji}</span>
           </button>
         ))}
       </div>
@@ -87,7 +115,7 @@ export default function PromoCarousel({ banners, onTap, intervalMs = 3800 }: Pro
           <span
             key={i}
             className={`h-1.5 rounded-full transition-all ${
-              i === active ? "w-5 bg-emerald-500" : "w-1.5 bg-gray-300"
+              i === active ? "w-5 bg-primary" : "w-1.5 bg-muted-foreground/30"
             }`}
           />
         ))}
