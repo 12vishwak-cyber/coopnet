@@ -24,18 +24,18 @@ export default function CustomerOrders() {
     return (
       <div className="p-4 space-y-4">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Your Orders</h1>
-          <p className="text-xs text-gray-400 font-medium">Track and reorder in seconds</p>
+          <h1 className="text-lg font-bold text-foreground">Your Orders</h1>
+          <p className="text-xs text-muted-foreground font-medium">Track and reorder in seconds</p>
         </div>
-        <div className="bg-white rounded-3xl p-10 border border-gray-100 text-center mt-4">
-          <div className="h-16 w-16 rounded-3xl bg-emerald-50 flex items-center justify-center mx-auto mb-3">
-            <ShoppingBag className="h-7 w-7 text-emerald-500" />
+        <div className="bg-card rounded-3xl p-10 border border-border text-center mt-4">
+          <div className="h-16 w-16 rounded-3xl bg-primary/15 flex items-center justify-center mx-auto mb-3">
+            <ShoppingBag className="h-7 w-7 text-primary" />
           </div>
-          <p className="text-sm font-extrabold text-gray-900">No orders yet</p>
-          <p className="text-xs text-gray-400 mt-1">Place your first order to see it here</p>
+          <p className="text-sm font-extrabold text-foreground">No orders yet</p>
+          <p className="text-xs text-muted-foreground mt-1">Place your first order to see it here</p>
           <Button
             onClick={() => navigate("/customer")}
-            className="mt-5 h-11 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 font-bold"
+            className="mt-5 h-11 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold"
           >
             Start Shopping
           </Button>
@@ -47,15 +47,15 @@ export default function CustomerOrders() {
   return (
     <div className="p-4 space-y-4">
       <div>
-        <h1 className="text-lg font-bold text-gray-900">Your Orders</h1>
-        <p className="text-xs text-gray-400 font-medium">Track and reorder in seconds</p>
+        <h1 className="text-lg font-bold text-foreground">Your Orders</h1>
+        <p className="text-xs text-muted-foreground font-medium">Track and reorder in seconds</p>
       </div>
 
       {/* Active order — hero card */}
       {activeOrder && (
         <button
           onClick={() => navigate(`/customer/order/track/${activeOrder.id}`)}
-          className="w-full text-left bg-gradient-to-br from-emerald-500 via-emerald-500 to-teal-600 rounded-3xl p-5 shadow-xl shadow-emerald-200 active:scale-[0.99] transition-transform"
+          className="w-full text-left bg-gradient-to-br from-emerald-500 via-emerald-500 to-teal-600 rounded-3xl p-5 shadow-xl shadow-emerald-500/30 active:scale-[0.99] transition-transform"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="h-11 w-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -71,7 +71,7 @@ export default function CustomerOrders() {
           </div>
 
           {(() => {
-            const stepIdx = ORDER_STAGES.indexOf(activeOrder.status); // 0..4
+            const stepIdx = ORDER_STAGES.indexOf(activeOrder.status);
             return (
               <>
                 <div className="flex items-center gap-1 mb-3">
@@ -111,16 +111,16 @@ export default function CustomerOrders() {
       {/* Past orders */}
       {pastOrders.length > 0 && (
         <div>
-          <h2 className="text-sm font-extrabold text-gray-900 mb-3 flex items-center gap-2">
-            <Package className="h-4 w-4 text-gray-500" /> Past Orders
+          <h2 className="text-sm font-extrabold text-foreground mb-3 flex items-center gap-2">
+            <Package className="h-4 w-4 text-muted-foreground" /> Past Orders
           </h2>
           <div className="space-y-3">
             {pastOrders.map((o) => (
-              <div key={o.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <div key={o.id} className="bg-card rounded-2xl p-4 shadow-sm border border-border">
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2 shrink-0">
                     {o.items.slice(0, 3).map((i) => (
-                      <div key={i.id} className="h-11 w-11 rounded-xl ring-2 ring-white overflow-hidden bg-gray-50">
+                      <div key={i.id} className="h-11 w-11 rounded-xl ring-2 ring-card overflow-hidden bg-muted">
                         <img src={i.image} alt={i.name} className="h-full w-full object-cover" loading="lazy" />
                       </div>
                     ))}
@@ -129,18 +129,18 @@ export default function CustomerOrders() {
                     onClick={() => navigate(`/customer/order/impact/${o.id}`)}
                     className="flex-1 min-w-0 text-left"
                   >
-                    <p className="text-sm font-bold text-gray-900 truncate">{o.seller}</p>
-                    <p className="text-[11px] text-gray-400 font-medium">
+                    <p className="text-sm font-bold text-foreground truncate">{o.seller}</p>
+                    <p className="text-[11px] text-muted-foreground font-medium">
                       {o.items.length} items · ₹{o.total}
                     </p>
-                    <p className="text-[10px] text-gray-400 mt-0.5 flex items-center gap-1">
+                    <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
                       <Check className="h-3 w-3 text-emerald-500" />
                       {o.status} · {o.dateLabel}
                     </p>
                   </button>
                   <button
                     onClick={() => handleReorder(o)}
-                    className="shrink-0 h-9 px-3 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-extrabold flex items-center gap-1.5 active:scale-95 transition-transform border border-emerald-100"
+                    className="shrink-0 h-9 px-3 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-extrabold flex items-center gap-1.5 active:scale-95 transition-transform border border-emerald-500/20"
                   >
                     <RotateCcw className="h-3.5 w-3.5" /> Reorder
                   </button>
