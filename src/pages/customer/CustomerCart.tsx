@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useCart, PROMO_CODES } from "@/contexts/CartContext";
-import { useOrders } from "@/contexts/OrdersContext";
 import MoneyBreakdown from "@/components/MoneyBreakdown";
 import { freeDeliveryProgress } from "@/lib/pricing";
+import { placeOrder as placeOrderCloud, assignDriver, advanceOrder } from "@/lib/coopnet-api";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function CustomerCart() {
   const navigate = useNavigate();
-  const { placeOrder } = useOrders();
+  const [placing, setPlacing] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [countdown, setCountdown] = useState(180); // 3-min "fastest delivery" urgency
   const {
@@ -250,14 +252,64 @@ export default function CustomerCart() {
         {/* CTA */}
         <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
           <Button
-            className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30"
-            onClick={() => {
-              const o = placeOrder({ items, subtotal, discount, deliveryFee, total: totalPrice });
-              clearCart();
-              navigate(`/customer/order/track/${o.id}`);
+            disabled={placing}
+            className="w-full h-14 rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 disabled:opacity-70"
+            onClick={async () => {
+              if (placing || items.length === 0) return;
+              setPlacing(true);
+              try {
+                // Resolve seller from the first item — look up its sellerId in DB.
+                const firstSellerName = items[0].seller;
+                const { data: sellers } = await supabase
+                  .from("sellers")
+                  .select("id, lat, lng, name")
+                  .eq("name", firstSellerName)
+                  .limit(1);
+                const seller = sellers?.[0];
+                if (!seller) {
+                  toast.error("Seller not found in network");
+                  setPlacing(false);
+                  return;
+                }
+                const order = await placeOrderCloud({
+                  sellerId: seller.id,
+                  items: items.map((i) => ({
+                    id: i.id,
+                    name: i.name,
+                    qty: i.quantity,
+                    price: i.price,
+                    image: i.image,
+                    unit: i.unit,
+                  })),
+                  subtotal,
+                  discount,
+                  deliveryFee,
+                  platformFee,
+                  communityFund,
+                  total: totalPrice,
+                });
+                clearCart();
+                navigate(`/customer/order/track/${order.id}`);
+                // Kick off lifecycle in the background.
+                setTimeout(async () => {
+                  try {
+                    await advanceOrder(order.id, "packed", `Packed by ${seller.name}`, "seller");
+                    await assignDriver(order.id, seller.lat, seller.lng);
+                    setTimeout(() => {
+                      advanceOrder(order.id, "out_for_delivery", "Picked up — heading to you", "driver").catch(() => {});
+                    }, 12_000);
+                  } catch (e) {
+                    console.warn("Lifecycle advance failed", e);
+                  }
+                }, 4_000);
+              } catch (e) {
+                toast.error("Could not place order");
+                console.error(e);
+                setPlacing(false);
+              }
             }}
           >
-            Place Order · ₹{totalPrice}
+            {placing ? "Placing…" : `Place Order · ₹${totalPrice}`}
           </Button>
         </div>
       </div>
