@@ -14,7 +14,283 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      drivers: {
+        Row: {
+          created_at: string
+          current_lat: number
+          current_lng: number
+          id: string
+          last_assigned_at: string | null
+          name: string
+          phone: string | null
+          rating: number
+          status: string
+          total_deliveries: number
+          vehicle: string
+        }
+        Insert: {
+          created_at?: string
+          current_lat: number
+          current_lng: number
+          id: string
+          last_assigned_at?: string | null
+          name: string
+          phone?: string | null
+          rating?: number
+          status?: string
+          total_deliveries?: number
+          vehicle?: string
+        }
+        Update: {
+          created_at?: string
+          current_lat?: number
+          current_lng?: number
+          id?: string
+          last_assigned_at?: string | null
+          name?: string
+          phone?: string | null
+          rating?: number
+          status?: string
+          total_deliveries?: number
+          vehicle?: string
+        }
+        Relationships: []
+      }
+      order_events: {
+        Row: {
+          actor: string | null
+          created_at: string
+          id: string
+          message: string
+          order_id: string
+          status: string
+        }
+        Insert: {
+          actor?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          order_id: string
+          status: string
+        }
+        Update: {
+          actor?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          arrived_at: string | null
+          assignment_reason: Json | null
+          community_fund: number
+          created_at: string
+          customer_address: string
+          customer_lat: number
+          customer_lng: number
+          customer_name: string
+          delivered_at: string | null
+          delivery_fee: number
+          discount: number
+          distance_km: number
+          driver_earnings: number
+          driver_id: string | null
+          id: string
+          items: Json
+          platform_fee: number
+          seller_earnings: number
+          seller_id: string
+          short_code: string
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+          wait_penalty: number
+        }
+        Insert: {
+          arrived_at?: string | null
+          assignment_reason?: Json | null
+          community_fund?: number
+          created_at?: string
+          customer_address?: string
+          customer_lat: number
+          customer_lng: number
+          customer_name?: string
+          delivered_at?: string | null
+          delivery_fee?: number
+          discount?: number
+          distance_km?: number
+          driver_earnings?: number
+          driver_id?: string | null
+          id?: string
+          items: Json
+          platform_fee?: number
+          seller_earnings?: number
+          seller_id: string
+          short_code: string
+          status?: string
+          subtotal: number
+          total: number
+          updated_at?: string
+          wait_penalty?: number
+        }
+        Update: {
+          arrived_at?: string | null
+          assignment_reason?: Json | null
+          community_fund?: number
+          created_at?: string
+          customer_address?: string
+          customer_lat?: number
+          customer_lng?: number
+          customer_name?: string
+          delivered_at?: string | null
+          delivery_fee?: number
+          discount?: number
+          distance_km?: number
+          driver_earnings?: number
+          driver_id?: string | null
+          id?: string
+          items?: Json
+          platform_fee?: number
+          seller_earnings?: number
+          seller_id?: string
+          short_code?: string
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          wait_penalty?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image: string
+          in_stock: boolean
+          name: string
+          original_price: number | null
+          price: number
+          seller_id: string
+          tag: string | null
+          unit: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id: string
+          image: string
+          in_stock?: boolean
+          name: string
+          original_price?: number | null
+          price: number
+          seller_id: string
+          tag?: string | null
+          unit?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string
+          in_stock?: boolean
+          name?: string
+          original_price?: number | null
+          price?: number
+          seller_id?: string
+          tag?: string | null
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sellers: {
+        Row: {
+          avg_prep_minutes: number
+          banner_image: string | null
+          category: string
+          contribution_pct: number
+          created_at: string
+          description: string | null
+          id: string
+          lat: number
+          lng: number
+          location_label: string
+          name: string
+          rating: number
+          total_orders: number
+        }
+        Insert: {
+          avg_prep_minutes?: number
+          banner_image?: string | null
+          category?: string
+          contribution_pct?: number
+          created_at?: string
+          description?: string | null
+          id: string
+          lat: number
+          lng: number
+          location_label: string
+          name: string
+          rating?: number
+          total_orders?: number
+        }
+        Update: {
+          avg_prep_minutes?: number
+          banner_image?: string | null
+          category?: string
+          contribution_pct?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          lat?: number
+          lng?: number
+          location_label?: string
+          name?: string
+          rating?: number
+          total_orders?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
