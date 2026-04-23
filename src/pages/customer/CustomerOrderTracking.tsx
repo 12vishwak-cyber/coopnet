@@ -1,224 +1,300 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Check, Star, Truck, User, Phone, MessageCircle, Package, MapPin, Bike, Hourglass } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Star,
+  Truck,
+  User,
+  Phone,
+  MessageCircle,
+  Package,
+  MapPin,
+  Bike,
+  Hourglass,
+  Coins,
+  Sparkles,
+  Info,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useOrders, ORDER_STAGES, OrderStatus, timeLabel } from "@/contexts/OrdersContext";
+import { Skeleton } from "@/components/ui/skeleton";
+import LiveMap from "@/components/LiveMap";
+import {
+  useLiveOrder,
+  STATUS_FLOW,
+  STATUS_LABELS,
+  setWaitPenalty,
+  type DbOrder,
+} from "@/lib/coopnet-api";
 
-// Route path keypoints (must mirror the SVG path below).
-// Path: M60,60 Q140,90 200,80 Q260,70 340,140
-function pointOnRoute(t: number): { x: number; y: number } {
-  // Two quadratic Bezier segments stitched at t=0.5.
-  const clamp = Math.max(0, Math.min(1, t));
-  if (clamp <= 0.5) {
-    const u = clamp / 0.5;
-    // B(u) = (1-u)^2 P0 + 2(1-u)u P1 + u^2 P2
-    const x = (1 - u) ** 2 * 60 + 2 * (1 - u) * u * 140 + u ** 2 * 200;
-    const y = (1 - u) ** 2 * 60 + 2 * (1 - u) * u * 90 + u ** 2 * 80;
-    return { x, y };
-  }
-  const u = (clamp - 0.5) / 0.5;
-  const x = (1 - u) ** 2 * 200 + 2 * (1 - u) * u * 260 + u ** 2 * 340;
-  const y = (1 - u) ** 2 * 80 + 2 * (1 - u) * u * 70 + u ** 2 * 140;
-  return { x, y };
+const WAIT_GRACE_S = 180;
+const WAIT_RATE = 5; // ₹/min after grace, paid 100% to driver
+
+function timeLabel(d: Date): string {
+  return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function statusToProgress(status: DbOrder["status"]): number {
+  // How far the driver pin should be along the route.
+  if (status === "out_for_delivery") return 0.55;
+  if (status === "arrived") return 1;
+  if (status === "delivered") return 1;
+  if (status === "assigned") return 0.05;
+  return 0;
 }
 
 export default function CustomerOrderTracking() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { getOrder, activeOrder } = useOrders();
-  const order = (id && getOrder(id)) || activeOrder;
+  const { order, events, seller, driver } = useLiveOrder(id);
+  const [progress, setProgress] = useState(0);
+
+  // Smoothly animate the driver pin while out_for_delivery.
+  useEffect(() => {
+    if (!order) return;
+    const target = statusToProgress(order.status);
+    setProgress(target * 0.4); // start partway
+    if (order.status !== "out_for_delivery") {
+      setProgress(target);
+      return;
+    }
+    let p = 0.1;
+    const iv = setInterval(() => {
+      p = Math.min(0.95, p + 0.01);
+      setProgress(p);
+    }, 800);
+    return () => clearInterval(iv);
+  }, [order?.status, order?.id]);
+
+  // Wait-penalty engine.
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const iv = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(iv);
+  }, []);
+
+  const arrivedTs = order?.arrived_at ? new Date(order.arrived_at).getTime() : null;
+  const waitElapsed = arrivedTs ? Math.floor((now - arrivedTs) / 1000) : 0;
+  const overGrace = Math.max(0, waitElapsed - WAIT_GRACE_S);
+  const accruedPenalty = Math.ceil((overGrace / 60) * WAIT_RATE);
+
+  // Persist penalty back to DB (driver app reads it too).
+  useEffect(() => {
+    if (!order || !arrivedTs) return;
+    if (order.wait_penalty !== accruedPenalty) {
+      setWaitPenalty(order.id, accruedPenalty).catch(() => {});
+    }
+  }, [accruedPenalty, arrivedTs, order]);
 
   // Auto-redirect to impact screen on delivery.
   useEffect(() => {
-    if (order && order.status === "Delivered") {
+    if (order?.status === "delivered") {
       const t = setTimeout(() => navigate(`/customer/order/impact/${order.id}`), 2_500);
       return () => clearTimeout(t);
     }
-  }, [order, navigate]);
+  }, [order?.status, order?.id, navigate]);
 
-  const workerPos = useMemo(() => {
-    if (!order) return { x: 60, y: 60 };
-    const stageIdx = ORDER_STAGES.indexOf(order.status);
-    // Before "Out for Delivery" the worker sits at the seller pickup.
-    if (stageIdx < 3) return pointOnRoute(0);
-    if (stageIdx >= 4) return pointOnRoute(1);
-    return pointOnRoute(order.workerProgress);
-  }, [order]);
-
-  if (!order) {
+  if (!order || !seller) {
     return (
-      <div className="min-h-screen bg-[#f5f5f5] flex flex-col items-center justify-center p-6 text-center">
-        <Package className="h-10 w-10 text-gray-300 mb-3" />
-        <p className="text-sm font-bold text-gray-900">No active order</p>
-        <p className="text-[12px] text-gray-400 mt-1">Place an order to start tracking.</p>
-        <Button className="mt-4 rounded-2xl" onClick={() => navigate("/customer")}>
-          Go shopping
-        </Button>
+      <div className="min-h-screen bg-surface text-foreground p-4 space-y-3">
+        <Skeleton className="h-12 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+        <Skeleton className="h-24 w-full rounded-2xl" />
+        <Skeleton className="h-48 w-full rounded-2xl" />
       </div>
     );
   }
 
-  const stageIdx = ORDER_STAGES.indexOf(order.status);
+  const stageIdx = STATUS_FLOW.indexOf(order.status);
+  const stopsAhead = order.status === "out_for_delivery" ? Math.max(0, Math.round((1 - progress) * 3)) : 0;
   const liveLine =
-    order.status === "Placed"
+    order.status === "placed"
       ? "Sent to seller — confirming…"
-      : order.status === "Packed"
-      ? `Packed by ${order.seller}`
-      : order.status === "Assigned"
-      ? `${order.worker.name} accepted — heading to pickup`
-      : order.status === "Out for Delivery"
-      ? order.stopsAhead > 0
-        ? `${order.stopsAhead} ${order.stopsAhead === 1 ? "stop" : "stops"} before you`
+      : order.status === "packed"
+      ? `Packed by ${seller.name}`
+      : order.status === "assigned"
+      ? `${driver?.name ?? "Driver"} accepted — heading to pickup`
+      : order.status === "out_for_delivery"
+      ? stopsAhead > 0
+        ? `${stopsAhead} ${stopsAhead === 1 ? "stop" : "stops"} before you`
         : "Arriving at your doorstep"
+      : order.status === "arrived"
+      ? "Driver arrived — please collect"
       : "Delivered ✓";
 
+  const etaMin =
+    order.status === "delivered" || order.status === "arrived"
+      ? 0
+      : order.status === "out_for_delivery"
+      ? Math.max(2, Math.round((1 - progress) * 14))
+      : Math.max(8, Math.round(order.distance_km * 6 + 6));
+
   return (
-    <div className="min-h-screen bg-[#f5f5f5] pb-6">
+    <div className="min-h-screen bg-surface text-foreground pb-6">
       {/* Header */}
-      <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
-        <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
-          <ArrowLeft className="h-4 w-4 text-gray-600" />
+      <div className="bg-card px-4 py-3 flex items-center gap-3 border-b border-border">
+        <button
+          onClick={() => navigate(-1)}
+          className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"
+          aria-label="Back"
+        >
+          <ArrowLeft className="h-4 w-4 text-muted-foreground" />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-[15px] font-bold text-gray-900 truncate">Order Tracking</h1>
-          <p className="text-[11px] text-gray-400 truncate">{order.id} · {liveLine}</p>
+          <h1 className="text-[15px] font-bold text-foreground truncate">Order Tracking</h1>
+          <p className="text-[11px] text-muted-foreground truncate">
+            {order.short_code} · {liveLine}
+          </p>
         </div>
-        <span className="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 rounded-full px-2.5 py-1">
-          {order.etaMin > 0 ? `~${order.etaMin} min` : "Arrived"}
+        <span className="text-[11px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 rounded-full px-2.5 py-1">
+          {etaMin > 0 ? `~${etaMin} min` : "Arrived"}
         </span>
       </div>
 
       <div className="p-4 space-y-3">
-        {/* Map */}
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-          <div className="relative h-52 bg-gradient-to-br from-emerald-50 to-teal-50">
-            <svg viewBox="0 0 400 200" className="w-full h-full">
-              {/* road grid */}
-              <line x1="0" y1="80" x2="400" y2="80" stroke="#e5e7eb" strokeWidth="1" />
-              <line x1="0" y1="140" x2="400" y2="140" stroke="#e5e7eb" strokeWidth="1" />
-              <line x1="130" y1="0" x2="130" y2="200" stroke="#e5e7eb" strokeWidth="1" />
-              <line x1="270" y1="0" x2="270" y2="200" stroke="#e5e7eb" strokeWidth="1" />
-              {/* full route */}
-              <path
-                d="M60,60 Q140,90 200,80 Q260,70 340,140"
-                fill="none"
-                stroke="#cbd5e1"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-              {/* completed segment (length-based dash) */}
-              <path
-                d="M60,60 Q140,90 200,80 Q260,70 340,140"
-                fill="none"
-                stroke="#10b981"
-                strokeWidth="3"
-                strokeLinecap="round"
-                pathLength={1}
-                style={{
-                  strokeDasharray: `${stageIdx >= 4 ? 1 : stageIdx >= 3 ? order.workerProgress : 0} 1`,
-                  transition: "stroke-dasharray 0.4s linear",
-                }}
-              />
-
-              {/* Seller pin */}
-              <circle cx="60" cy="60" r="11" fill="#d1fae5" />
-              <circle cx="60" cy="60" r="5" fill="#10b981" />
-              <text x="60" y="40" textAnchor="middle" fill="#065f46" fontSize="9" fontWeight="700">Seller</text>
-
-              {/* Customer pin */}
-              <circle cx="340" cy="140" r="11" fill="#dbeafe" />
-              <circle cx="340" cy="140" r="5" fill="#3b82f6" />
-              <text x="340" y="165" textAnchor="middle" fill="#1e40af" fontSize="9" fontWeight="700">You</text>
-
-              {/* Worker pin (animated) */}
-              <g style={{ transition: "transform 0.4s linear" }} transform={`translate(${workerPos.x}, ${workerPos.y})`}>
-                <circle r="14" fill="#fef3c7" opacity="0.6">
-                  <animate attributeName="r" values="12;18;12" dur="1.6s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.6;0.1;0.6" dur="1.6s" repeatCount="indefinite" />
-                </circle>
-                <circle r="7" fill="#f59e0b" stroke="#fff" strokeWidth="2" />
-              </g>
-            </svg>
-            <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-xl px-3 py-1.5 shadow-sm">
-              <p className="text-[11px] font-extrabold text-emerald-600">⚡ {liveLine}</p>
-            </div>
+        {/* Live map */}
+        <div className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border">
+          <LiveMap
+            seller={{ lat: seller.lat, lng: seller.lng, label: seller.name }}
+            customer={{ lat: order.customer_lat, lng: order.customer_lng, label: order.customer_address }}
+            driver={
+              driver
+                ? { lat: driver.current_lat, lng: driver.current_lng, label: driver.name }
+                : null
+            }
+            routeProgress={progress}
+            className="h-64 w-full"
+          />
+          <div className="px-4 py-2.5 flex items-center justify-between text-[11px]">
+            <span className="font-extrabold text-emerald-600 dark:text-emerald-400">⚡ {liveLine}</span>
+            <span className="text-muted-foreground">{order.distance_km} km route</span>
           </div>
         </div>
 
-        {/* Worker Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
-              <User className="h-6 w-6 text-emerald-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-bold text-gray-900 truncate">{order.worker.name}</p>
-                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
-                  <Bike className="h-3 w-3" /> {order.worker.vehicle}
-                </span>
+        {/* Driver card */}
+        {driver && (
+          <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-emerald-500/15 flex items-center justify-center">
+                <User className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="flex items-center gap-0.5 text-gray-500">
-                  <Star className="h-3 w-3 text-amber-400 fill-amber-400" /> {order.worker.rating}
-                </span>
-                <span className="text-gray-300">·</span>
-                <span className="text-emerald-600 font-medium">Earning ₹{order.worker.earnings}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-bold text-foreground truncate">{driver.name}</p>
+                  <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
+                    <Bike className="h-3 w-3" /> {driver.vehicle}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="flex items-center gap-0.5 text-muted-foreground">
+                    <Star className="h-3 w-3 text-amber-400 fill-amber-400" /> {driver.rating}
+                  </span>
+                  <span className="text-muted-foreground">·</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                    Earning ₹{order.driver_earnings + (order.wait_penalty || 0)}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <button className="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center">
-                <Phone className="h-4 w-4 text-emerald-600" />
-              </button>
-              <button className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center">
-                <MessageCircle className="h-4 w-4 text-gray-500" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="h-10 w-10 rounded-full bg-emerald-500/15 flex items-center justify-center"
+                  aria-label="Call driver"
+                >
+                  <Phone className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                </button>
+                <button
+                  className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"
+                  aria-label="Message driver"
+                >
+                  <MessageCircle className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Live status timeline */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Live Status</h3>
+        {/* Driver earnings transparency */}
+        {driver && (
+          <div className="bg-emerald-500/10 dark:bg-emerald-500/15 rounded-2xl p-3.5 border border-emerald-500/30">
+            <div className="flex items-center gap-2 mb-2">
+              <Coins className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <p className="text-[12px] font-extrabold text-emerald-800 dark:text-emerald-200">
+                How {driver.name.split(" ")[0]} is paid
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <PayPill label="Base" value="₹20" />
+              <PayPill label={`${order.distance_km}km × ₹12`} value={`₹${Math.round(order.distance_km * 12)}`} />
+              <PayPill label="To driver" value={`₹${order.driver_earnings + (order.wait_penalty || 0)}`} highlight />
+            </div>
+            <p className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-2 leading-relaxed">
+              100% of delivery fee goes to {driver.name.split(" ")[0]} — CoopNet does not skim driver pay.
+            </p>
+          </div>
+        )}
+
+        {/* Live timeline */}
+        <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
+          <h3 className="text-sm font-bold text-foreground mb-4">Live Status</h3>
           <div className="space-y-0">
-            {ORDER_STAGES.map((stage, i) => {
-              const event = order.events.find((e) => e.status === stage);
-              const done = stageIdx > i;
-              const isCurrent = stageIdx === i;
-              const Icon = stage === "Out for Delivery" ? Truck : stage === "Delivered" ? MapPin : stage === "Packed" ? Package : Check;
+            {STATUS_FLOW.filter((s) => s !== "arrived").map((stage, i) => {
+              // We collapse "arrived" into "out_for_delivery" for the timeline.
+              const ev = events.find((e) => e.status === stage);
+              const compareIdx = STATUS_FLOW.indexOf(stage);
+              const myIdx = STATUS_FLOW.indexOf(order.status);
+              const done = myIdx > compareIdx;
+              const isCurrent =
+                myIdx === compareIdx ||
+                (stage === "out_for_delivery" && order.status === "arrived");
+              const Icon =
+                stage === "out_for_delivery"
+                  ? Truck
+                  : stage === "delivered"
+                  ? MapPin
+                  : stage === "packed"
+                  ? Package
+                  : Check;
               return (
                 <div key={stage} className="flex items-start gap-3 pb-4 last:pb-0">
                   <div className="flex flex-col items-center">
-                    <div className={`h-6 w-6 rounded-full flex items-center justify-center shrink-0 ${
-                      done
-                        ? "bg-emerald-500"
-                        : isCurrent
-                        ? "bg-amber-400 ring-4 ring-amber-100"
-                        : "bg-gray-100"
-                    }`}>
+                    <div
+                      className={`h-6 w-6 rounded-full flex items-center justify-center shrink-0 ${
+                        done
+                          ? "bg-emerald-500"
+                          : isCurrent
+                          ? "bg-amber-400 ring-4 ring-amber-100 dark:ring-amber-900/40"
+                          : "bg-muted"
+                      }`}
+                    >
                       {done ? (
                         <Check className="h-3.5 w-3.5 text-white" />
                       ) : isCurrent ? (
                         <Icon className="h-3 w-3 text-white" />
                       ) : (
-                        <span className="h-2 w-2 rounded-full bg-gray-300" />
+                        <span className="h-2 w-2 rounded-full bg-muted-foreground/40" />
                       )}
                     </div>
-                    {i < ORDER_STAGES.length - 1 && (
-                      <div className={`w-0.5 h-7 ${done ? "bg-emerald-200" : "bg-gray-100"}`} />
-                    )}
+                    {i < 4 && <div className={`w-0.5 h-7 ${done ? "bg-emerald-500/30" : "bg-muted"}`} />}
                   </div>
                   <div className="-mt-0.5 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className={`text-sm ${done || isCurrent ? "font-bold text-gray-900" : "text-gray-400 font-medium"}`}>
-                        {stage}
+                      <p
+                        className={`text-sm ${
+                          done || isCurrent
+                            ? "font-bold text-foreground"
+                            : "text-muted-foreground font-medium"
+                        }`}
+                      >
+                        {STATUS_LABELS[stage]}
                       </p>
-                      {event && (
-                        <p className="text-[11px] text-gray-400 font-medium">{timeLabel(new Date(event.at))}</p>
+                      {ev && (
+                        <p className="text-[11px] text-muted-foreground font-medium">
+                          {timeLabel(new Date(ev.created_at))}
+                        </p>
                       )}
                     </div>
-                    <p className="text-[11px] text-gray-500 mt-0.5">
-                      {event?.message ?? (isCurrent ? "In progress…" : "Waiting")}
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {ev?.message ?? (isCurrent ? "In progress…" : "Waiting")}
                     </p>
                   </div>
                 </div>
@@ -227,32 +303,86 @@ export default function CustomerOrderTracking() {
           </div>
         </div>
 
-        {/* Wait warning — appears when driver has marked arrival */}
-        {order.arrivedAt && order.status !== "Delivered" && (
-          <CustomerWaitWarning arrivedAt={order.arrivedAt} penalty={order.waitPenalty ?? 0} />
+        {/* Wait penalty warning */}
+        {order.arrived_at && order.status !== "delivered" && (
+          <CustomerWaitWarning arrivedAt={order.arrived_at} penalty={accruedPenalty} />
         )}
 
-        {/* Why this driver */}
-        <div className="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-100">
-          <p className="text-[11px] font-bold text-emerald-800 mb-1">🤖 Why this driver?</p>
-          <p className="text-[11px] text-emerald-700 leading-relaxed">
-            Assigned by proximity, load capacity, and cooperative rules — not surge pricing.
-          </p>
-        </div>
+        {/* Why this driver — DB-backed */}
+        {order.assignment_reason && driver && (
+          <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-4 w-4 text-emerald-500" />
+              <p className="text-sm font-bold text-foreground">Why {driver.name.split(" ")[0]}?</p>
+            </div>
+            <p className="text-[12px] text-muted-foreground leading-relaxed mb-3">
+              {order.assignment_reason.explanation}
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <Factor
+                label="Distance"
+                value={`${order.assignment_reason.distance} km`}
+                hint="Closest match"
+              />
+              <Factor
+                label="Rating"
+                value={`${order.assignment_reason.rating}★`}
+                hint="Customer reviews"
+              />
+              <Factor
+                label="Co-op rotation"
+                value={`${order.assignment_reason.idleHours.toFixed(1)}h idle`}
+                hint="Fair earnings spread"
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3 flex items-center gap-1">
+              <Info className="h-3 w-3" />
+              Picked from {order.assignment_reason.considered} available drivers — no surge pricing.
+            </p>
+          </div>
+        )}
 
         <Button
-          className="w-full h-12 rounded-2xl font-bold bg-gray-900 hover:bg-gray-800"
+          className="w-full h-12 rounded-2xl font-bold bg-gray-900 hover:bg-gray-800 text-white"
           onClick={() => navigate(`/customer/order/impact/${order.id}`)}
         >
-          {order.status === "Delivered" ? "View Impact" : "Skip to Impact Preview"}
+          {order.status === "delivered" ? "View Impact" : "Skip to Impact Preview"}
         </Button>
       </div>
     </div>
   );
 }
 
-const WAIT_GRACE_S = 180;
-const WAIT_RATE = 5; // ₹/min after grace, paid to driver
+function PayPill({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div
+      className={`rounded-xl p-2 ${
+        highlight ? "bg-emerald-500 text-white" : "bg-card border border-emerald-500/30"
+      }`}
+    >
+      <p className={`text-[9px] font-medium ${highlight ? "opacity-90" : "text-muted-foreground"}`}>
+        {label}
+      </p>
+      <p
+        className={`text-sm font-extrabold ${
+          highlight ? "" : "text-emerald-700 dark:text-emerald-300"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function Factor({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div className="rounded-xl bg-muted/60 p-2.5">
+      <p className="text-[10px] text-muted-foreground font-medium">{label}</p>
+      <p className="text-[13px] font-extrabold text-foreground">{value}</p>
+      <p className="text-[9px] text-muted-foreground mt-0.5">{hint}</p>
+    </div>
+  );
+}
 
 function CustomerWaitWarning({ arrivedAt, penalty }: { arrivedAt: string; penalty: number }) {
   const [now, setNow] = useState(Date.now());
@@ -269,24 +399,30 @@ function CustomerWaitWarning({ arrivedAt, penalty }: { arrivedAt: string; penalt
   return (
     <div
       className={`rounded-2xl border-2 p-3.5 ${
-        inGrace ? "bg-amber-50 border-amber-200" : "bg-rose-50 border-rose-200"
+        inGrace
+          ? "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/40"
+          : "bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/40"
       }`}
     >
       <div className="flex items-start gap-3">
         <div
           className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
-            inGrace ? "bg-amber-100" : "bg-rose-100"
+            inGrace ? "bg-amber-100 dark:bg-amber-500/20" : "bg-rose-100 dark:bg-rose-500/20"
           }`}
         >
-          <Hourglass className={`h-5 w-5 ${inGrace ? "text-amber-700" : "text-rose-700"}`} />
+          <Hourglass className={`h-5 w-5 ${inGrace ? "text-amber-700 dark:text-amber-300" : "text-rose-700 dark:text-rose-300"}`} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className={`text-[13px] font-extrabold ${inGrace ? "text-amber-900" : "text-rose-900"}`}>
+          <p
+            className={`text-[13px] font-extrabold ${
+              inGrace ? "text-amber-900 dark:text-amber-200" : "text-rose-900 dark:text-rose-200"
+            }`}
+          >
             {inGrace
               ? `Driver has arrived — collect within ${m}:${s}`
               : `+₹${penalty} wait charge added`}
           </p>
-          <p className="text-[11px] text-gray-600 mt-0.5">
+          <p className="text-[11px] text-muted-foreground mt-0.5">
             {inGrace
               ? `Please come down to avoid ₹${WAIT_RATE}/min charge after the 3-minute grace.`
               : `Charged for late pickup — paid 100% to your driver as fair compensation.`}
