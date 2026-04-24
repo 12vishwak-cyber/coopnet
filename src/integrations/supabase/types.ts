@@ -56,6 +56,89 @@ export type Database = {
         }
         Relationships: []
       }
+      governance_proposals: {
+        Row: {
+          activated_at: string | null
+          code: string
+          created_at: string
+          deadline_at: string | null
+          description: string
+          id: string
+          proposer_label: string
+          proposer_role: string
+          required_majority: number
+          status: string
+          title: string
+          total_members: number
+          updated_at: string
+        }
+        Insert: {
+          activated_at?: string | null
+          code: string
+          created_at?: string
+          deadline_at?: string | null
+          description: string
+          id?: string
+          proposer_label: string
+          proposer_role: string
+          required_majority?: number
+          status?: string
+          title: string
+          total_members?: number
+          updated_at?: string
+        }
+        Update: {
+          activated_at?: string | null
+          code?: string
+          created_at?: string
+          deadline_at?: string | null
+          description?: string
+          id?: string
+          proposer_label?: string
+          proposer_role?: string
+          required_majority?: number
+          status?: string
+          title?: string
+          total_members?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      governance_votes: {
+        Row: {
+          created_at: string
+          id: string
+          proposal_id: string
+          vote: string
+          voter_key: string
+          voter_role: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          proposal_id: string
+          vote: string
+          voter_key: string
+          voter_role: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          proposal_id?: string
+          vote?: string
+          voter_key?: string
+          voter_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "governance_votes_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "governance_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           actor: string | null
@@ -195,6 +278,7 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
+          gallery_images: string[]
           id: string
           image: string
           in_stock: boolean
@@ -209,6 +293,7 @@ export type Database = {
           category: string
           created_at?: string
           description?: string | null
+          gallery_images?: string[]
           id: string
           image: string
           in_stock?: boolean
@@ -223,6 +308,7 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          gallery_images?: string[]
           id?: string
           image?: string
           in_stock?: boolean
@@ -288,6 +374,51 @@ export type Database = {
           name?: string
           rating?: number
           total_orders?: number
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          actor_label: string
+          category: string
+          created_at: string
+          id: string
+          message: string
+          order_ref: string | null
+          priority: string
+          response: string | null
+          role_context: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          actor_label: string
+          category: string
+          created_at?: string
+          id?: string
+          message: string
+          order_ref?: string | null
+          priority?: string
+          response?: string | null
+          role_context: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          actor_label?: string
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          order_ref?: string | null
+          priority?: string
+          response?: string | null
+          role_context?: string
+          status?: string
+          subject?: string
+          updated_at?: string
         }
         Relationships: []
       }
