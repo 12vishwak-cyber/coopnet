@@ -135,7 +135,7 @@ const sellerImageSets = {
     sourdough: gallery(u('photo-1509440159596-0249088772ff'), [u('photo-1549931319-a545dcf3bc73'), u('photo-1506084868230-bb9d95c24759')]),
     croissant: gallery(u('photo-1623334044303-241021148842'), [u('photo-1517433670267-08bbd4be890f'), u('photo-1509440159596-0249088772ff')]),
     redVelvet: gallery(u('photo-1586985289688-ca3cf47d3e6e'), [u('photo-1559620192-032c4bc4674e'), u('photo-1533134242443-d4fd215305ad')]),
-    garlicBread: gallery(u('photo-1573140247632-f8fd74997d5c'), [u('photo-1619531040576-f9416740661f'), u('photo-1549931319-a545dcf3bc73')]),
+    garlicBread: gallery(u('photo-1619531038896-38dc8ffa8b82'), [u('photo-1593504049359-74330189a345'), u('photo-1549931319-a545dcf3bc73')]),
     baguette: gallery(u('photo-1608198093002-ad4e005484ec'), [u('photo-1506084868230-bb9d95c24759'), u('photo-1549931319-a545dcf3bc73')]),
     cinnamonRoll: gallery(u('photo-1509440159596-0249088772ff'), [u('photo-1504754524776-8f4f37790ca0'), u('photo-1523294587484-bae6cc870010')]),
     muffin: gallery(u('photo-1486427944299-d1955d23e34d'), [u('photo-1464306076886-da185f6a9d05'), u('photo-1495214783159-3503fd1b572d')]),
