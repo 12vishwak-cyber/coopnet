@@ -3,6 +3,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertTriangle, Globe, Brain } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const products = [
   { name: "Basmati Rice (5kg)", sku: "GR-001", stock: 45, price: "₹320", status: "available" },
@@ -40,7 +41,9 @@ export default function SellerInventory() {
         <div className="lg:col-span-2 bg-card border rounded-lg animate-fade-up stagger-1">
           <div className="p-4 border-b flex items-center justify-between">
             <h2 className="text-[13px] font-semibold">Products</h2>
-            <Button size="sm" variant="outline" className="text-xs">Add Product</Button>
+            <Button asChild size="sm" variant="outline" className="text-xs">
+              <Link to="/seller/inventory/new">Add Product</Link>
+            </Button>
           </div>
           <Table>
             <TableHeader>
