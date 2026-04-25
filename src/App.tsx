@@ -10,6 +10,9 @@ import SellerOrders from "@/pages/seller/SellerOrders";
 import SellerInventory from "@/pages/seller/SellerInventory";
 import SellerInsights from "@/pages/seller/SellerInsights";
 import SellerEarnings from "@/pages/seller/SellerEarnings";
+import SellerSupport from "@/pages/seller/SellerSupport";
+import SellerAddProduct from "@/pages/seller/SellerAddProduct";
+import WorkerSupport from "@/pages/worker/WorkerSupport";
 import WorkerDashboard from "@/pages/worker/WorkerDashboard";
 import WorkerTasks from "@/pages/worker/WorkerTasks";
 import WorkerDelivery from "@/pages/worker/WorkerDelivery";
@@ -73,7 +76,10 @@ const App = () => (
           <Route path="/seller/inventory" element={<DashboardLayout><SellerInventory /></DashboardLayout>} />
           <Route path="/seller/insights" element={<DashboardLayout><SellerInsights /></DashboardLayout>} />
           <Route path="/seller/earnings" element={<DashboardLayout><SellerEarnings /></DashboardLayout>} />
+          <Route path="/seller/support" element={<DashboardLayout><SellerSupport /></DashboardLayout>} />
+          <Route path="/seller/inventory/new" element={<DashboardLayout><SellerAddProduct /></DashboardLayout>} />
           <Route path="/worker" element={<DashboardLayout><WorkerDashboard /></DashboardLayout>} />
+          <Route path="/worker/support" element={<DashboardLayout><WorkerSupport /></DashboardLayout>} />
           <Route path="/worker/tasks" element={<DashboardLayout><WorkerTasks /></DashboardLayout>} />
           <Route path="/worker/delivery" element={<DashboardLayout><WorkerDelivery /></DashboardLayout>} />
           <Route path="/worker/route" element={<DashboardLayout><WorkerRoute /></DashboardLayout>} />

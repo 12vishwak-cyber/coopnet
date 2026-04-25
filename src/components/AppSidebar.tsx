@@ -2,7 +2,7 @@ import {
   LayoutDashboard, ShoppingCart, Package, BarChart3, DollarSign,
   Truck, ClipboardList, MapPin, Route, ArrowLeftRight, Info, User, Settings,
   Globe, Scale, PiggyBank, Database, Vote, Activity, Users, BookOpen,
-  AlertCircle, HelpCircle, LogOut
+  AlertCircle, HelpCircle, LogOut, LifeBuoy
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -17,8 +17,10 @@ const sellerItems = [
   { title: "Dashboard", url: "/seller", icon: LayoutDashboard },
   { title: "Orders", url: "/seller/orders", icon: ShoppingCart },
   { title: "Inventory", url: "/seller/inventory", icon: Package },
+  { title: "Add Product", url: "/seller/inventory/new", icon: Package },
   { title: "Insights", url: "/seller/insights", icon: BarChart3 },
   { title: "Earnings", url: "/seller/earnings", icon: DollarSign },
+  { title: "Support", url: "/seller/support", icon: LifeBuoy },
 ];
 
 const workerItems = [
@@ -27,6 +29,7 @@ const workerItems = [
   { title: "Delivery", url: "/worker/delivery", icon: Truck },
   { title: "Route", url: "/worker/route", icon: Route },
   { title: "Earnings", url: "/worker/earnings", icon: DollarSign },
+  { title: "Support", url: "/worker/support", icon: LifeBuoy },
 ];
 
 const networkItems = [

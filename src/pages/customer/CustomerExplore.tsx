@@ -33,7 +33,29 @@ const sellers = [
 const products = PRODUCTS.slice(0, 12);
 const localSpecials = PRODUCTS.filter((p) => ["p11", "p12", "p13"].includes(p.id));
 
-const filters = ["Fast delivery", "Lowest price", "High trust", "Nearest"];
+const filters = ["Fast delivery", "Lowest price", "Top rated", "Nearest"] as const;
+type FilterKey = typeof filters[number];
+
+function sortProducts(list: typeof PRODUCTS, filter: FilterKey | null) {
+  if (!filter) return list;
+  const copy = [...list];
+  if (filter === "Lowest price") return copy.sort((a, b) => a.price - b.price);
+  if (filter === "Top rated") return copy.sort((a, b) => discountPct(b) - discountPct(a));
+  return copy; // Fast delivery / Nearest fall back to original order (proximity-curated)
+}
+
+function sortSellers<T extends { rating: number; distance: string; deliveryTime: string }>(
+  list: T[],
+  filter: FilterKey | null
+): T[] {
+  if (!filter) return list;
+  const copy = [...list];
+  const num = (s: string) => parseFloat(s) || 0;
+  if (filter === "Fast delivery") return copy.sort((a, b) => num(a.deliveryTime) - num(b.deliveryTime));
+  if (filter === "Top rated") return copy.sort((a, b) => b.rating - a.rating);
+  if (filter === "Nearest") return copy.sort((a, b) => num(a.distance) - num(b.distance));
+  return copy;
+}
 
 export default function CustomerExplore() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -78,25 +100,28 @@ export default function CustomerExplore() {
 
   const filteredProducts = useMemo(() => {
     const base = activeCategory ? PRODUCTS.filter(matchesCategory) : products;
-    if (!isSearching) return base;
-    return PRODUCTS.filter(
-      (p) =>
-        matchesCategory(p) &&
-        (p.name.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q))
-    );
+    const searched = !isSearching
+      ? base
+      : PRODUCTS.filter(
+          (p) =>
+            matchesCategory(p) &&
+            (p.name.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q))
+        );
+    return sortProducts(searched, activeFilter as FilterKey | null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q, isSearching, activeCategory]);
+  }, [q, isSearching, activeCategory, activeFilter]);
 
   const filteredSellers = useMemo(() => {
+    let base: typeof sellers;
     if (activeCategory) {
       const sellerIdsInCat = new Set(PRODUCTS.filter((p) => p.category === activeCategory).map((p) => p.sellerId));
-      const base = sellers.filter((s) => sellerIdsInCat.has(s.id));
-      if (!isSearching) return base;
-      return base.filter((s) => s.name.toLowerCase().includes(q));
+      base = sellers.filter((s) => sellerIdsInCat.has(s.id));
+    } else {
+      base = sellers;
     }
-    if (!isSearching) return sellers;
-    return sellers.filter((s) => s.name.toLowerCase().includes(q));
-  }, [q, isSearching, activeCategory]);
+    if (isSearching) base = base.filter((s) => s.name.toLowerCase().includes(q));
+    return sortSellers(base, activeFilter as FilterKey | null);
+  }, [q, isSearching, activeCategory, activeFilter]);
 
   const filteredSpecials = useMemo(() => {
     const base = activeCategory && activeCategory !== "Specials"
