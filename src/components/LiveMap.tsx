@@ -1,26 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-import { supabase } from "@/integrations/supabase/client";
-
-// Cached at module level so we don't re-fetch the token on every mount.
-let tokenPromise: Promise<string> | null = null;
-async function getMapboxToken(): Promise<string> {
-  if (!tokenPromise) {
-    tokenPromise = supabase.functions
-      .invoke("get-mapbox-token")
-      .then(({ data, error }) => {
-        if (error) throw error;
-        if (!data?.token) throw new Error("Missing token in response");
-        return data.token as string;
-      })
-      .catch((e) => {
-        tokenPromise = null;
-        throw e;
-      });
-  }
-  return tokenPromise;
-}
+import { useEffect, useMemo, useRef, useState } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 export type LatLng = { lat: number; lng: number };
 
@@ -28,20 +8,25 @@ export type LiveMapProps = {
   seller: LatLng & { label?: string };
   customer: LatLng & { label?: string };
   driver?: (LatLng & { label?: string; bearing?: number }) | null;
-  routeProgress?: number; // 0..1 — driver position along route
+  /** 0..1 — animates the driver marker along the fetched route */
+  routeProgress?: number;
   className?: string;
   interactive?: boolean;
+  /** "driver" mode = zoomed-in, simplified UI for nav. "preview" = shared customer view */
+  mode?: "preview" | "driver";
 };
 
 /**
- * Realistic Mapbox GL JS map with:
- * - Real OSM-style streets
+ * Real OpenStreetMap-backed Leaflet map (no API token needed).
+ *
  * - Seller pickup pin (emerald)
  * - Customer drop pin (blue)
- * - Animated driver pin (amber) that moves along the fetched walking/driving route
- * - Auto-fitting bounds
+ * - Animated driver pin (amber, pulsing)
+ * - Real driving route via the public OSRM demo endpoint, with a straight-line
+ *   fallback so the map always renders something useful.
  *
- * Token is fetched once via the `get-mapbox-token` edge function.
+ * `mode="driver"` zooms in tight on the driver and uses thicker route lines
+ * so it works as an in-car navigation view.
  */
 export default function LiveMap({
   seller,
@@ -50,211 +35,181 @@ export default function LiveMap({
   routeProgress = 0,
   className = "h-64 w-full",
   interactive = true,
+  mode = "preview",
 }: LiveMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const sellerMarkerRef = useRef<mapboxgl.Marker | null>(null);
-  const customerMarkerRef = useRef<mapboxgl.Marker | null>(null);
-  const driverMarkerRef = useRef<mapboxgl.Marker | null>(null);
-  const routeCoordsRef = useRef<[number, number][] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const sellerMarkerRef = useRef<L.Marker | null>(null);
+  const customerMarkerRef = useRef<L.Marker | null>(null);
+  const driverMarkerRef = useRef<L.Marker | null>(null);
+  const routeLayerRef = useRef<L.Polyline | null>(null);
+  const routeBgLayerRef = useRef<L.Polyline | null>(null);
+  const [routeCoords, setRouteCoords] = useState<[number, number][] | null>(null);
   const [ready, setReady] = useState(false);
 
   // Mount the map once.
   useEffect(() => {
-    let cancelled = false;
-    let map: mapboxgl.Map | null = null;
+    if (!containerRef.current) return;
+    const map = L.map(containerRef.current, {
+      center: [(seller.lat + customer.lat) / 2, (seller.lng + customer.lng) / 2],
+      zoom: mode === "driver" ? 16 : 14,
+      zoomControl: interactive && mode !== "driver",
+      attributionControl: false,
+      dragging: interactive,
+      scrollWheelZoom: interactive,
+      doubleClickZoom: interactive,
+      touchZoom: interactive,
+    });
+    mapRef.current = map;
 
+    // OSM tiles — use Carto's "voyager" for a calm, modern look.
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      subdomains: "abcd",
+    }).addTo(map);
+
+    sellerMarkerRef.current = L.marker([seller.lat, seller.lng], { icon: pinIcon("#10b981", "S") })
+      .bindPopup(seller.label || "Seller pickup")
+      .addTo(map);
+    customerMarkerRef.current = L.marker([customer.lat, customer.lng], { icon: pinIcon("#3b82f6", "C") })
+      .bindPopup(customer.label || "Your address")
+      .addTo(map);
+
+    setReady(true);
+
+    // Route fetch: OSRM public demo. Falls back to straight line.
     (async () => {
       try {
-        const token = await getMapboxToken();
-        if (cancelled || !containerRef.current) return;
-        mapboxgl.accessToken = token;
-
-        map = new mapboxgl.Map({
-          container: containerRef.current,
-          style: "mapbox://styles/mapbox/streets-v12",
-          center: [(seller.lng + customer.lng) / 2, (seller.lat + customer.lat) / 2],
-          zoom: 14,
-          interactive,
-          attributionControl: false,
-        });
-        mapRef.current = map;
-
-        map.on("load", async () => {
-          if (cancelled || !map) return;
-
-          // Pickup marker (seller — emerald)
-          const sellerEl = makePinElement("#10b981", "S");
-          sellerMarkerRef.current = new mapboxgl.Marker({ element: sellerEl })
-            .setLngLat([seller.lng, seller.lat])
-            .setPopup(new mapboxgl.Popup({ offset: 24 }).setText(seller.label || "Seller pickup"))
-            .addTo(map);
-
-          // Drop marker (customer — blue)
-          const custEl = makePinElement("#3b82f6", "C");
-          customerMarkerRef.current = new mapboxgl.Marker({ element: custEl })
-            .setLngLat([customer.lng, customer.lat])
-            .setPopup(new mapboxgl.Popup({ offset: 24 }).setText(customer.label || "Your address"))
-            .addTo(map);
-
-          // Fetch route from Mapbox Directions API.
-          try {
-            const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${seller.lng},${seller.lat};${customer.lng},${customer.lat}?geometries=geojson&overview=full&access_token=${token}`;
-            const res = await fetch(url);
-            const json = await res.json();
-            const route = json?.routes?.[0]?.geometry;
-            if (route?.coordinates) {
-              routeCoordsRef.current = route.coordinates as [number, number][];
-              map.addSource("route", {
-                type: "geojson",
-                data: { type: "Feature", properties: {}, geometry: route },
-              });
-              map.addLayer({
-                id: "route-bg",
-                type: "line",
-                source: "route",
-                layout: { "line-cap": "round", "line-join": "round" },
-                paint: { "line-color": "#cbd5e1", "line-width": 6 },
-              });
-              map.addLayer({
-                id: "route",
-                type: "line",
-                source: "route",
-                layout: { "line-cap": "round", "line-join": "round" },
-                paint: { "line-color": "#10b981", "line-width": 4 },
-              });
-
-              // Fit to route.
-              const bounds = new mapboxgl.LngLatBounds();
-              for (const c of route.coordinates) bounds.extend(c as [number, number]);
-              map.fitBounds(bounds, { padding: 50, duration: 600 });
-            }
-          } catch (routeErr) {
-            console.warn("Route fetch failed, falling back to straight line", routeErr);
-          }
-
-          // Driver marker (amber pulse).
-          if (driver) {
-            const drvEl = makeDriverElement();
-            driverMarkerRef.current = new mapboxgl.Marker({ element: drvEl })
-              .setLngLat([driver.lng, driver.lat])
-              .addTo(map);
-          }
-
-          setReady(true);
-        });
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Map failed to load");
+        const url = `https://router.project-osrm.org/route/v1/driving/${seller.lng},${seller.lat};${customer.lng},${customer.lat}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        const json = await res.json();
+        const coords: [number, number][] = json?.routes?.[0]?.geometry?.coordinates?.map(
+          ([lng, lat]: [number, number]) => [lat, lng],
+        );
+        if (coords && coords.length > 1) {
+          setRouteCoords(coords);
+        } else {
+          setRouteCoords([
+            [seller.lat, seller.lng],
+            [customer.lat, customer.lng],
+          ]);
+        }
+      } catch {
+        setRouteCoords([
+          [seller.lat, seller.lng],
+          [customer.lat, customer.lng],
+        ]);
       }
     })();
 
     return () => {
-      cancelled = true;
-      sellerMarkerRef.current?.remove();
-      customerMarkerRef.current?.remove();
-      driverMarkerRef.current?.remove();
-      mapRef.current?.remove();
+      map.remove();
       mapRef.current = null;
+      sellerMarkerRef.current = null;
+      customerMarkerRef.current = null;
+      driverMarkerRef.current = null;
+      routeLayerRef.current = null;
+      routeBgLayerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update seller/customer positions if they change.
+  // Draw the route once we have coords.
   useEffect(() => {
-    sellerMarkerRef.current?.setLngLat([seller.lng, seller.lat]);
+    const map = mapRef.current;
+    if (!map || !routeCoords) return;
+
+    routeBgLayerRef.current?.remove();
+    routeLayerRef.current?.remove();
+
+    routeBgLayerRef.current = L.polyline(routeCoords, {
+      color: "#cbd5e1",
+      weight: mode === "driver" ? 10 : 7,
+      opacity: 1,
+      lineCap: "round",
+      lineJoin: "round",
+    }).addTo(map);
+
+    routeLayerRef.current = L.polyline(routeCoords, {
+      color: "#10b981",
+      weight: mode === "driver" ? 6 : 4,
+      opacity: 1,
+      lineCap: "round",
+      lineJoin: "round",
+    }).addTo(map);
+
+    if (mode !== "driver") {
+      const bounds = L.latLngBounds(routeCoords);
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }, [routeCoords, mode]);
+
+  // Update seller/customer pin positions if they change.
+  useEffect(() => {
+    sellerMarkerRef.current?.setLatLng([seller.lat, seller.lng]);
   }, [seller.lat, seller.lng]);
   useEffect(() => {
-    customerMarkerRef.current?.setLngLat([customer.lng, customer.lat]);
+    customerMarkerRef.current?.setLatLng([customer.lat, customer.lng]);
   }, [customer.lat, customer.lng]);
 
-  // Animate driver position along the fetched route.
-  useEffect(() => {
-    if (!ready || !mapRef.current) return;
-    const coords = routeCoordsRef.current;
-    let lng: number;
-    let lat: number;
-
-    if (coords && coords.length > 1) {
+  // Animate driver position along the route.
+  const driverPos = useMemo(() => {
+    if (routeCoords && routeCoords.length > 1) {
       const t = Math.max(0, Math.min(1, routeProgress));
-      const idx = Math.floor(t * (coords.length - 1));
-      const next = coords[Math.min(idx + 1, coords.length - 1)];
-      const cur = coords[idx];
-      const localT = t * (coords.length - 1) - idx;
-      lng = cur[0] + (next[0] - cur[0]) * localT;
-      lat = cur[1] + (next[1] - cur[1]) * localT;
-    } else if (driver) {
-      lng = driver.lng;
-      lat = driver.lat;
-    } else {
-      return;
+      const idx = Math.floor(t * (routeCoords.length - 1));
+      const next = routeCoords[Math.min(idx + 1, routeCoords.length - 1)];
+      const cur = routeCoords[idx];
+      const localT = t * (routeCoords.length - 1) - idx;
+      return [cur[0] + (next[0] - cur[0]) * localT, cur[1] + (next[1] - cur[1]) * localT] as [
+        number,
+        number,
+      ];
     }
+    if (driver) return [driver.lat, driver.lng] as [number, number];
+    return null;
+  }, [routeCoords, routeProgress, driver]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map || !driverPos) return;
     if (!driverMarkerRef.current) {
-      const drvEl = makeDriverElement();
-      driverMarkerRef.current = new mapboxgl.Marker({ element: drvEl })
-        .setLngLat([lng, lat])
-        .addTo(mapRef.current);
+      driverMarkerRef.current = L.marker(driverPos, { icon: driverIcon(), zIndexOffset: 1000 }).addTo(map);
     } else {
-      driverMarkerRef.current.setLngLat([lng, lat]);
+      driverMarkerRef.current.setLatLng(driverPos);
     }
-  }, [routeProgress, driver, ready]);
+    if (mode === "driver") {
+      // Keep the driver centered in nav mode.
+      map.setView(driverPos, 16, { animate: true });
+    }
+  }, [driverPos, ready, mode]);
 
   return (
     <div className={`relative ${className}`}>
       <div ref={containerRef} className="absolute inset-0 rounded-xl overflow-hidden bg-muted" />
-      {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted/90 text-sm text-muted-foreground rounded-xl p-4 text-center">
-          Map unavailable: {error}
-        </div>
-      )}
     </div>
   );
 }
 
-// Custom DOM marker — a coloured pin with an inner letter.
-function makePinElement(color: string, letter: string): HTMLDivElement {
-  const el = document.createElement("div");
-  el.style.cssText = `
-    width: 32px; height: 32px; border-radius: 50% 50% 50% 0;
-    background: ${color}; transform: rotate(-45deg);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25); border: 2px solid #fff;
-  `;
-  const inner = document.createElement("span");
-  inner.textContent = letter;
-  inner.style.cssText = `
-    transform: rotate(45deg); color: #fff; font-weight: 800;
-    font-size: 13px; font-family: system-ui, sans-serif;
-  `;
-  el.appendChild(inner);
-  return el;
+function pinIcon(color: string, letter: string): L.DivIcon {
+  return L.divIcon({
+    className: "",
+    html: `
+      <div style="
+        width:32px;height:32px;border-radius:50% 50% 50% 0;
+        background:${color};transform:rotate(-45deg);
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 4px 10px rgba(0,0,0,0.25);border:2px solid #fff;">
+        <span style="transform:rotate(45deg);color:#fff;font-weight:800;font-size:13px;font-family:system-ui,sans-serif;">
+          ${letter}
+        </span>
+      </div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+  });
 }
 
-// Animated pulsing amber circle for the driver.
-function makeDriverElement(): HTMLDivElement {
-  const wrap = document.createElement("div");
-  wrap.style.cssText = `
-    position: relative; width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-  `;
-  const pulse = document.createElement("div");
-  pulse.style.cssText = `
-    position: absolute; inset: -8px;
-    border-radius: 50%; background: rgba(245,158,11,0.35);
-    animation: livemap-pulse 1.6s ease-out infinite;
-  `;
-  const dot = document.createElement("div");
-  dot.style.cssText = `
-    position: relative; width: 22px; height: 22px; border-radius: 50%;
-    background: #f59e0b; border: 3px solid #fff;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  `;
-  wrap.appendChild(pulse);
-  wrap.appendChild(dot);
-
-  // Inject keyframes once.
-  if (!document.getElementById("livemap-pulse-style")) {
+function driverIcon(): L.DivIcon {
+  if (typeof document !== "undefined" && !document.getElementById("livemap-pulse-style")) {
     const style = document.createElement("style");
     style.id = "livemap-pulse-style";
     style.textContent = `@keyframes livemap-pulse {
@@ -264,6 +219,14 @@ function makeDriverElement(): HTMLDivElement {
     }`;
     document.head.appendChild(style);
   }
-
-  return wrap;
+  return L.divIcon({
+    className: "",
+    html: `
+      <div style="position:relative;width:28px;height:28px;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;inset:-8px;border-radius:50%;background:rgba(245,158,11,0.35);animation:livemap-pulse 1.6s ease-out infinite;"></div>
+        <div style="position:relative;width:22px;height:22px;border-radius:50%;background:#f59e0b;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,0.25);"></div>
+      </div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+  });
 }
