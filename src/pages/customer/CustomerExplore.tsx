@@ -15,19 +15,19 @@ import storeProvisions from "@/assets/stores/provisions.jpg";
 
 const u = (id: string) => `https://images.unsplash.com/${id}?w=400&q=75&auto=format&fit=crop`;
 
+// IMPORTANT: ids here MUST match `public.sellers.id` in Lovable Cloud DB.
+// Mismatched ids cause the "Electronics card opens Fashion shop" bug.
 const sellers = [
-  { id: "s1", name: "Ravi General Store", distance: "0.8 km", rating: 4.6, tags: ["Fast delivery", "Trusted"], items: 48, deliveryTime: "22 min", banner: storeGeneral },
-  { id: "s2", name: "Priya Fresh Mart", distance: "1.2 km", rating: 4.8, tags: ["Organic", "Top rated"], items: 35, deliveryTime: "18 min", banner: storeFreshMart },
-  { id: "s3", name: "Kumar Groceries", distance: "0.5 km", rating: 4.3, tags: ["Nearest"], items: 62, deliveryTime: "25 min", banner: storeGroceries },
-  { id: "s4", name: "Lakshmi Dairy", distance: "1.5 km", rating: 4.7, tags: ["Fresh daily"], items: 22, deliveryTime: "15 min", banner: storeDairy },
-  { id: "s5", name: "Ahmed Provisions", distance: "2.1 km", rating: 4.4, tags: ["Bulk orders"], items: 55, deliveryTime: "28 min", banner: storeProvisions },
-  // New stores backing the new categories
-  { id: "s6", name: "Sweet Crumb Bakers", distance: "1.7 km", rating: 4.9, tags: ["Bakery", "Fresh today"], items: 18, deliveryTime: "20 min", banner: u("photo-1509440159596-0249088772ff") },
-  { id: "s7", name: "MediCare Plus", distance: "0.9 km", rating: 4.7, tags: ["Pharmacy", "24×7"], items: 240, deliveryTime: "18 min", banner: u("photo-1576602976047-174e57a47881") },
-  { id: "s8", name: "Threadline Studio", distance: "2.4 km", rating: 4.6, tags: ["Fashion"], items: 96, deliveryTime: "35 min", banner: u("photo-1483985988355-763728e1935b") },
-  { id: "s9", name: "TechHub Express", distance: "1.4 km", rating: 4.5, tags: ["Electronics"], items: 72, deliveryTime: "25 min", banner: u("photo-1498049794561-7780e7231661") },
-  { id: "s10", name: "HomeStyle Bazaar", distance: "1.8 km", rating: 4.6, tags: ["Home", "Cozy"], items: 120, deliveryTime: "28 min", banner: u("photo-1556909114-f6e7ad7d3136") },
-  { id: "s11", name: "GlowKart", distance: "1.1 km", rating: 4.7, tags: ["Personal Care"], items: 80, deliveryTime: "22 min", banner: u("photo-1556228453-efd6c1ff04f6") },
+  { id: "s1", name: "Ravi General Store", distance: "0.8 km", rating: 4.6, tags: ["Groceries", "Fast delivery"], items: 10, deliveryTime: "22 min", banner: storeGeneral, category: "Groceries" as const },
+  { id: "s2", name: "Priya Fresh Mart", distance: "1.2 km", rating: 4.8, tags: ["Organic", "Top rated"], items: 10, deliveryTime: "18 min", banner: storeFreshMart, category: "Groceries" as const },
+  { id: "s3", name: "Kumar Groceries", distance: "0.5 km", rating: 4.3, tags: ["Nearest"], items: 9, deliveryTime: "25 min", banner: storeGroceries, category: "Groceries" as const },
+  { id: "s4", name: "Lakshmi Dairy", distance: "1.5 km", rating: 4.7, tags: ["Fresh daily"], items: 8, deliveryTime: "15 min", banner: storeDairy, category: "Dairy" as const },
+  { id: "s5", name: "Ahmed Provisions", distance: "2.1 km", rating: 4.4, tags: ["Bulk orders"], items: 8, deliveryTime: "28 min", banner: storeProvisions, category: "Provisions" as const },
+  { id: "s6", name: "Sweet Crust Bakery", distance: "1.7 km", rating: 4.9, tags: ["Bakery", "Fresh today"], items: 9, deliveryTime: "20 min", banner: u("photo-1509440159596-0249088772ff"), category: "Bakery" as const },
+  { id: "s7", name: "Wellness Pharmacy", distance: "0.9 km", rating: 4.7, tags: ["Pharmacy", "24×7"], items: 8, deliveryTime: "18 min", banner: u("photo-1576602976047-174e57a47881"), category: "Pharmacy" as const },
+  { id: "s8", name: "TechHub Electronics", distance: "1.4 km", rating: 4.5, tags: ["Electronics"], items: 8, deliveryTime: "25 min", banner: u("photo-1498049794561-7780e7231661"), category: "Electronics" as const },
+  { id: "s9", name: "Threads & Trends", distance: "2.4 km", rating: 4.6, tags: ["Fashion"], items: 8, deliveryTime: "35 min", banner: u("photo-1483985988355-763728e1935b"), category: "Fashion" as const },
+  { id: "s10", name: "Home Essentials Co.", distance: "1.8 km", rating: 4.6, tags: ["Home", "Cozy"], items: 10, deliveryTime: "28 min", banner: u("photo-1556909114-f6e7ad7d3136"), category: "Home" as const },
 ];
 
 const products = PRODUCTS.slice(0, 12);
