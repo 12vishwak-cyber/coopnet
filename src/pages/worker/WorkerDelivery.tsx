@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { useOrders } from "@/contexts/OrdersContext";
+import LiveMap from "@/components/LiveMap";
 
 // Synthetic fallback when no live order exists.
 const fallbackDelivery = {
@@ -383,62 +384,22 @@ export default function WorkerDelivery() {
 
 /* ============ Sub-components ============ */
 
+// Real map shared with the customer side. `large` switches into navigation mode
+// (zoomed-in, follows the driver, thicker route lines).
 function DeliveryMap({ progress, large }: { progress: number; large?: boolean }) {
-  // Simple two-segment Bezier route. Driver pin slides along it.
-  const t = Math.max(0, Math.min(1, progress));
-  const path = "M40,210 Q120,80 220,140 Q320,200 380,40";
-  // Sample point along path approximation:
-  const pt =
-    t <= 0.5
-      ? {
-          x: (1 - t * 2) ** 2 * 40 + 2 * (1 - t * 2) * (t * 2) * 120 + (t * 2) ** 2 * 220,
-          y: (1 - t * 2) ** 2 * 210 + 2 * (1 - t * 2) * (t * 2) * 80 + (t * 2) ** 2 * 140,
-        }
-      : (() => {
-          const u = (t - 0.5) * 2;
-          return {
-            x: (1 - u) ** 2 * 220 + 2 * (1 - u) * u * 320 + u ** 2 * 380,
-            y: (1 - u) ** 2 * 140 + 2 * (1 - u) * u * 200 + u ** 2 * 40,
-          };
-        })();
-
+  // Demo coords near MG Road, Bangalore. When the driver app is wired to a
+  // live order this should pull seller.{lat,lng} and order.customer_{lat,lng}.
+  const seller = { lat: 12.9756, lng: 77.605, label: "Pickup" };
+  const customer = { lat: 12.9688, lng: 77.6042, label: "Drop" };
   return (
-    <div className={`relative w-full bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 ${large ? "h-full" : "aspect-[16/9]"}`}>
-      <svg viewBox="0 0 420 240" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
-        {/* grid */}
-        {[60, 120, 180].map((y) => (
-          <line key={`h${y}`} x1="0" y1={y} x2="420" y2={y} stroke="hsl(var(--border))" strokeWidth="0.5" />
-        ))}
-        {[100, 200, 300].map((x) => (
-          <line key={`v${x}`} x1={x} y1="0" x2={x} y2="240" stroke="hsl(var(--border))" strokeWidth="0.5" />
-        ))}
-        {/* full route */}
-        <path d={path} fill="none" stroke="hsl(var(--muted-foreground))" strokeOpacity="0.35" strokeWidth="3" strokeLinecap="round" />
-        {/* completed */}
-        <path
-          d={path}
-          fill="none"
-          stroke="hsl(var(--primary))"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-          pathLength={1}
-          style={{ strokeDasharray: `${t} 1`, transition: "stroke-dasharray 0.5s linear" }}
-        />
-        {/* pickup pin */}
-        <circle cx="40" cy="210" r="10" fill="hsl(var(--primary) / 0.2)" />
-        <circle cx="40" cy="210" r="5" fill="hsl(var(--primary))" />
-        {/* drop pin */}
-        <circle cx="380" cy="40" r="10" fill="hsl(var(--destructive) / 0.2)" />
-        <circle cx="380" cy="40" r="5" fill="hsl(var(--destructive))" />
-        {/* driver pin */}
-        <g transform={`translate(${pt.x}, ${pt.y})`} style={{ transition: "transform 0.5s linear" }}>
-          <circle r="14" fill="hsl(var(--warning) / 0.25)">
-            <animate attributeName="r" values="12;18;12" dur="1.6s" repeatCount="indefinite" />
-          </circle>
-          <circle r="7" fill="hsl(var(--warning))" stroke="hsl(var(--background))" strokeWidth="2" />
-        </g>
-      </svg>
-    </div>
+    <LiveMap
+      seller={seller}
+      customer={customer}
+      routeProgress={progress}
+      mode={large ? "driver" : "preview"}
+      interactive={!large}
+      className={large ? "h-full w-full" : "aspect-[16/9] w-full"}
+    />
   );
 }
 
