@@ -105,6 +105,10 @@
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+  /* Invisible scrollbars for full panes (seller/driver dashboards) */
+  .no-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
   /* Skeleton shimmer that adapts to theme */
   .skeleton-shimmer {
     background: linear-gradient(
