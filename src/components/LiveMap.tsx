@@ -50,15 +50,17 @@ export default function LiveMap({
   // Mount the map once.
   useEffect(() => {
     if (!containerRef.current) return;
+    const navMode = mode === "driver";
     const map = L.map(containerRef.current, {
       center: [(seller.lat + customer.lat) / 2, (seller.lng + customer.lng) / 2],
-      zoom: mode === "driver" ? 16 : 14,
-      zoomControl: interactive && mode !== "driver",
+      zoom: navMode ? 17 : 14,
+      zoomControl: interactive && !navMode,
       attributionControl: false,
-      dragging: interactive,
-      scrollWheelZoom: interactive,
-      doubleClickZoom: interactive,
-      touchZoom: interactive,
+      dragging: interactive && !navMode,
+      scrollWheelZoom: interactive && !navMode,
+      doubleClickZoom: interactive && !navMode,
+      touchZoom: interactive && !navMode,
+      keyboard: interactive && !navMode,
     });
     mapRef.current = map;
 
@@ -178,8 +180,8 @@ export default function LiveMap({
       driverMarkerRef.current.setLatLng(driverPos);
     }
     if (mode === "driver") {
-      // Keep the driver centered in nav mode.
-      map.setView(driverPos, 16, { animate: true });
+      // Keep the driver centered + zoomed-in for navigation.
+      map.setView(driverPos, 17, { animate: true });
     }
   }, [driverPos, ready, mode]);
 
