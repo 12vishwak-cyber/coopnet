@@ -12,11 +12,94 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, ArrowRight, CheckCircle2, ImagePlus, Loader2, X } from "lucide-react";
-import { CATEGORIES, type Category } from "@/data/products";
+import { ArrowLeft, ArrowRight, CheckCircle2, ImagePlus, Loader2, Sparkles, X } from "lucide-react";
+import { CATEGORIES, PRODUCTS, type Category } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import SafeImage from "@/components/SafeImage";
+
+/**
+ * Suggest a fair selling price using the median of comparable products in the
+ * same category. Falls back to category-defaults when the local catalog is
+ * empty. The hint is non-blocking — sellers can override.
+ */
+const CATEGORY_DEFAULTS: Record<Category, number> = {
+  Vegetables: 35,
+  Fruits: 90,
+  Dairy: 65,
+  Snacks: 60,
+  Essentials: 95,
+  Bakery: 120,
+  Beverages: 70,
+  Specials: 150,
+  Fashion: 599,
+  Pharmacy: 180,
+  Electronics: 899,
+  Home: 350,
+  "Personal Care": 249,
+};
+
+function suggestPrice(category: Category): { value: number; sample: number } {
+  const peers = PRODUCTS.filter((p) => p.category === category).map((p) => p.price);
+  if (!peers.length) return { value: CATEGORY_DEFAULTS[category], sample: 0 };
+  const sorted = [...peers].sort((a, b) => a - b);
+  const median = sorted[Math.floor(sorted.length / 2)];
+  return { value: Math.round(median), sample: peers.length };
+}
+
+function PriceSuggestion({
+  category,
+  currentPrice,
+  onApply,
+}: {
+  category: Category;
+  currentPrice: number;
+  onApply: (price: number) => void;
+}) {
+  const { value, sample } = suggestPrice(category);
+  const diff = currentPrice > 0 ? Math.round(((currentPrice - value) / value) * 100) : 0;
+  const tone =
+    currentPrice === 0 || Math.abs(diff) <= 15
+      ? "fair"
+      : diff > 15
+      ? "high"
+      : "low";
+
+  const message =
+    tone === "fair"
+      ? sample > 0
+        ? `Based on ${sample} comparable ${category.toLowerCase()} items in the network.`
+        : `Typical range for ${category.toLowerCase()}.`
+      : tone === "high"
+      ? `${diff}% above market — customers may pick a cheaper seller.`
+      : `${Math.abs(diff)}% below market — you may be leaving money on the table.`;
+
+  return (
+    <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5 flex items-start gap-3">
+      <div className="h-8 w-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+        <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[12px] font-bold text-blue-800 dark:text-blue-200">
+          Suggested price · ₹{value}{" "}
+          <span className="font-medium text-blue-700/80 dark:text-blue-300/80">
+            (based on market)
+          </span>
+        </p>
+        <p className="text-[11px] text-blue-700/80 dark:text-blue-300/80 mt-0.5 leading-snug">
+          {message}
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={() => onApply(value)}
+        className="text-[11px] font-bold text-blue-700 dark:text-blue-200 bg-card border border-blue-500/40 rounded-md px-2.5 py-1 hover:bg-blue-500/20 transition-colors shrink-0"
+      >
+        Use ₹{value}
+      </button>
+    </div>
+  );
+}
 
 const ACTING_SELLER_ID = "s1";
 const STEPS = ["Images", "Details", "Pricing", "Review"] as const;
@@ -288,6 +371,13 @@ export default function SellerAddProduct() {
                 />
               </div>
             </div>
+
+            <PriceSuggestion
+              category={category}
+              currentPrice={Number(price) || 0}
+              onApply={(p) => setPrice(String(p))}
+            />
+
             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3">
               <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Fair distribution</p>
               <p className="text-[10px] text-emerald-700/80 dark:text-emerald-300/80 mt-0.5 leading-relaxed">

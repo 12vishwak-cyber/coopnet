@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <ThemeToggle />
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-6">
+          <main className="flex-1 overflow-auto no-scrollbar p-6">
             {children}
           </main>
           <footer className="h-8 flex items-center justify-center border-t bg-card px-4">

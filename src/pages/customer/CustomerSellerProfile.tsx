@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSeller, useSellerProducts } from "@/lib/coopnet-api";
 import { useCart } from "@/contexts/CartContext";
 import SafeImage from "@/components/SafeImage";
+import SellerChat from "@/components/SellerChat";
 
 /**
  * Seller profile — fully DB-backed.
@@ -89,7 +90,11 @@ export default function CustomerSellerProfile() {
             <div className="flex items-center gap-1 bg-amber-100 dark:bg-amber-500/20 px-2.5 py-1 rounded-full shrink-0">
               <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
               <span className="text-sm font-bold text-amber-900 dark:text-amber-200">{seller.rating}</span>
-            </div>
+          </div>
+
+          <div className="mt-3">
+            <SellerChat sellerId={seller.id} sellerName={seller.name} />
+          </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2 mt-4">
