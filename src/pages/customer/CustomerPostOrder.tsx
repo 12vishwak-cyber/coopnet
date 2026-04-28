@@ -1,9 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Heart, Star, Users, PiggyBank, Truck, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Heart, Star, Users, PiggyBank, Truck, ArrowRight, CheckCircle2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useMemo, useState } from "react";
 import { useOrders } from "@/contexts/OrdersContext";
 import MoneyBreakdown from "@/components/MoneyBreakdown";
+import SafeImage from "@/components/SafeImage";
+import { toast } from "sonner";
 
 export default function CustomerPostOrder() {
   const navigate = useNavigate();
@@ -12,6 +15,9 @@ export default function CustomerPostOrder() {
   const order = id ? getOrder(id) : undefined;
   const [sellerRating, setSellerRating] = useState(4);
   const [workerRating, setWorkerRating] = useState(5);
+  const [feedback, setFeedback] = useState("");
+  const [itemRatings, setItemRatings] = useState<Record<string, number>>({});
+  const [submitted, setSubmitted] = useState(false);
   const [confetti, setConfetti] = useState(true);
 
   useEffect(() => {
@@ -28,6 +34,17 @@ export default function CustomerPostOrder() {
   const community = Math.round((orderSubtotal - orderDiscount) * 0.06);
   const sellerPaid = orderSubtotal - orderDiscount - community;
   const workerPaid = order?.worker?.earnings ?? Math.round(orderTotal * 0.12);
+
+  const items = useMemo(() => order?.items ?? [], [order]);
+  const ratedCount = Object.values(itemRatings).filter((v) => v > 0).length;
+
+  const setItemRating = (itemId: string, n: number) =>
+    setItemRatings((prev) => ({ ...prev, [itemId]: n }));
+
+  const submitRatings = () => {
+    setSubmitted(true);
+    toast.success("Thanks for the feedback — it shapes the network.");
+  };
 
   return (
     <div className="min-h-screen bg-surface text-foreground relative overflow-hidden">
