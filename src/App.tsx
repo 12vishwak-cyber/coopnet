@@ -68,7 +68,7 @@ const App = () => (
         <MembershipProvider>
         <FlyToCartProvider>
         <Routes>
-          <Route path="/" element={<Navigate to="/seller" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/seller" element={<DashboardLayout><SellerDashboard /></DashboardLayout>} />
