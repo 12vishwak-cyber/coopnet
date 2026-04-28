@@ -19,7 +19,6 @@ export default function CustomerPostOrder() {
     return () => clearTimeout(t);
   }, []);
 
-  // Derived impact figures from the real order (or sensible fallbacks)
   const orderId = order?.id ?? "ORD-1847";
   const sellerName = order?.seller ?? "Kumar Groceries";
   const workerName = order?.worker?.name ?? "Arun K.";
@@ -31,8 +30,7 @@ export default function CustomerPostOrder() {
   const workerPaid = order?.worker?.earnings ?? Math.round(orderTotal * 0.12);
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] relative overflow-hidden">
-      {/* Confetti */}
+    <div className="min-h-screen bg-surface text-foreground relative overflow-hidden">
       {confetti && (
         <div className="pointer-events-none absolute inset-0 z-20">
           {Array.from({ length: 24 }).map((_, i) => {
@@ -52,41 +50,48 @@ export default function CustomerPostOrder() {
         </div>
       )}
 
-      <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100 relative z-10">
-        <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-gray-50 flex items-center justify-center">
-          <ArrowLeft className="h-4 w-4 text-gray-600" />
+      <div className="bg-card px-4 py-3 flex items-center gap-3 border-b border-border relative z-10">
+        <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+          <ArrowLeft className="h-4 w-4 text-muted-foreground" />
         </button>
-        <span className="text-[15px] font-bold text-gray-900">Order Complete</span>
+        <span className="text-[15px] font-bold text-foreground">Order Complete</span>
       </div>
 
       <div className="p-4 space-y-3 relative z-10">
         {/* Success */}
-        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100">
-          <div className="h-16 w-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3 animate-scale-in">
+        <div className="bg-card rounded-2xl p-6 text-center shadow-sm border border-border">
+          <div className="h-16 w-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-3 animate-scale-in">
             <CheckCircle2 className="h-8 w-8 text-emerald-500" />
           </div>
-          <h1 className="text-lg font-bold text-gray-900">Order Delivered!</h1>
-          <p className="text-xs text-gray-400 mt-1">{orderId} · Here's your impact</p>
+          <h1 className="text-lg font-bold text-foreground">Order Delivered!</h1>
+          <p className="text-xs text-muted-foreground mt-1">{orderId} · Here's your impact</p>
         </div>
 
         {/* Impact Cards */}
         {[
-          { icon: PiggyBank, color: "bg-emerald-50", iconColor: "text-emerald-500", title: `₹${community} contributed to community fund`, desc: "Supports routing, infrastructure, and shared intelligence" },
-          { icon: Users, color: "bg-blue-50", iconColor: "text-blue-500", title: "Supported a local seller", desc: `${sellerName} received ₹${sellerPaid} directly — no commission` },
-          { icon: Truck, color: "bg-amber-50", iconColor: "text-amber-500", title: "Fair driver earnings", desc: `${workerName} earned ₹${workerPaid} — based on cooperative rules` },
-        ].map(({ icon: Icon, color, iconColor, title, desc }) => (
-          <div key={title} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
-            <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center shrink-0`}>
-              <Icon className={`h-5 w-5 ${iconColor}`} />
+          { icon: PiggyBank, tone: "emerald", title: `₹${community} contributed to community fund`, desc: "Supports routing, infrastructure, and shared intelligence" },
+          { icon: Users, tone: "blue", title: "Supported a local seller", desc: `${sellerName} received ₹${sellerPaid} directly — no commission` },
+          { icon: Truck, tone: "amber", title: "Fair driver earnings", desc: `${workerName} earned ₹${workerPaid} — based on cooperative rules` },
+        ].map(({ icon: Icon, tone, title, desc }) => {
+          const toneMap: Record<string, string> = {
+            emerald: "bg-emerald-500/15 text-emerald-500",
+            blue: "bg-blue-500/15 text-blue-500",
+            amber: "bg-amber-500/15 text-amber-500",
+          };
+          return (
+            <div key={title} className="bg-card rounded-2xl p-4 shadow-sm border border-border flex items-center gap-3">
+              <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${toneMap[tone]}`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">{title}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{desc}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-bold text-gray-900">{title}</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">{desc}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
-        {/* Detailed money breakdown with infographics */}
+        {/* Detailed money breakdown */}
         <MoneyBreakdown
           input={{
             subtotal: orderSubtotal,
@@ -100,18 +105,18 @@ export default function CustomerPostOrder() {
         />
 
         {/* Ratings */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Rate Your Experience</h3>
+        <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
+          <h3 className="text-sm font-bold text-foreground mb-4">Rate Your Experience</h3>
           {[
             { label: `Seller · ${sellerName}`, rating: sellerRating, setRating: setSellerRating },
             { label: `Driver · ${workerName}`, rating: workerRating, setRating: setWorkerRating },
           ].map(({ label, rating, setRating }) => (
             <div key={label} className="flex items-center justify-between mb-3 last:mb-0">
-              <span className="text-sm font-medium text-gray-700">{label}</span>
+              <span className="text-sm font-medium text-foreground">{label}</span>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map(n => (
                   <button key={n} onClick={() => setRating(n)}>
-                    <Star className={`h-6 w-6 transition-colors ${n <= rating ? "text-amber-400 fill-amber-400" : "text-gray-200"}`} />
+                    <Star className={`h-6 w-6 transition-colors ${n <= rating ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"}`} />
                   </button>
                 ))}
               </div>
@@ -122,7 +127,7 @@ export default function CustomerPostOrder() {
         {/* Membership CTA */}
         <button
           onClick={() => navigate("/customer/membership")}
-          className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 shadow-lg shadow-emerald-200 active:scale-[0.99] transition-transform text-left"
+          className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-4 shadow-lg shadow-emerald-500/20 active:scale-[0.99] transition-transform text-left"
         >
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
@@ -137,7 +142,7 @@ export default function CustomerPostOrder() {
         </button>
 
         <Button
-          className="w-full h-12 rounded-2xl font-bold bg-gray-900 hover:bg-gray-800"
+          className="w-full h-12 rounded-2xl font-bold"
           onClick={() => navigate("/customer")}
         >
           Continue Shopping

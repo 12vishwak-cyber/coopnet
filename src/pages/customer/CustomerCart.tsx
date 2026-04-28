@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useCart, PROMO_CODES } from "@/contexts/CartContext";
 import MoneyBreakdown from "@/components/MoneyBreakdown";
+import SafeImage from "@/components/SafeImage";
 import { freeDeliveryProgress } from "@/lib/pricing";
 import { placeOrder as placeOrderCloud, assignDriver, advanceOrder } from "@/lib/coopnet-api";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,7 +102,7 @@ export default function CustomerCart() {
           {items.map((item, i) => (
             <div key={item.id} className={`flex items-center gap-3 p-4 ${i < items.length - 1 ? "border-b border-border" : ""}`}>
               <div className="h-14 w-14 rounded-xl overflow-hidden shrink-0 bg-muted">
-                <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
+                <SafeImage src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-foreground truncate">{item.name}</p>
