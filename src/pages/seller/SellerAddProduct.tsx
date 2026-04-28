@@ -288,6 +288,13 @@ export default function SellerAddProduct() {
                 />
               </div>
             </div>
+
+            <PriceSuggestion
+              category={category}
+              currentPrice={Number(price) || 0}
+              onApply={(p) => setPrice(String(p))}
+            />
+
             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3">
               <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Fair distribution</p>
               <p className="text-[10px] text-emerald-700/80 dark:text-emerald-300/80 mt-0.5 leading-relaxed">
