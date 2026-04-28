@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSeller, useSellerProducts } from "@/lib/coopnet-api";
 import { useCart } from "@/contexts/CartContext";
+import SafeImage from "@/components/SafeImage";
 
 /**
  * Seller profile — fully DB-backed.
@@ -49,8 +50,9 @@ export default function CustomerSellerProfile() {
       {/* Banner */}
       <div className="relative">
         <div className="h-44 overflow-hidden">
-          <img
-            src={seller.banner_image || ""}
+          <SafeImage
+            src={seller.banner_image}
+            category={seller.category}
             alt={seller.name}
             className="h-full w-full object-cover"
             width={768}
@@ -140,8 +142,9 @@ export default function CustomerSellerProfile() {
                     className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border flex flex-col"
                   >
                     <div className="h-28 overflow-hidden bg-muted relative">
-                      <img
+                      <SafeImage
                         src={p.image}
+                        category={p.category}
                         alt={p.name}
                         className="h-full w-full object-cover"
                         loading="lazy"

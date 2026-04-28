@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Star, MapPin, Clock, Search, SlidersHorizontal, X, PackageSearch } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import QtyButton from "@/components/QtyButton";
+import SafeImage from "@/components/SafeImage";
 import { ProductGridSkeleton } from "@/components/CustomerSkeletons";
 
 import { PRODUCTS, discountPct, CATEGORIES, Category } from "@/data/products";
@@ -280,7 +281,7 @@ export default function CustomerExplore() {
                         {p.tag}
                       </span>
                     )}
-                    <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
+                    <SafeImage src={p.image} category={p.category} alt={p.name} className="h-full w-full object-cover" loading="lazy" width={256} height={160} />
                   </div>
                   <div className="p-3">
                     <p className="text-[13px] font-bold text-foreground leading-snug">{p.name}</p>
@@ -326,7 +327,7 @@ export default function CustomerExplore() {
               className="w-full text-left bg-card rounded-2xl overflow-hidden shadow-sm border border-border active:scale-[0.98] transition-transform"
             >
               <div className="h-28 overflow-hidden bg-muted">
-                <img src={s.banner} alt={s.name} className="h-full w-full object-cover" loading="lazy" width={400} height={112} />
+                <SafeImage src={s.banner} category={s.category} alt={s.name} className="h-full w-full object-cover" loading="lazy" width={400} height={112} />
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between mb-2">
