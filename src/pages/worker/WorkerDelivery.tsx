@@ -129,102 +129,41 @@ export default function WorkerDelivery() {
           <div className="relative h-full w-full">
             <DeliveryMap progress={driverProgress} large />
 
-            {/* Top floating bar: exit + ETA */}
-            <div className="absolute top-3 left-3 right-3 flex items-center gap-2 z-10">
-              <button
-                onClick={() => setDriveMode(false)}
-                className="h-11 w-11 rounded-full bg-background/95 backdrop-blur shadow-md border flex items-center justify-center"
-                aria-label="Exit drive mode"
-              >
-                <Shrink className="h-5 w-5" />
-              </button>
-              <div className="flex-1 bg-background/95 backdrop-blur rounded-full shadow-md border px-4 py-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ArrowUp className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-bold tabular-nums">{eta} min</span>
-                </div>
-                <span className="text-[11px] text-muted-foreground truncate max-w-[140px]">
-                  → {live?.items[0]?.seller ? "Doorstep" : fallbackDelivery.delivery.address}
-                </span>
-              </div>
+            {/* Minimal exit button — top-left */}
+            <button
+              onClick={() => setDriveMode(false)}
+              className="absolute top-4 left-4 z-10 h-11 w-11 rounded-full bg-background/95 backdrop-blur shadow-md border flex items-center justify-center"
+              aria-label="Exit drive mode"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* ETA pill — top-right */}
+            <div className="absolute top-4 right-4 z-10 bg-background/95 backdrop-blur rounded-full shadow-md border px-3.5 py-2 flex items-center gap-2">
+              <ArrowUp className="h-4 w-4 text-primary" />
+              <span className="text-sm font-bold tabular-nums">{eta} min</span>
             </div>
 
-            {/* Turn-by-turn card */}
-            <div className="absolute top-20 left-3 right-3 z-10">
-              <div className="bg-primary text-primary-foreground rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-primary-foreground/15 flex items-center justify-center shrink-0">
-                  {arrivedAt ? <MapPin className="h-6 w-6" /> : <CornerUpRight className="h-6 w-6" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] uppercase tracking-wider opacity-80 font-semibold">
-                    {arrivedAt ? "You have arrived" : "In 200 m"}
-                  </p>
-                  <p className="text-base font-extrabold leading-tight truncate">
-                    {arrivedAt ? "Hand over the order" : "Turn right onto Sector 12 Rd"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Wait timer banner — appears once arrived */}
-            {arrivedAt && (
-              <div className="absolute top-40 left-3 right-3 z-10">
-                <WaitTimerCard
-                  graceRemaining={graceRemaining}
-                  waitElapsed={waitElapsed}
-                  penalty={accruedPenalty}
-                  compact
-                />
-              </div>
-            )}
-
-            {/* Bottom floating compact panel */}
-            <div className="absolute bottom-0 inset-x-0 z-10 p-3">
-              <div className="bg-card border rounded-2xl shadow-xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">Order</p>
-                    <p className="text-sm font-extrabold">{id}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[11px] text-muted-foreground">Earnings</p>
-                    <button
-                      onClick={() => setShowEarnings(true)}
-                      className="text-sm font-extrabold text-success inline-flex items-center gap-1"
-                    >
-                      ₹{totalEarnings + accruedPenalty}
-                      <Info className="h-3 w-3 opacity-60" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  {!arrivedAt ? (
-                    <Button className="flex-1 h-11" onClick={handleArrive}>
-                      <MapPin className="h-4 w-4 mr-1.5" /> I've Arrived
-                    </Button>
-                  ) : (
-                    <Button className="flex-1 h-11" onClick={handleConfirm}>
-                      <Check className="h-4 w-4 mr-1.5" /> Confirm Handover
-                    </Button>
-                  )}
-                  <Button variant="outline" size="icon" className="h-11 w-11">
-                    <Phone className="h-4 w-4" />
+            {/* Bottom action bar — only essentials */}
+            <div className="absolute bottom-0 inset-x-0 z-10 p-3 pb-4">
+              <div className="bg-card border rounded-2xl shadow-xl px-3 py-3 flex items-center gap-2">
+                {!arrivedAt ? (
+                  <Button className="flex-1 h-12 text-sm font-bold" onClick={handleArrive}>
+                    <MapPin className="h-4 w-4 mr-1.5" /> I've Arrived
                   </Button>
-                </div>
+                ) : (
+                  <Button className="flex-1 h-12 text-sm font-bold" onClick={handleConfirm}>
+                    <Check className="h-4 w-4 mr-1.5" /> Complete
+                  </Button>
+                )}
+                <Button variant="outline" size="icon" className="h-12 w-12 shrink-0" aria-label="Call">
+                  <Phone className="h-5 w-5" />
+                </Button>
+                <Button variant="outline" size="icon" className="h-12 w-12 shrink-0" aria-label="Navigation">
+                  <Navigation className="h-5 w-5" />
+                </Button>
               </div>
             </div>
-
-            {showEarnings && (
-              <EarningsPopover
-                onClose={() => setShowEarnings(false)}
-                distanceKm={distanceKm}
-                baseFare={baseFare}
-                perKmRate={perKmRate}
-                penalty={accruedPenalty}
-                total={totalEarnings + accruedPenalty}
-              />
-            )}
           </div>
         ) : (
           <>
