@@ -121,7 +121,54 @@ export default function CustomerPostOrder() {
           showInfographics
         />
 
-        {/* Ratings */}
+        {/* Item-level rating */}
+        {items.length > 0 && (
+          <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-bold text-foreground">Rate your items</h3>
+              <span className="text-[10px] font-medium text-muted-foreground">
+                {ratedCount}/{items.length} rated
+              </span>
+            </div>
+            <div className="space-y-3">
+              {items.map((it) => {
+                const r = itemRatings[it.id] ?? 0;
+                return (
+                  <div key={it.id} className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-xl overflow-hidden bg-muted shrink-0">
+                      <SafeImage src={it.image} alt={it.name} className="h-full w-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-bold text-foreground truncate">{it.name}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {it.unit} · ×{it.qty}
+                      </p>
+                    </div>
+                    <div className="flex gap-0.5 shrink-0">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <button
+                          key={n}
+                          disabled={submitted}
+                          onClick={() => setItemRating(it.id, n)}
+                          className="p-0.5"
+                          aria-label={`Rate ${it.name} ${n} stars`}
+                        >
+                          <Star
+                            className={`h-4 w-4 transition-colors ${
+                              n <= r ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Seller + driver rating */}
         <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
           <h3 className="text-sm font-bold text-foreground mb-4">Rate Your Experience</h3>
           {[
@@ -132,13 +179,35 @@ export default function CustomerPostOrder() {
               <span className="text-sm font-medium text-foreground">{label}</span>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map(n => (
-                  <button key={n} onClick={() => setRating(n)}>
+                  <button key={n} disabled={submitted} onClick={() => setRating(n)}>
                     <Star className={`h-6 w-6 transition-colors ${n <= rating ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"}`} />
                   </button>
                 ))}
               </div>
             </div>
           ))}
+
+          <Textarea
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value.slice(0, 400))}
+            disabled={submitted}
+            placeholder="Anything you'd like to share? (optional)"
+            className="mt-3 min-h-[72px] text-sm"
+          />
+
+          <Button
+            disabled={submitted}
+            onClick={submitRatings}
+            className="w-full mt-3 h-11 rounded-xl font-bold bg-emerald-500 hover:bg-emerald-600 text-white"
+          >
+            {submitted ? (
+              <>
+                <Check className="h-4 w-4 mr-1.5" /> Feedback submitted
+              </>
+            ) : (
+              "Submit ratings"
+            )}
+          </Button>
         </div>
 
         {/* Membership CTA */}
