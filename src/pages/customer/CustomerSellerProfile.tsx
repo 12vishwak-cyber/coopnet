@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSeller, useSellerProducts } from "@/lib/coopnet-api";
 import { useCart } from "@/contexts/CartContext";
 import SafeImage from "@/components/SafeImage";
+import SellerChat from "@/components/SellerChat";
 
 /**
  * Seller profile — fully DB-backed.
