@@ -26,9 +26,24 @@ const stockSuggestions = [
 ];
 
 export default function SellerDashboard() {
+  const { t } = useLanguage();
   return (
     <div>
-      <PageHeader title="Dashboard" description="Store performance overview" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <PageHeader title="Dashboard" description="Store performance overview" />
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="gap-1.5">
+            <Link to="/seller/inventory/bulk">
+              <Upload className="h-4 w-4" /> {t("upload_list")}
+            </Link>
+          </Button>
+          <Button asChild className="gap-1.5 shadow-md">
+            <Link to="/seller/inventory/new">
+              <Plus className="h-4 w-4" /> {t("add_product")}
+            </Link>
+          </Button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {/* Network Status */}
