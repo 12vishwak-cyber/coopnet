@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Globe, ArrowRight, Store, Truck, ShoppingBag } from "lucide-react";
+import { Globe, ArrowRight, Store, Truck, ShoppingBag, Languages } from "lucide-react";
+import { useLanguage, LANGUAGES } from "@/contexts/LanguageContext";
 
 type Role = "customer" | "seller" | "worker";
 
