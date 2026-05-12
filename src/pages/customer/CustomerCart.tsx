@@ -361,7 +361,7 @@ export default function CustomerCart() {
               }
             }}
           >
-            {placing ? "Placing…" : `Place Order · ₹${totalPrice}`}
+            {placing ? "Placing…" : `${t("place_order")} · ₹${totalPrice} · ${payMethod === "upi" ? t("pay_upi") : t("pay_cod")}`}
           </Button>
         </div>
       </div>
