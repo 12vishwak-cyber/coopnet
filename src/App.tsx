@@ -81,6 +81,7 @@ const App = () => (
           <Route path="/seller/earnings" element={<DashboardLayout><SellerEarnings /></DashboardLayout>} />
           <Route path="/seller/support" element={<DashboardLayout><SellerSupport /></DashboardLayout>} />
           <Route path="/seller/inventory/new" element={<DashboardLayout><SellerAddProduct /></DashboardLayout>} />
+          <Route path="/seller/inventory/bulk" element={<DashboardLayout><SellerBulkUpload /></DashboardLayout>} />
           <Route path="/worker" element={<DashboardLayout><WorkerDashboard /></DashboardLayout>} />
           <Route path="/worker/support" element={<DashboardLayout><WorkerSupport /></DashboardLayout>} />
           <Route path="/worker/tasks" element={<DashboardLayout><WorkerTasks /></DashboardLayout>} />
