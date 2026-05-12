@@ -17,6 +17,7 @@ const ONBOARDED_KEY = "coopnet:onboarded:v1";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { lang, setLang, t } = useLanguage();
   const [role, setRole] = useState<Role>("customer");
 
   const handleContinue = () => {
