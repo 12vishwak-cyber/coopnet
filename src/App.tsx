@@ -123,6 +123,7 @@ const App = () => (
         </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
+    </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
