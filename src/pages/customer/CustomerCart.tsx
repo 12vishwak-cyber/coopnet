@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, Trash2, ShoppingBag, Tag, X, Sparkles, Clock } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShieldCheck, Heart, Leaf, Trash2, ShoppingBag, Tag, X, Sparkles, Clock, Wallet, Banknote, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
@@ -10,11 +10,16 @@ import { freeDeliveryProgress } from "@/lib/pricing";
 import { placeOrder as placeOrderCloud, assignDriver, advanceOrder } from "@/lib/coopnet-api";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+type PayMethod = "upi" | "cod";
 
 export default function CustomerCart() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [placing, setPlacing] = useState(false);
   const [promoInput, setPromoInput] = useState("");
+  const [payMethod, setPayMethod] = useState<PayMethod>("upi");
   const [countdown, setCountdown] = useState(180); // 3-min "fastest delivery" urgency
   const {
     items,
