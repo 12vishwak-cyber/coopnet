@@ -54,6 +54,29 @@ export default function Login() {
           <p className="text-sm text-muted-foreground">Cooperative commerce, owned by everyone.</p>
         </div>
 
+        {/* Language selector */}
+        <div className="bg-card border rounded-xl p-3 mb-3 animate-fade-up">
+          <div className="flex items-center gap-2 mb-2">
+            <Languages className="h-4 w-4 text-primary" />
+            <span className="text-xs font-semibold">{t("language")}</span>
+          </div>
+          <div className="grid grid-cols-5 gap-1.5">
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLang(l.code)}
+                className={`text-[11px] font-bold px-1 py-1.5 rounded-md border transition-colors ${
+                  lang === l.code
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {l.native}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="bg-card border rounded-xl p-6 animate-fade-up stagger-1 space-y-5">
           <div>
             <h2 className="text-base font-semibold mb-1">Sign in to continue</h2>
