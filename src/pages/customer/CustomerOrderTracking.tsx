@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import LiveMap from "@/components/LiveMap";
+import DisputeButton from "@/components/DisputeButton";
 import {
   useLiveOrder,
   STATUS_FLOW,
