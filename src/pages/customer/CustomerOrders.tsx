@@ -1,24 +1,70 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Truck, RotateCcw, Check, Package, ShoppingBag } from "lucide-react";
-import { useCart, CartItem } from "@/contexts/CartContext";
-import { useOrders, Order, ORDER_STAGES } from "@/contexts/OrdersContext";
+import { ChevronRight, Truck, Check, Package, ShoppingBag, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { STATUS_LABELS, type DbOrder } from "@/lib/coopnet-api";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+const ACTIVE = ["placed", "packed", "assigned", "out_for_delivery", "arrived"] as const;
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  if (sameDay) return `Today, ${time}`;
+  return d.toLocaleDateString([], { day: "numeric", month: "short" }) + `, ${time}`;
+}
 
 export default function CustomerOrders() {
   const navigate = useNavigate();
-  const { addItems } = useCart();
-  const { activeOrder, pastOrders, orders } = useOrders();
+  const { t } = useLanguage();
+  const [orders, setOrders] = useState<DbOrder[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleReorder = (order: Order) => {
-    const flat: Omit<CartItem, "quantity">[] = [];
-    order.items.forEach((it) => {
-      for (let i = 0; i < it.qty; i++) {
-        flat.push({ id: it.id, name: it.name, price: it.price, unit: it.unit, seller: it.seller, image: it.image });
-      }
-    });
-    addItems(flat);
-    navigate("/customer/cart");
-  };
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      const { data } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (cancelled) return;
+      setOrders((data as DbOrder[]) || []);
+      setLoading(false);
+    };
+    load();
+    const channel = supabase
+      .channel("customer-orders-feed")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, (payload) => {
+        setOrders((prev) => {
+          if (payload.eventType === "INSERT") return [payload.new as DbOrder, ...prev];
+          if (payload.eventType === "UPDATE")
+            return prev.map((o) => (o.id === (payload.new as DbOrder).id ? (payload.new as DbOrder) : o));
+          if (payload.eventType === "DELETE")
+            return prev.filter((o) => o.id !== (payload.old as DbOrder).id);
+          return prev;
+        });
+      })
+      .subscribe();
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const activeOrder = orders.find((o) => (ACTIVE as readonly string[]).includes(o.status));
+  const pastOrders = orders.filter((o) => o.status === "delivered");
+
+  if (loading) {
+    return (
+      <div className="p-4">
+        <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+      </div>
+    );
+  }
 
   if (orders.length === 0) {
     return (
@@ -31,7 +77,7 @@ export default function CustomerOrders() {
           <div className="h-16 w-16 rounded-3xl bg-primary/15 flex items-center justify-center mx-auto mb-3">
             <ShoppingBag className="h-7 w-7 text-primary" />
           </div>
-          <p className="text-sm font-extrabold text-foreground">No orders yet</p>
+          <p className="text-sm font-extrabold text-foreground">{t("no_orders")}</p>
           <p className="text-xs text-muted-foreground mt-1">Place your first order to see it here</p>
           <Button
             onClick={() => navigate("/customer")}
@@ -48,51 +94,27 @@ export default function CustomerOrders() {
     <div className="p-4 space-y-4">
       <div>
         <h1 className="text-lg font-bold text-foreground">Your Orders</h1>
-        <p className="text-xs text-muted-foreground font-medium">Track and reorder in seconds</p>
+        <p className="text-xs text-muted-foreground font-medium">Live updates from sellers and drivers</p>
       </div>
 
-      {/* Active order — hero card */}
       {activeOrder && (
         <button
           onClick={() => navigate(`/customer/order/track/${activeOrder.id}`)}
           className="w-full text-left bg-gradient-to-br from-emerald-500 via-emerald-500 to-teal-600 rounded-3xl p-5 shadow-xl shadow-emerald-500/30 active:scale-[0.99] transition-transform"
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-3">
             <div className="h-11 w-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <Truck className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">{activeOrder.status}</p>
-              <p className="text-2xl font-extrabold text-white leading-none">
-                {activeOrder.etaMin > 0 ? `${activeOrder.etaMin} mins` : "Arrived"}
+              <p className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">
+                {STATUS_LABELS[activeOrder.status]}
               </p>
+              <p className="text-2xl font-extrabold text-white leading-none">#{activeOrder.short_code}</p>
             </div>
             <ChevronRight className="h-5 w-5 text-white/70" />
           </div>
-
-          {(() => {
-            const stepIdx = ORDER_STAGES.indexOf(activeOrder.status);
-            return (
-              <>
-                <div className="flex items-center gap-1 mb-3">
-                  {[0, 1, 2, 3].map((s) => (
-                    <div
-                      key={s}
-                      className={`h-1.5 flex-1 rounded-full ${stepIdx > s ? "bg-white" : "bg-white/25"}`}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center justify-between text-[10px] font-bold text-white/90">
-                  <span className={stepIdx >= 1 ? "" : "opacity-50"}>✓ Packed</span>
-                  <span className={stepIdx >= 2 ? "" : "opacity-50"}>◉ Assigned</span>
-                  <span className={stepIdx >= 3 ? "" : "opacity-50"}>● Out</span>
-                  <span className={stepIdx >= 4 ? "" : "opacity-50"}>○ Delivered</span>
-                </div>
-              </>
-            );
-          })()}
-
-          <div className="mt-4 pt-3 border-t border-white/20 flex items-center gap-3">
+          <div className="mt-3 pt-3 border-t border-white/20 flex items-center gap-3">
             <div className="flex -space-x-2">
               {activeOrder.items.slice(0, 3).map((i) => (
                 <div key={i.id} className="h-9 w-9 rounded-xl ring-2 ring-emerald-500 overflow-hidden bg-white">
@@ -101,54 +123,66 @@ export default function CustomerOrders() {
               ))}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-bold text-white truncate">{activeOrder.seller}</p>
-              <p className="text-[10px] text-white/80">{activeOrder.id} · {activeOrder.items.length} items · ₹{activeOrder.total}</p>
+              <p className="text-[12px] font-bold text-white truncate">
+                {activeOrder.items.length} items · ₹{activeOrder.total}
+              </p>
+              <p className="text-[10px] text-white/80 flex items-center gap-1">
+                <Clock className="h-3 w-3" /> {formatDate(activeOrder.created_at)}
+              </p>
             </div>
           </div>
         </button>
       )}
 
-      {/* Past orders */}
-      {pastOrders.length > 0 && (
-        <div>
-          <h2 className="text-sm font-extrabold text-foreground mb-3 flex items-center gap-2">
-            <Package className="h-4 w-4 text-muted-foreground" /> Past Orders
-          </h2>
-          <div className="space-y-3">
-            {pastOrders.map((o) => (
-              <div key={o.id} className="bg-card rounded-2xl p-4 shadow-sm border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="flex -space-x-2 shrink-0">
-                    {o.items.slice(0, 3).map((i) => (
-                      <div key={i.id} className="h-11 w-11 rounded-xl ring-2 ring-card overflow-hidden bg-muted">
-                        <img src={i.image} alt={i.name} className="h-full w-full object-cover" loading="lazy" />
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => navigate(`/customer/order/impact/${o.id}`)}
-                    className="flex-1 min-w-0 text-left"
-                  >
-                    <p className="text-sm font-bold text-foreground truncate">{o.seller}</p>
-                    <p className="text-[11px] text-muted-foreground font-medium">
-                      {o.items.length} items · ₹{o.total}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
-                      <Check className="h-3 w-3 text-emerald-500" />
-                      {o.status} · {o.dateLabel}
-                    </p>
-                  </button>
-                  <button
-                    onClick={() => handleReorder(o)}
-                    className="shrink-0 h-9 px-3 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-extrabold flex items-center gap-1.5 active:scale-95 transition-transform border border-emerald-500/20"
-                  >
-                    <RotateCcw className="h-3.5 w-3.5" /> Reorder
-                  </button>
+      <div>
+        <h2 className="text-sm font-extrabold text-foreground mb-3 flex items-center gap-2">
+          <Package className="h-4 w-4 text-muted-foreground" /> All Orders
+        </h2>
+        <div className="space-y-3">
+          {orders.map((o) => (
+            <button
+              key={o.id}
+              onClick={() =>
+                navigate(
+                  o.status === "delivered"
+                    ? `/customer/order/impact/${o.id}`
+                    : `/customer/order/track/${o.id}`,
+                )
+              }
+              className="w-full text-left bg-card rounded-2xl p-4 shadow-sm border border-border"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2 shrink-0">
+                  {o.items.slice(0, 3).map((i) => (
+                    <div key={i.id} className="h-11 w-11 rounded-xl ring-2 ring-card overflow-hidden bg-muted">
+                      <img src={i.image} alt={i.name} className="h-full w-full object-cover" loading="lazy" />
+                    </div>
+                  ))}
                 </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground truncate">#{o.short_code}</p>
+                  <p className="text-[11px] text-muted-foreground font-medium">
+                    {o.items.length} items · ₹{o.total}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+                    {o.status === "delivered" ? (
+                      <Check className="h-3 w-3 text-emerald-500" />
+                    ) : (
+                      <Clock className="h-3 w-3 text-amber-500" />
+                    )}
+                    {STATUS_LABELS[o.status]} · {formatDate(o.created_at)}
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               </div>
-            ))}
-          </div>
+            </button>
+          ))}
         </div>
+      </div>
+      {pastOrders.length === 0 && !activeOrder && (
+        <p className="text-center text-xs text-muted-foreground pt-2">
+          Orders update in real time as sellers and drivers progress.
+        </p>
       )}
     </div>
   );
