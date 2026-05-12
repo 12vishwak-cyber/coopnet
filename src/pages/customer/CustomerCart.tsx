@@ -255,6 +255,52 @@ export default function CustomerCart() {
           ))}
         </div>
 
+        {/* Payment method */}
+        <div className="bg-card rounded-2xl p-4 shadow-sm border border-border space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold text-foreground">{t("payment_method")}</span>
+            <Lock className="h-3.5 w-3.5 text-emerald-500" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              { id: "upi", label: t("pay_upi"), icon: Wallet, sub: "PhonePe · GPay · Paytm" },
+              { id: "cod", label: t("pay_cod"), icon: Banknote, sub: "Pay when delivered" },
+            ] as const).map((opt) => {
+              const active = payMethod === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => setPayMethod(opt.id as PayMethod)}
+                  className={`text-left rounded-xl p-3 border-2 transition-colors ${
+                    active ? "border-emerald-500 bg-emerald-500/5" : "border-border bg-card"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <opt.icon className={`h-4 w-4 ${active ? "text-emerald-600" : "text-muted-foreground"}`} />
+                    <span className="text-sm font-bold text-foreground">{opt.label}</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">{opt.sub}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Trust banner */}
+        <div className="rounded-2xl p-4 bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-3">
+          <div className="h-9 w-9 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+            <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[13px] font-extrabold text-emerald-700 dark:text-emerald-300">
+              {t("safe_payment")} <span className="text-emerald-600">सुरक्षित</span>
+            </p>
+            <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80">
+              {t("money_released")}
+            </p>
+          </div>
+        </div>
+
         {/* CTA */}
         <div className="bg-card rounded-2xl p-4 shadow-sm border border-border">
           <Button
