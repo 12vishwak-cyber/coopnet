@@ -1,8 +1,11 @@
-import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Lightbulb, Globe, Activity, Zap, BarChart3, Users } from "lucide-react";
+import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Lightbulb, Globe, Activity, Zap, BarChart3, Users, Plus, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const recentOrders = [
   { id: "ORD-1847", customer: "Priya M.", items: 3, total: "₹1,240", status: "pending", time: "12 min ago" },
