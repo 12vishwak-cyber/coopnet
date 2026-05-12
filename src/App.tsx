@@ -37,6 +37,8 @@ import { CartProvider } from "@/contexts/CartContext";
 import { OrdersProvider } from "@/contexts/OrdersContext";
 import { MembershipProvider } from "@/contexts/MembershipContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import SellerBulkUpload from "@/pages/seller/SellerBulkUpload";
 import { FlyToCartProvider } from "@/contexts/FlyToCartContext";
 import SplashScreen from "@/components/SplashScreen";
 import CustomerMembership from "@/pages/customer/CustomerMembership";
@@ -58,6 +60,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
+    <LanguageProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -78,6 +81,7 @@ const App = () => (
           <Route path="/seller/earnings" element={<DashboardLayout><SellerEarnings /></DashboardLayout>} />
           <Route path="/seller/support" element={<DashboardLayout><SellerSupport /></DashboardLayout>} />
           <Route path="/seller/inventory/new" element={<DashboardLayout><SellerAddProduct /></DashboardLayout>} />
+          <Route path="/seller/inventory/bulk" element={<DashboardLayout><SellerBulkUpload /></DashboardLayout>} />
           <Route path="/worker" element={<DashboardLayout><WorkerDashboard /></DashboardLayout>} />
           <Route path="/worker/support" element={<DashboardLayout><WorkerSupport /></DashboardLayout>} />
           <Route path="/worker/tasks" element={<DashboardLayout><WorkerTasks /></DashboardLayout>} />
@@ -119,6 +123,7 @@ const App = () => (
         </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
+    </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

@@ -2,8 +2,9 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, Globe, Brain } from "lucide-react";
+import { AlertTriangle, Globe, Brain, Plus, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const products = [
   { name: "Basmati Rice (5kg)", sku: "GR-001", stock: 45, price: "₹320", status: "available" },
@@ -21,11 +22,26 @@ const suggestions = [
 ];
 
 export default function SellerInventory() {
+  const { t } = useLanguage();
   const lowStockCount = products.filter(p => p.status === "low").length;
 
   return (
     <div>
-      <PageHeader title="Inventory" description="Manage your product stock" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <PageHeader title="Inventory" description="Manage your product stock" />
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="gap-1.5">
+            <Link to="/seller/inventory/bulk">
+              <Upload className="h-4 w-4" /> {t("upload_list")}
+            </Link>
+          </Button>
+          <Button asChild className="gap-1.5">
+            <Link to="/seller/inventory/new">
+              <Plus className="h-4 w-4" /> {t("add_product")}
+            </Link>
+          </Button>
+        </div>
+      </div>
 
       {lowStockCount > 0 && (
         <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 mb-6 flex items-start gap-3 animate-fade-up">

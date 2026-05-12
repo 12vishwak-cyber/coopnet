@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import LiveMap from "@/components/LiveMap";
+import DisputeButton from "@/components/DisputeButton";
 import {
   useLiveOrder,
   STATUS_FLOW,
@@ -149,6 +150,7 @@ export default function CustomerOrderTracking() {
         <span className="text-[11px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 rounded-full px-2.5 py-1">
           {etaMin > 0 ? `~${etaMin} min` : "Arrived"}
         </span>
+        <DisputeButton orderRef={order.short_code} variant="icon" />
       </div>
 
       <div className="p-4 space-y-3">

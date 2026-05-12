@@ -1,8 +1,11 @@
-import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Lightbulb, Globe, Activity, Zap, BarChart3, Users } from "lucide-react";
+import { ShoppingCart, DollarSign, AlertTriangle, TrendingUp, Lightbulb, Globe, Activity, Zap, BarChart3, Users, Plus, Upload } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const recentOrders = [
   { id: "ORD-1847", customer: "Priya M.", items: 3, total: "₹1,240", status: "pending", time: "12 min ago" },
@@ -23,9 +26,24 @@ const stockSuggestions = [
 ];
 
 export default function SellerDashboard() {
+  const { t } = useLanguage();
   return (
     <div>
-      <PageHeader title="Dashboard" description="Store performance overview" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <PageHeader title="Dashboard" description="Store performance overview" />
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="gap-1.5">
+            <Link to="/seller/inventory/bulk">
+              <Upload className="h-4 w-4" /> {t("upload_list")}
+            </Link>
+          </Button>
+          <Button asChild className="gap-1.5 shadow-md">
+            <Link to="/seller/inventory/new">
+              <Plus className="h-4 w-4" /> {t("add_product")}
+            </Link>
+          </Button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {/* Network Status */}

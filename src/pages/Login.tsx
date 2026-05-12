@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Globe, ArrowRight, Store, Truck, ShoppingBag } from "lucide-react";
+import { Globe, ArrowRight, Store, Truck, ShoppingBag, Languages } from "lucide-react";
+import { useLanguage, LANGUAGES } from "@/contexts/LanguageContext";
 
 type Role = "customer" | "seller" | "worker";
 
@@ -16,6 +17,7 @@ const ONBOARDED_KEY = "coopnet:onboarded:v1";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { lang, setLang, t } = useLanguage();
   const [role, setRole] = useState<Role>("customer");
 
   const handleContinue = () => {
@@ -50,6 +52,29 @@ export default function Login() {
             <span className="text-xl font-semibold tracking-tight">CoopNet</span>
           </div>
           <p className="text-sm text-muted-foreground">Cooperative commerce, owned by everyone.</p>
+        </div>
+
+        {/* Language selector */}
+        <div className="bg-card border rounded-xl p-3 mb-3 animate-fade-up">
+          <div className="flex items-center gap-2 mb-2">
+            <Languages className="h-4 w-4 text-primary" />
+            <span className="text-xs font-semibold">{t("language")}</span>
+          </div>
+          <div className="grid grid-cols-5 gap-1.5">
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => setLang(l.code)}
+                className={`text-[11px] font-bold px-1 py-1.5 rounded-md border transition-colors ${
+                  lang === l.code
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {l.native}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="bg-card border rounded-xl p-6 animate-fade-up stagger-1 space-y-5">
