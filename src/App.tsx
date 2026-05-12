@@ -37,6 +37,8 @@ import { CartProvider } from "@/contexts/CartContext";
 import { OrdersProvider } from "@/contexts/OrdersContext";
 import { MembershipProvider } from "@/contexts/MembershipContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import SellerBulkUpload from "@/pages/seller/SellerBulkUpload";
 import { FlyToCartProvider } from "@/contexts/FlyToCartContext";
 import SplashScreen from "@/components/SplashScreen";
 import CustomerMembership from "@/pages/customer/CustomerMembership";
