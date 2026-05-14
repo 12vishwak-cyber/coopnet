@@ -99,14 +99,28 @@ Deno.serve(async (req) => {
     for (const p of products ?? []) priceMap.set(p.id as string, p as never);
 
     let subtotal = 0;
-    const verifiedItems = items.map((it: { id?: string; qty?: number }) => {
+    const verifiedItems = items.map((it: { id?: string; qty?: number; name?: string; price?: number; image?: string; unit?: string }) => {
       const id = String(it.id ?? "");
       const qty = Math.max(1, Math.min(99, Math.floor(Number(it.qty) || 0)));
       const p = priceMap.get(id);
-      if (!p) throw new Error(`Unknown product: ${id}`);
-      if (p.seller_id !== sellerId) throw new Error(`Product ${id} not from seller ${sellerId}`);
-      subtotal += p.price * qty;
-      return { id, name: p.name, price: p.price, image: p.image, unit: p.unit, qty };
+      // If the product exists in the DB, trust DB price + enforce seller match.
+      // Otherwise (prototype catalog lives client-side), fall back to the
+      // client payload but clamp price to a sane range.
+      if (p) {
+        if (p.seller_id !== sellerId) throw new Error(`Product ${id} not from seller ${sellerId}`);
+        subtotal += p.price * qty;
+        return { id, name: p.name, price: p.price, image: p.image, unit: p.unit, qty };
+      }
+      const price = Math.max(0, Math.min(100000, Math.round(Number(it.price) || 0)));
+      subtotal += price * qty;
+      return {
+        id,
+        name: String(it.name ?? "Item").slice(0, 120),
+        price,
+        image: String(it.image ?? ""),
+        unit: String(it.unit ?? "1 pc").slice(0, 40),
+        qty,
+      };
     });
     subtotal = Math.round(subtotal);
 
