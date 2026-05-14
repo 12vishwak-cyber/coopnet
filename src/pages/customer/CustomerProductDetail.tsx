@@ -186,8 +186,8 @@ export default function CustomerProductDetail() {
         </div>
       </div>
 
-      {/* Sticky bottom bar — single CTA pattern: Add → quantity stepper */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-card border-t border-border px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      {/* Sticky bottom bar — sits above the customer bottom nav (68px) */}
+      <div className="fixed bottom-[68px] left-0 right-0 z-40 bg-card border-t border-border px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
         {qty === 0 ? (
           <Button
             onClick={handleAdd}
