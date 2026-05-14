@@ -78,9 +78,8 @@ export default function SellerBulkUpload() {
       // Demo seller — first seller in DB
       const { data: sellers } = await supabase.from("sellers").select("id").limit(1);
       const sellerId = sellers?.[0]?.id ?? "seller-1";
-      const rows = valid.map((it, idx) => ({
+      const products = valid.map((it, idx) => ({
         id: `bulk-${Date.now()}-${idx}`,
-        seller_id: sellerId,
         name: it.name.trim(),
         unit: it.qty?.toString() ?? "1 pc",
         price: Number(it.price ?? 0),
@@ -90,9 +89,11 @@ export default function SellerBulkUpload() {
         in_stock: true,
         gallery_images: [],
       }));
-      const { error } = await supabase.from("products").insert(rows);
+      const { error } = await supabase.functions.invoke("seller-add-products", {
+        body: { sellerId, products },
+      });
       if (error) throw error;
-      toast.success(`${rows.length} products added`);
+      toast.success(`${products.length} products added`);
       navigate("/seller/inventory");
     } catch (e) {
       console.error(e);

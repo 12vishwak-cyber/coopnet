@@ -437,5 +437,8 @@ export async function advanceOrder(
 }
 
 export async function setWaitPenalty(orderId: string, penalty: number) {
-  await supabase.from("orders").update({ wait_penalty: penalty }).eq("id", orderId);
+  const { error } = await supabase.functions.invoke("set-wait-penalty", {
+    body: { orderId, penalty },
+  });
+  if (error) throw error;
 }

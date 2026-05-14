@@ -34,6 +34,16 @@ function shortCode() {
   return s;
 }
 
+function computeDeliveryFee(distanceKm: number, subtotal: number): number {
+  if (subtotal <= 0) return 0;
+  const base = 15;
+  const extra = Math.max(0, distanceKm - 1) * 8;
+  return Math.min(45, Math.round(base + extra));
+}
+const FREE_DELIVERY_THRESHOLD = 199;
+const PLATFORM_FEE = 4;
+const COMMUNITY_PCT = 0.06;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -46,12 +56,8 @@ Deno.serve(async (req) => {
       customerLng,
       customerAddress = "Home",
       customerName = "You",
-      subtotal,
-      discount = 0,
-      deliveryFee = 0,
-      platformFee = 0,
-      communityFund = 0,
-      total,
+      discount: clientDiscount = 0,
+      freeDelivery = false,
     } = body ?? {};
 
     if (!sellerId || !Array.isArray(items) || items.length === 0) {
@@ -79,23 +85,56 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Default customer location: ~1.5km from seller if not provided.
+    // Server-side price recompute. Never trust client totals.
+    const productIds = items
+      .map((it: { id?: string }) => (typeof it.id === "string" ? it.id : null))
+      .filter((id: string | null): id is string => !!id);
+    const { data: products, error: pErr } = await supabase
+      .from("products")
+      .select("id, name, price, image, unit, seller_id")
+      .in("id", productIds.length > 0 ? productIds : ["__none__"]);
+    if (pErr) throw pErr;
+
+    const priceMap = new Map<string, { price: number; name: string; image: string; unit: string; seller_id: string }>();
+    for (const p of products ?? []) priceMap.set(p.id as string, p as never);
+
+    let subtotal = 0;
+    const verifiedItems = items.map((it: { id?: string; qty?: number }) => {
+      const id = String(it.id ?? "");
+      const qty = Math.max(1, Math.min(99, Math.floor(Number(it.qty) || 0)));
+      const p = priceMap.get(id);
+      if (!p) throw new Error(`Unknown product: ${id}`);
+      if (p.seller_id !== sellerId) throw new Error(`Product ${id} not from seller ${sellerId}`);
+      subtotal += p.price * qty;
+      return { id, name: p.name, price: p.price, image: p.image, unit: p.unit, qty };
+    });
+    subtotal = Math.round(subtotal);
+
+    const discount = Math.max(0, Math.min(subtotal, Math.round(Number(clientDiscount) || 0)));
+    const netGoods = subtotal - discount;
+
     const cLat = typeof customerLat === "number" ? customerLat : seller.lat + 0.012;
     const cLng = typeof customerLng === "number" ? customerLng : seller.lng + 0.008;
     const distanceKm = +haversineKm(seller.lat, seller.lng, cLat, cLng).toFixed(2);
-    const sellerEarnings = +(subtotal - discount).toFixed(2);
+
+    const rawDelivery = computeDeliveryFee(distanceKm, subtotal);
+    const deliveryFee = freeDelivery || netGoods >= FREE_DELIVERY_THRESHOLD ? 0 : rawDelivery;
+    const platformFee = subtotal > 0 ? PLATFORM_FEE : 0;
+    const communityFund = Math.round(netGoods * COMMUNITY_PCT);
+    const sellerEarnings = Math.max(0, netGoods - communityFund);
+    const total = Math.max(0, netGoods + deliveryFee + platformFee);
 
     const { data: order, error: oErr } = await supabase
       .from("orders")
       .insert({
         short_code: shortCode(),
-        customer_name: customerName,
+        customer_name: String(customerName).slice(0, 80),
         customer_lat: cLat,
         customer_lng: cLng,
-        customer_address: customerAddress,
+        customer_address: String(customerAddress).slice(0, 200),
         seller_id: sellerId,
         status: "placed",
-        items,
+        items: verifiedItems,
         subtotal,
         discount,
         delivery_fee: deliveryFee,

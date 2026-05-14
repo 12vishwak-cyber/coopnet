@@ -144,18 +144,22 @@ export default function SellerAddProduct() {
     setBusy(true);
     try {
       const id = `p_user_${Date.now().toString(36)}`;
-      const { error } = await supabase.from("products").insert({
-        id,
-        seller_id: ACTING_SELLER_ID,
-        name: name.trim(),
-        description: description.trim(),
-        category,
-        unit,
-        price: Number(price),
-        original_price: originalPrice ? Number(originalPrice) : null,
-        image: imageUrl.trim(),
-        gallery_images: galleryUrls,
-        in_stock: true,
+      const { error } = await supabase.functions.invoke("seller-add-products", {
+        body: {
+          sellerId: ACTING_SELLER_ID,
+          products: [{
+            id,
+            name: name.trim(),
+            description: description.trim(),
+            category,
+            unit,
+            price: Number(price),
+            original_price: originalPrice ? Number(originalPrice) : null,
+            image: imageUrl.trim(),
+            gallery_images: galleryUrls,
+            in_stock: true,
+          }],
+        },
       });
       if (error) {
         toast.error("Couldn't save product");
