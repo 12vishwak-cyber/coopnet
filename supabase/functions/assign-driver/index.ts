@@ -44,14 +44,20 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Pull all available drivers.
-    const { data: drivers, error } = await supabase
+    // Pull all available drivers — if none, fall back to the full pool so the
+    // co-op rotation still finds the longest-idle driver instead of stalling.
+    let { data: drivers, error } = await supabase
       .from("drivers")
       .select("*")
       .eq("status", "available");
     if (error) throw error;
     if (!drivers || drivers.length === 0) {
-      return new Response(JSON.stringify({ error: "No available drivers" }), {
+      const { data: all, error: e2 } = await supabase.from("drivers").select("*");
+      if (e2) throw e2;
+      drivers = all ?? [];
+    }
+    if (!drivers || drivers.length === 0) {
+      return new Response(JSON.stringify({ error: "No drivers in network" }), {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
