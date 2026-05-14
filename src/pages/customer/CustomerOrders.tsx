@@ -143,7 +143,7 @@ export default function CustomerOrders() {
           <Package className="h-4 w-4 text-muted-foreground" /> All Orders
         </h2>
         <div className="space-y-3">
-          {orders.map((o) => (
+          {visibleOrders.map((o) => (
             <button
               key={o.id}
               onClick={() =>
