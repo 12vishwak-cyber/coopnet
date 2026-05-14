@@ -55,8 +55,12 @@ export default function CustomerOrders() {
     };
   }, []);
 
+  // A customer can only have ONE active order at a time. Treat the most-recent
+  // active order as the live one, and ignore any older "stuck active" rows in
+  // the shared prototype DB so the list stays realistic.
   const activeOrder = orders.find((o) => (ACTIVE as readonly string[]).includes(o.status));
   const pastOrders = orders.filter((o) => o.status === "delivered");
+  const visibleOrders = activeOrder ? [activeOrder, ...pastOrders] : pastOrders;
 
   if (loading) {
     return (
