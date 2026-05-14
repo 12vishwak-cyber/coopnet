@@ -93,7 +93,7 @@ export default function SellerBulkUpload() {
         body: { sellerId, products },
       });
       if (error) throw error;
-      toast.success(`${rows.length} products added`);
+      toast.success(`${products.length} products added`);
       navigate("/seller/inventory");
     } catch (e) {
       console.error(e);
