@@ -1,0 +1,1 @@
+UPDATE public.drivers SET status='available', last_assigned_at=NULL;
