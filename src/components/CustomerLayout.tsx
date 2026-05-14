@@ -47,8 +47,8 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         {children}
       </main>
 
-      {/* Sticky cart bar */}
-      <StickyCartBar />
+      {/* Sticky cart bar — hidden on cart and product-detail pages to avoid overlapping their own CTAs */}
+      {!(location.pathname === "/customer/cart" || location.pathname.startsWith("/customer/product/")) && <StickyCartBar />}
 
       {/* Bottom Nav */}
       <nav className="fixed bottom-0 left-0 right-0 h-[68px] bg-card border-t border-border flex items-center justify-around px-2 z-50">
