@@ -1,83 +1,71 @@
-
-
-The user has shared the **CoopNet vision document** describing the entire platform philosophy. They're on `/customer` right now. Reading this as context-setting, I should audit the current customer interface against the stated principles and propose targeted refinements that bring it closer to the "Zepto-quality, cooperative-underneath" goal.
-
-Let me check the current state of key customer screens to identify gaps.
-<lov-tool-use id="toolu_vrtx_01HL96vL9fdc9XSf6ubekN6g" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/customer/CustomerOrders.tsx\"}">
-</lov-tool-use>
-
-<lov-tool-use id="toolu_vrtx_01CekcFZ4bSd4NpYTi2oQYtD" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/customer/CustomerNetwork.tsx\"}">
-</lov-tool-use>
-
-<lov-tool-use id="toolu_vrtx_01RqH1wtWEZeiYYeK8uMLvtk" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/customer/CustomerExplore.tsx\"}">
-</lov-tool-use>
-
-<lov-tool-use id="toolu_vrtx_011Suj9gDXBn3fRqPP8oCC4g" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/customer/CustomerOrders.tsx\"}">
-</lov-tool-use>
-
-<lov-tool-use id="toolu_vrtx_01HgAcfjgXnKEJQT9uRyN936" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/customer/CustomerNetwork.tsx\"}">
-</lov-tool-use>
-
-<lov-tool-use id="toolu_vrtx_017LGidNahUZs8Ni5yi7JKd9" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/customer/CustomerExplore.tsx\"}">
-</lov-tool-use>
-
-<lov-tool-use id="toolu_vrtx_01BQZVtt3R75T4frDHq1gGKY" name="code--view" integration-id="code" data="{\"file_path\": \"src/pages/customer/CustomerProfile.tsx\"}">
-</lov-tool-use>
-<lov-plan>
+# CoopNet Seller and Driver Mobile Experience
 
 ## Goal
-Tighten the customer-facing experience so it reads as a polished Zepto/Blinkit-style quick commerce app — pushing cooperative/governance UI deeper, sharpening the shopping flow, and removing dashboard-y elements from primary screens.
+Add purpose-built mobile interfaces for sellers and delivery drivers without removing, simplifying, or visually redesigning the existing desktop dashboards. Mobile and desktop will use the same routes, data, order state, inventory actions, earnings, chat, and backend operations.
 
-## Current gaps vs the brief
-1. **Orders page** uses emoji thumbnails, looks static. No live ETA progress bar on active order.
-2. **Impact tab (CustomerNetwork)** is full of governance metrics, rule tables, and proposals upfront — feels like a dashboard.
-3. **Profile** leads with Node ID, fund stats, governance progress — system-first, not user-first.
-4. **Explore** search input is non-functional; no "results" feedback.
-5. **Home** could use stronger urgency cues (timer on offers, "selling fast" microcopy) and a "Recommended for you" behavioral row.
-6. No global discoverability of active promo codes (mentioned previously but not surfaced).
+## Responsive structure
+- Keep the current desktop sidebar, header, page layouts, tables, analytics, and controls at desktop widths.
+- Add a mobile application shell for `/seller/*` and `/worker/*` with a compact role-aware header and fixed bottom navigation.
+- Seller mobile navigation: **Home, Orders, Products, Earnings, Profile**.
+- Driver mobile navigation: **Home, Orders, Earnings, Profile**.
+- Tablet layouts will remain responsive versions of the desktop screens; phone layouts will use dedicated operational views rather than compressed tables.
+- Hide mobile navigation during driver Drive Mode so the map and essential delivery controls own the screen.
 
-## Proposed changes
+## Seller mobile experience
 
-### A. Orders (`CustomerOrders.tsx`)
-- Replace emoji with real product/store images.
-- Active order: large card with animated progress bar, ETA countdown ("Arriving in 8 mins"), 3-step mini-status (Packed → Out → Delivered).
-- Past orders: compact rows with "Reorder" button (re-adds items to cart via context).
+### Home
+- Create a glanceable shop-operations view with store status, today’s sales and order count, orders needing action, low-stock alerts, and quick actions.
+- Reuse current seller order and product data so actions remain synchronized with desktop.
 
-### B. Impact / Community (`CustomerNetwork.tsx`)
-- Rename header to **"Your Impact"**, drop "Network rules" table from default view.
-- Default view = emotional hero card: "You supported 4 local sellers ❤️" + 3 friendly stat cards (workers earned, fund contributed, orders).
-- Move proposals + rules into a single "Cooperative" sub-tab (de-emphasized, smaller text).
-- Activity feed simplified to user-relevant events only (their orders, their fund contributions).
+### Orders
+- Replace the table on mobile with concise order cards showing order number, customer, item count, value, preparation deadline, and status.
+- Add an order-detail sheet/view with full items and progressive actions for accept/reject, prepare, ready for pickup, driver pickup, and completion according to allowed backend states.
+- Keep customer chat directly accessible from the mobile order detail.
+- Preserve the current desktop table unchanged.
 
-### C. Profile (`CustomerProfile.tsx`)
-- Lead with avatar + name + friendly greeting, hide Node ID into a small chip.
-- Stat row stays (Orders / Saved / Rating) but rename "Fund" → "Saved".
-- Move governance progress into a collapsible "Membership" card lower on the page.
-- Keep Support + Settings tabs; surface Logout more clearly.
+### Products
+- Replace the inventory table on mobile with searchable/filterable product rows containing image, name, price, stock, status, and availability control.
+- Provide mobile actions for edit, stock update, price update, list upload, and add product.
+- Retain the existing guided Add Product flow and market price recommendation, adapting its layout and controls for phone use without changing seller control over final pricing.
 
-### D. Explore (`CustomerExplore.tsx`)
-- Make search input controlled; filter `products` live by name/seller.
-- Add empty state when no matches.
-- Add "X results" microcopy.
+### Earnings and profile
+- Present today/week/order/AOV summaries as compact mobile cards, with transaction and fee details available on tap.
+- Link Profile to the existing profile/settings/support capabilities and preserve role identity and Node ID in the mobile header/profile.
 
-### E. Home (`CustomerHome.tsx`)
-- Add small "selling fast 🔥" / "only X left" microcopy on 1–2 trending cards (static, for vibe).
-- Add a thin promo-code banner above categories: "Use WELCOME10 for 10% off →" linking to cart.
-- Add a "Recommended for you" row (reuses PRODUCTS, shuffled subset) for behavioral depth.
+## Delivery driver mobile experience
 
-### F. Layout polish (`CustomerLayout.tsx`)
-- No structural changes; minor: ensure header location is tappable to a simple address sheet (out of scope unless trivial — will skip if it grows).
+### Home / work mode
+- Create an action-focused overview with online status, today’s earnings, completed deliveries, distance, working time, and the next available order.
+- Show the full payout before acceptance: base pay, distance pay, route distance, ETA, and waiting-compensation rule.
+- Wire accept/reject and active-delivery transitions to the existing order APIs/context rather than static task rows.
 
-## Files to edit
-- `src/pages/customer/CustomerOrders.tsx` — visual rewrite + reorder action
-- `src/pages/customer/CustomerNetwork.tsx` — emotional-first restructure
-- `src/pages/customer/CustomerProfile.tsx` — soften system framing
-- `src/pages/customer/CustomerExplore.tsx` — working search + empty state
-- `src/pages/customer/CustomerHome.tsx` — promo banner row + recommended section + urgency microcopy
-- `src/contexts/CartContext.tsx` — add `addItems(items[])` helper for Reorder (small addition)
+### Orders
+- Replace the task table on mobile with available, active, and completed order cards.
+- Open a focused order detail before acceptance and route accepted work into the active delivery flow.
+- Preserve desktop task management and analytics.
 
-## Out of scope
-- Real maps (kept as SVG in tracking page)
-- Backend integration / auth changes
-- Seller, Worker, Network admin screens (untouched)
+### Drive Mode
+- Expand the existing driver map into a true full-screen state, using the current real map implementation and live order coordinates where available.
+- Support five clear stages: going to pickup, at pickup, going to customer, arrived, and completed.
+- Show only destination, large ETA/distance, current position/route, and safe bottom controls: Navigation, Call, Order Details, plus the single stage-appropriate primary action.
+- Use large touch targets, high contrast, minimal text, restrained motion, and no dashboard analytics or bottom navigation while driving.
+- Show delivery earnings and a Next Order action after completion.
 
+### Earnings and profile
+- Convert summaries and history into mobile cards with drill-down details while keeping the desktop analytics table.
+- Reuse the existing profile, support, governance, and settings flows through mobile-friendly navigation.
+
+## Shared implementation details
+- Add focused mobile shell/navigation components and small seller/driver mobile view components; desktop page markup remains available in parallel.
+- Use semantic design tokens and existing Button, Sheet/Drawer, Switch, Badge, and other design-system components.
+- Reuse `useIsMobile`, order hooks/context, `coopnet-api`, `LiveMap`, seller chat, pricing suggestions, and existing backend mutations. Eliminate synthetic driver data from actionable mobile states when live data exists; provide a clear empty state when it does not.
+- Keep controls at least 44px high, prevent horizontal overflow, reserve bottom-safe-area space, and preserve dark mode.
+- Record the dual-presentation architecture in `AGENTS.md` because it becomes a project-wide structural rule.
+
+## Verification
+- Test seller and driver routes at mobile, tablet, and desktop widths.
+- Verify desktop sidebar dashboards and tables remain intact.
+- Verify seller order actions, chat, inventory/add-product, market pricing, earnings, profile, and support on mobile.
+- Verify driver availability, payout disclosure, accept/reject, pickup, Drive Mode stages, calls/navigation links, completion, and earnings.
+- Check no horizontal scrolling, overlaps, tiny controls, duplicated actions, or mobile navigation over Drive Mode.
+- Check the latest build/runtime diagnostics and run focused interaction tests in the live preview.
