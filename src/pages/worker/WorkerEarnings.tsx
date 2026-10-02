@@ -16,6 +16,13 @@ const history = [
 export default function WorkerEarnings() {
   return (
     <div>
+      <div className="md:hidden">
+        <div className="mb-5"><p className="text-xs text-muted-foreground">Delivery payouts</p><h1 className="text-2xl font-bold">Earnings</h1></div>
+        <div className="rounded-lg bg-primary p-5 text-primary-foreground"><p className="text-sm opacity-80">Today</p><p className="mt-2 text-3xl font-bold">₹620</p><p className="mt-1 text-xs opacity-80">12 deliveries · 38.4 km</p></div>
+        <div className="mt-3 grid grid-cols-2 gap-3"><div className="rounded-lg border bg-card p-4"><p className="text-xl font-bold">₹3,420</p><p className="text-xs text-muted-foreground">This week</p></div><div className="rounded-lg border bg-card p-4"><p className="text-xl font-bold">₹68</p><p className="text-xs text-muted-foreground">Per delivery</p></div></div>
+        <div className="mt-5 overflow-hidden rounded-lg border bg-card">{history.slice(0, 6).map((item) => <div key={item.id} className="flex items-center justify-between border-b p-4 last:border-0"><div><p className="text-sm font-bold">{item.id}</p><p className="text-xs text-muted-foreground">{item.date} · contribution {item.contribution}</p></div><p className="text-sm font-bold text-success">{item.net}</p></div>)}</div>
+      </div>
+      <div className="hidden md:block">
       <PageHeader title="Earnings" description="Your delivery earnings overview" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
@@ -61,6 +68,7 @@ export default function WorkerEarnings() {
         </Table>
       </div>
       <p className="text-[10px] text-muted-foreground mt-3">Network rules active · Contribution rules applied · Shared intelligence active</p>
+      </div>
     </div>
   );
 }
