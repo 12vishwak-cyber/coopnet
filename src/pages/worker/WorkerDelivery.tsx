@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useOrders } from "@/contexts/OrdersContext";
 import LiveMap from "@/components/LiveMap";
+import WorkerMobileDelivery from "@/components/WorkerMobileDelivery";
 
 // Synthetic fallback when no live order exists.
 const fallbackDelivery = {
@@ -114,7 +115,9 @@ export default function WorkerDelivery() {
   };
 
   return (
-    <div>
+    <>
+      <div className="md:hidden"><WorkerMobileDelivery /></div>
+      <div className="hidden md:block">
       {!driveMode && (
         <PageHeader title="Delivery" description="Active delivery details" />
       )}
@@ -313,7 +316,8 @@ export default function WorkerDelivery() {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

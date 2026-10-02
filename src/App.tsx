@@ -54,6 +54,7 @@ import CustomerPostOrder from "@/pages/customer/CustomerPostOrder";
 import CustomerNetwork from "@/pages/customer/CustomerNetwork";
 import CustomerProfile from "@/pages/customer/CustomerProfile";
 import NotFound from "./pages/NotFound.tsx";
+import MobileRoleProfile from "@/components/MobileRoleProfile";
 
 const queryClient = new QueryClient();
 
@@ -80,10 +81,12 @@ const App = () => (
           <Route path="/seller/insights" element={<DashboardLayout><SellerInsights /></DashboardLayout>} />
           <Route path="/seller/earnings" element={<DashboardLayout><SellerEarnings /></DashboardLayout>} />
           <Route path="/seller/support" element={<DashboardLayout><SellerSupport /></DashboardLayout>} />
+          <Route path="/seller/profile" element={<DashboardLayout><MobileRoleProfile role="seller" /></DashboardLayout>} />
           <Route path="/seller/inventory/new" element={<DashboardLayout><SellerAddProduct /></DashboardLayout>} />
           <Route path="/seller/inventory/bulk" element={<DashboardLayout><SellerBulkUpload /></DashboardLayout>} />
           <Route path="/worker" element={<DashboardLayout><WorkerDashboard /></DashboardLayout>} />
           <Route path="/worker/support" element={<DashboardLayout><WorkerSupport /></DashboardLayout>} />
+          <Route path="/worker/profile" element={<DashboardLayout><MobileRoleProfile role="worker" /></DashboardLayout>} />
           <Route path="/worker/tasks" element={<DashboardLayout><WorkerTasks /></DashboardLayout>} />
           <Route path="/worker/delivery" element={<DashboardLayout><WorkerDelivery /></DashboardLayout>} />
           <Route path="/worker/route" element={<DashboardLayout><WorkerRoute /></DashboardLayout>} />
