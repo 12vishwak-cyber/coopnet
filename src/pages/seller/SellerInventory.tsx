@@ -2,9 +2,14 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, Globe, Brain, Plus, Upload } from "lucide-react";
+import { AlertTriangle, Globe, Brain, Plus, Upload, Search, MoreVertical } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { useSellerProducts } from "@/lib/coopnet-api";
+import SafeImage from "@/components/SafeImage";
+import { useState } from "react";
 
 const products = [
   { name: "Basmati Rice (5kg)", sku: "GR-001", stock: 45, price: "₹320", status: "available" },
@@ -23,10 +28,23 @@ const suggestions = [
 
 export default function SellerInventory() {
   const { t } = useLanguage();
+  const { products: liveProducts } = useSellerProducts("s1");
+  const [query, setQuery] = useState("");
   const lowStockCount = products.filter(p => p.status === "low").length;
+  const mobileProducts = liveProducts.filter((product) => product.name.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <div>
+      <div className="md:hidden">
+        <div className="mb-4 flex items-end justify-between"><div><p className="text-xs text-muted-foreground">Ravi General Store</p><h1 className="text-2xl font-bold">Products</h1></div><Button asChild size="icon" className="h-11 w-11"><Link to="/seller/inventory/new" aria-label="Add product"><Plus className="h-5 w-5" /></Link></Button></div>
+        <div className="relative mb-3"><Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products" className="h-11 pl-9" /></div>
+        <div className="mb-4 grid grid-cols-2 gap-2"><Button asChild variant="outline" className="h-11"><Link to="/seller/inventory/bulk"><Upload className="mr-2 h-4 w-4" /> Upload list</Link></Button><Button asChild className="h-11"><Link to="/seller/inventory/new"><Plus className="mr-2 h-4 w-4" /> Add product</Link></Button></div>
+        <div className="space-y-2">
+          {mobileProducts.map((product) => <div key={product.id} className="flex items-center gap-3 rounded-lg border bg-card p-3"><SafeImage src={product.image} category={product.category} alt={product.name} className="h-16 w-16 shrink-0 rounded-md object-cover" /><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{product.name}</p><p className="text-xs text-muted-foreground">{product.category} · {product.unit}</p><p className="mt-1 text-sm font-bold">₹{Number(product.price).toFixed(0)}</p></div><div className="flex flex-col items-end gap-2"><Switch defaultChecked={product.in_stock} aria-label={`${product.name} availability`} /><Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Edit ${product.name}`}><MoreVertical className="h-4 w-4" /></Button></div></div>)}
+          {!mobileProducts.length && <div className="rounded-lg border bg-card p-8 text-center text-sm text-muted-foreground">No matching products.</div>}
+        </div>
+      </div>
+      <div className="hidden md:block">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <PageHeader title="Inventory" description="Manage your product stock" />
         <div className="flex gap-2">
@@ -113,6 +131,7 @@ export default function SellerInventory() {
         </div>
       </div>
       <p className="text-[10px] text-muted-foreground mt-3">Network rules active · Shared intelligence active</p>
+      </div>
     </div>
   );
 }

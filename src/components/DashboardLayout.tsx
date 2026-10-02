@@ -2,11 +2,18 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useLocation } from "react-router-dom";
+import MobileRoleShell from "@/components/MobileRoleShell";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const isWorker = location.pathname.startsWith("/worker");
   const nodeLabel = isWorker ? "Worker-07" : "Seller-23";
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return <MobileRoleShell role={isWorker ? "worker" : "seller"}>{children}</MobileRoleShell>;
+  }
 
   return (
     <SidebarProvider>

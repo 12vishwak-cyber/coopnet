@@ -5,6 +5,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Check, Eye, Package } from "lucide-react";
 import { useSellerOrders, advanceOrder, STATUS_LABELS } from "@/lib/coopnet-api";
 import { useState } from "react";
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import SellerChat from "@/components/SellerChat";
+import type { DbOrder } from "@/lib/coopnet-api";
+import { toast } from "sonner";
 
 // Demo seller identity — in a real auth flow this would come from the session.
 const ACTING_SELLER_ID = "s1";
@@ -22,6 +26,7 @@ function timeAgo(iso: string) {
 export default function SellerOrders() {
   const orders = useSellerOrders(ACTING_SELLER_ID);
   const [busy, setBusy] = useState<string | null>(null);
+  const [selected, setSelected] = useState<DbOrder | null>(null);
 
   const handlePack = async (id: string) => {
     setBusy(id);
@@ -32,8 +37,49 @@ export default function SellerOrders() {
     }
   };
 
+  const updateOrder = async (order: DbOrder, status: DbOrder["status"], message: string) => {
+    setBusy(order.id);
+    try {
+      await advanceOrder(order.id, status, message, "seller");
+      toast.success(message);
+      setSelected(null);
+    } catch {
+      toast.error("Couldn’t update this order");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <div>
+      <div className="md:hidden">
+        <div className="mb-5"><p className="text-xs text-muted-foreground">Live storefront</p><h1 className="text-2xl font-bold">Orders</h1></div>
+        <div className="space-y-3">
+          {orders.length === 0 ? (
+            <div className="rounded-lg border bg-card p-8 text-center"><Package className="mx-auto h-8 w-8 text-muted-foreground" /><p className="mt-2 text-sm font-bold">No orders yet</p><p className="mt-1 text-xs text-muted-foreground">New orders appear here instantly.</p></div>
+          ) : orders.map((order) => (
+            <button key={order.id} onClick={() => setSelected(order)} className="w-full rounded-lg border bg-card p-4 text-left">
+              <div className="flex items-start justify-between gap-3"><div><p className="text-sm font-bold">{order.short_code}</p><p className="text-xs text-muted-foreground">{order.customer_name} · {order.items.length} items</p></div><StatusBadge status={STATUS_LABELS[order.status].toLowerCase().replace(/\s+/g, "-")} /></div>
+              <div className="mt-4 flex items-end justify-between"><div><p className="text-lg font-bold">₹{Number(order.total).toFixed(0)}</p><p className="text-[10px] text-muted-foreground">Prepare by {new Date(new Date(order.created_at).getTime() + 8 * 60000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</p></div><span className="text-xs font-semibold text-primary">View order</span></div>
+            </button>
+          ))}
+        </div>
+        <Drawer open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
+          <DrawerContent className="max-h-[88svh]">
+            {selected && <div className="overflow-y-auto px-4 pb-6">
+              <DrawerHeader className="px-0 text-left"><DrawerTitle>{selected.short_code}</DrawerTitle><DrawerDescription>{selected.customer_name} · {STATUS_LABELS[selected.status]}</DrawerDescription></DrawerHeader>
+              <div className="space-y-2 rounded-lg border p-3">{selected.items.map((item) => <div key={item.id} className="flex justify-between text-sm"><span>{item.name} × {item.qty}</span><span className="font-medium">₹{Number(item.price * item.qty).toFixed(0)}</span></div>)}<div className="flex justify-between border-t pt-2 text-sm font-bold"><span>Total</span><span>₹{Number(selected.total).toFixed(0)}</span></div></div>
+              <div className="mt-4"><SellerChat sellerId={ACTING_SELLER_ID} sellerName={selected.customer_name} perspective="seller" /></div>
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                {selected.status === "placed" && <><Button variant="outline" className="h-12" disabled={busy === selected.id} onClick={() => updateOrder(selected, "cancelled", "Order declined")}>Reject</Button><Button className="h-12" disabled={busy === selected.id} onClick={() => updateOrder(selected, "packed", "Order accepted and prepared")}>Accept & prepare</Button></>}
+                {selected.status === "packed" && <Button className="col-span-2 h-12" disabled>Ready for driver pickup</Button>}
+                {!["placed", "packed", "cancelled", "delivered"].includes(selected.status) && <Button className="col-span-2 h-12" variant="outline" disabled>{STATUS_LABELS[selected.status]}</Button>}
+              </div>
+            </div>}
+          </DrawerContent>
+        </Drawer>
+      </div>
+      <div className="hidden md:block">
       <PageHeader title="Orders" description="Live orders from your storefront" />
       <p className="text-[11px] text-muted-foreground mb-4 -mt-4 animate-fade-up">
         Realtime feed · Updates instantly when customers place or drivers progress orders
@@ -107,6 +153,7 @@ export default function SellerOrders() {
       <p className="text-[10px] text-muted-foreground mt-3">
         Live orders synced via shared ledger · {orders.length} total
       </p>
+      </div>
     </div>
   );
 }

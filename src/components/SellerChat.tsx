@@ -20,7 +20,7 @@ function autoReply(text: string): string {
   return "Thanks for reaching out — I'll confirm and get back in a minute.";
 }
 
-export default function SellerChat({ sellerId, sellerName }: { sellerId: string; sellerName: string }) {
+export default function SellerChat({ sellerId, sellerName, perspective = "customer" }: { sellerId: string; sellerName: string; perspective?: "customer" | "seller" }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>(() => {
     if (typeof window === "undefined") return STARTER;
@@ -50,14 +50,14 @@ export default function SellerChat({ sellerId, sellerName }: { sellerId: string;
   const send = () => {
     const text = draft.trim();
     if (!text) return;
-    const mine: Msg = { id: `m${Date.now()}`, from: "customer", text, at: Date.now() };
+    const mine: Msg = { id: `m${Date.now()}`, from: perspective, text, at: Date.now() };
     setMessages((m) => [...m, mine]);
     setDraft("");
     // Simulated seller reply.
     setTimeout(() => {
       const reply: Msg = {
         id: `m${Date.now() + 1}`,
-        from: "seller",
+        from: perspective === "seller" ? "customer" : "seller",
         text: autoReply(text),
         at: Date.now(),
       };
@@ -72,9 +72,9 @@ export default function SellerChat({ sellerId, sellerName }: { sellerId: string;
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1 hover:bg-emerald-500/15 transition-colors"
+        className="flex min-h-11 items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 text-xs font-bold text-primary transition-colors hover:bg-primary/15"
       >
-        <MessageCircle className="h-3 w-3" /> Chat with seller
+        <MessageCircle className="h-4 w-4" /> {perspective === "seller" ? "Chat with customer" : "Chat with seller"}
       </button>
 
       {open && (
@@ -110,7 +110,7 @@ export default function SellerChat({ sellerId, sellerName }: { sellerId: string;
 
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-surface">
               {messages.map((m) => {
-                const mine = m.from === "customer";
+                const mine = m.from === perspective;
                 return (
                   <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                     <div

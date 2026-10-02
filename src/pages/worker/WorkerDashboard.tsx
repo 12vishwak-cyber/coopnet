@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Truck, DollarSign, ClipboardList, BarChart3, ToggleLeft, ToggleRight, Globe, Zap, MapPin, Database } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
+import WorkerMobileHome from "@/components/WorkerMobileHome";
 
 const tasks = [
   { id: "TSK-412", seller: "Sharma General Store", pickup: "MG Road", delivery: "Sector 12", items: 3, pay: "₹65", status: "assigned" },
@@ -21,7 +22,9 @@ export default function WorkerDashboard() {
   const [available, setAvailable] = useState(true);
 
   return (
-    <div>
+    <>
+      <div className="md:hidden"><WorkerMobileHome /></div>
+      <div className="hidden md:block">
       <PageHeader title="Dashboard" description="Your delivery overview" />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
@@ -164,6 +167,7 @@ export default function WorkerDashboard() {
         </div>
       </div>
       <p className="text-[10px] text-muted-foreground mt-3">Network rules active · System governed by cooperative · Transaction recorded in ledger</p>
-    </div>
+      </div>
+    </>
   );
 }
