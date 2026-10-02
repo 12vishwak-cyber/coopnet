@@ -173,7 +173,7 @@ export function useSellerProducts(sellerId: string | undefined) {
   useEffect(() => {
     if (!sellerId) return;
     let cancelled = false;
-    supabase
+    const fetchProducts = () => supabase
       .from("products")
       .select("*")
       .eq("seller_id", sellerId)
@@ -183,8 +183,18 @@ export function useSellerProducts(sellerId: string | undefined) {
         setProducts((data as DbProduct[]) || []);
         setLoading(false);
       });
+    fetchProducts();
+    const channel = supabase
+      .channel(`seller-products-${sellerId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "products", filter: `seller_id=eq.${sellerId}` },
+        () => fetchProducts(),
+      )
+      .subscribe();
     return () => {
       cancelled = true;
+      supabase.removeChannel(channel);
     };
   }, [sellerId]);
   return { products, loading };

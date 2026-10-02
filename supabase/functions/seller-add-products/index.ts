@@ -10,8 +10,9 @@ const corsHeaders = {
 };
 
 const ALLOWED_CATEGORIES = new Set([
-  "Groceries", "Dairy", "Provisions", "Bakery", "Vegetables",
-  "Fruits", "Meat", "Snacks", "Beverages", "Household", "Other",
+  "Groceries", "Dairy", "Provisions", "Bakery", "Vegetables", "Fruits",
+  "Meat", "Snacks", "Beverages", "Household", "Essentials", "Specials",
+  "Fashion", "Pharmacy", "Electronics", "Home", "Personal Care", "Other",
 ]);
 
 interface ProductInput {

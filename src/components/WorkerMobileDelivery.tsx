@@ -14,22 +14,28 @@ export default function WorkerMobileDelivery() {
   const [driveMode, setDriveMode] = useState(true);
   const [details, setDetails] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [atPickup, setAtPickup] = useState(false);
 
   if (!order) {
     return <div className="mx-auto max-w-md py-12 text-center"><Package className="mx-auto h-9 w-9 text-muted-foreground" /><h1 className="mt-3 text-lg font-bold">No active delivery</h1><p className="mt-1 text-sm text-muted-foreground">Accept an order to begin.</p><Button className="mt-5" onClick={() => navigate("/worker/tasks")}>Find orders</Button></div>;
   }
 
   const pickupStage = order.status === "assigned" || order.status === "packed" || order.status === "placed";
-  const atPickup = order.status === "assigned";
+  const goingToPickup = order.status === "assigned" && !atPickup;
   const goingToCustomer = order.status === "out_for_delivery";
   const arrived = order.status === "arrived";
   const distance = Number(order.distance_km || 2.4);
   const eta = Math.max(4, Math.round(distance * 4));
-  const destination = pickupStage ? "Pickup at Ravi General Store" : goingToCustomer ? "Delivering to customer" : arrived ? "You’re at the customer’s location" : "Delivery complete";
+  const destination = goingToPickup ? "Pickup at Ravi General Store" : atPickup ? "You’re at pickup" : goingToCustomer ? "Delivering to customer" : arrived ? "You’re at the customer’s location" : "Delivery complete";
 
   const advance = async () => {
     setBusy(true);
     try {
+      if (goingToPickup) {
+        setAtPickup(true);
+        toast.success("Pickup location reached");
+        return;
+      }
       if (atPickup) await advanceOrder(order.id, "out_for_delivery", "Order picked up — heading to customer", "driver");
       else if (goingToCustomer) await advanceOrder(order.id, "arrived", "Driver arrived at customer location", "driver");
       else if (arrived) await advanceOrder(order.id, "delivered", "Delivery completed", "driver");
@@ -65,7 +71,7 @@ export default function WorkerMobileDelivery() {
                 <Button asChild variant="outline" className="h-12 flex-col gap-0.5 px-1 text-[10px]"><a href="tel:+910000000000"><Phone className="h-4 w-4" />{pickupStage ? "Call seller" : "Call customer"}</a></Button>
                 <Button variant="outline" className="h-12 flex-col gap-0.5 px-1 text-[10px]" onClick={() => setDetails(true)}><Info className="h-4 w-4" />Order details</Button>
               </div>
-              <Button className="h-14 w-full text-base font-bold" disabled={busy} onClick={advance}>{busy ? "Updating…" : atPickup ? "Confirm pickup" : goingToCustomer ? "I’ve arrived" : "Complete delivery"}</Button>
+              <Button className="h-14 w-full text-base font-bold" disabled={busy} onClick={advance}>{busy ? "Updating…" : goingToPickup ? "I’m at pickup" : atPickup ? "Confirm pickup" : goingToCustomer ? "I’ve arrived" : "Complete delivery"}</Button>
             </>
           )}
         </div>
