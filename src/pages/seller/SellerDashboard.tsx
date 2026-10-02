@@ -6,6 +6,7 @@ import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLanguage } from "@/contexts/LanguageContext";
+import SellerMobileHome from "@/components/SellerMobileHome";
 
 const recentOrders = [
   { id: "ORD-1847", customer: "Priya M.", items: 3, total: "₹1,240", status: "pending", time: "12 min ago" },
@@ -28,7 +29,9 @@ const stockSuggestions = [
 export default function SellerDashboard() {
   const { t } = useLanguage();
   return (
-    <div>
+    <>
+      <div className="md:hidden"><SellerMobileHome /></div>
+      <div className="hidden md:block">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <PageHeader title="Dashboard" description="Store performance overview" />
         <div className="flex gap-2">
@@ -222,6 +225,7 @@ export default function SellerDashboard() {
         </div>
       </div>
       <p className="text-[10px] text-muted-foreground mt-3">Network rules active · Data from shared ledger · Shared intelligence active</p>
-    </div>
+      </div>
+    </>
   );
 }
