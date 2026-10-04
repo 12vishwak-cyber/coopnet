@@ -10,13 +10,13 @@ import { toast } from "sonner";
 export default function WorkerMobileDelivery() {
   const navigate = useNavigate();
   const orders = useActiveOrders();
-  const order = useMemo(() => orders.find((item) => item.driver_id) ?? orders[0], [orders]);
+  const activeOrder = useMemo(() => orders.find((item) => item.driver_id) ?? orders[0], [orders]);
   const [driveMode, setDriveMode] = useState(true);
   const [details, setDetails] = useState(false);
   const [busy, setBusy] = useState(false);
   const [atPickup, setAtPickup] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<(typeof orders)[number] | null>(null);
-  const currentOrder = order ?? completedOrder;
+  const currentOrder = activeOrder ?? completedOrder;
 
   if (!currentOrder) {
     return <div className="mx-auto max-w-md py-12 text-center"><Package className="mx-auto h-9 w-9 text-muted-foreground" /><h1 className="mt-3 text-lg font-bold">No active delivery</h1><p className="mt-1 text-sm text-muted-foreground">Accept an order to begin.</p><Button className="mt-5" onClick={() => navigate("/worker/tasks")}>Find orders</Button></div>;
