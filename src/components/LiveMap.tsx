@@ -64,10 +64,10 @@ export default function LiveMap({
     });
     mapRef.current = map;
 
-    // OSM tiles — use Carto's "voyager" for a calm, modern look.
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    // OpenStreetMap tiles render without a vendor API key.
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
-      subdomains: "abcd",
+      crossOrigin: true,
     }).addTo(map);
 
     sellerMarkerRef.current = L.marker([seller.lat, seller.lng], { icon: pinIcon("#10b981", "S") })

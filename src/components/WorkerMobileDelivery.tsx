@@ -15,10 +15,14 @@ export default function WorkerMobileDelivery() {
   const [details, setDetails] = useState(false);
   const [busy, setBusy] = useState(false);
   const [atPickup, setAtPickup] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<(typeof orders)[number] | null>(null);
+  const currentOrder = order ?? completedOrder;
 
-  if (!order) {
+  if (!currentOrder) {
     return <div className="mx-auto max-w-md py-12 text-center"><Package className="mx-auto h-9 w-9 text-muted-foreground" /><h1 className="mt-3 text-lg font-bold">No active delivery</h1><p className="mt-1 text-sm text-muted-foreground">Accept an order to begin.</p><Button className="mt-5" onClick={() => navigate("/worker/tasks")}>Find orders</Button></div>;
   }
+
+  const order = currentOrder;
 
   const pickupStage = order.status === "assigned" || order.status === "packed" || order.status === "placed";
   const goingToPickup = order.status === "assigned" && !atPickup;
@@ -38,7 +42,10 @@ export default function WorkerMobileDelivery() {
       }
       if (atPickup) await advanceOrder(order.id, "out_for_delivery", "Order picked up — heading to customer", "driver");
       else if (goingToCustomer) await advanceOrder(order.id, "arrived", "Driver arrived at customer location", "driver");
-      else if (arrived) await advanceOrder(order.id, "delivered", "Delivery completed", "driver");
+      else if (arrived) {
+        setCompletedOrder({ ...order, status: "delivered" });
+        await advanceOrder(order.id, "delivered", "Delivery completed", "driver");
+      }
       toast.success(atPickup ? "Pickup confirmed" : goingToCustomer ? "Arrival confirmed" : "Delivery complete");
     } catch {
       toast.error("Couldn’t update delivery");
