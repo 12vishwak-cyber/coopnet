@@ -61,13 +61,13 @@ export default function WorkerMobileDelivery() {
   return (
     <div className="fixed inset-0 z-[70] bg-background md:hidden">
       <LiveMap seller={{ lat: 12.9756, lng: 77.605, label: "Pickup" }} customer={{ lat: order.customer_lat, lng: order.customer_lng, label: "Drop" }} routeProgress={goingToCustomer ? 0.55 : arrived ? 0.95 : 0.08} mode="driver" interactive={false} className="h-full w-full" />
-      <Button variant="outline" size="icon" className="absolute left-4 top-4 h-12 w-12 rounded-full bg-card/95 shadow-lg" onClick={() => setDriveMode(false)} aria-label="Exit Drive Mode"><ArrowLeft className="h-5 w-5" /></Button>
-      <div className="absolute left-20 right-4 top-4 rounded-lg border bg-card/95 p-3 shadow-lg backdrop-blur">
+      <Button variant="outline" size="icon" className="absolute left-4 top-4 z-[1000] h-12 w-12 rounded-full bg-card/95 shadow-lg" onClick={() => setDriveMode(false)} aria-label="Exit Drive Mode"><ArrowLeft className="h-5 w-5" /></Button>
+      <div className="absolute left-20 right-4 top-4 z-[1000] rounded-lg border bg-card/95 p-3 shadow-lg backdrop-blur">
         <p className="truncate text-xs font-bold">{destination}</p>
         <div className="mt-1 flex items-end justify-between"><p className="text-2xl font-bold tabular-nums">{order.status === "delivered" ? "Done" : `${eta} min`}</p><p className="text-xs font-medium text-muted-foreground">{distance.toFixed(1)} km</p></div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 p-3 pb-[calc(.75rem+env(safe-area-inset-bottom))]">
+      <div className="absolute inset-x-0 bottom-0 z-[1000] p-3 pb-[calc(.75rem+env(safe-area-inset-bottom))]">
         <div className="rounded-lg border bg-card p-3 shadow-xl">
           {order.status === "delivered" ? (
             <div className="text-center"><div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-success/10"><Check className="h-5 w-5 text-success" /></div><p className="mt-2 text-base font-bold">Delivery complete</p><p className="text-2xl font-bold text-success">₹{Number(order.driver_earnings).toFixed(0)} earned</p><Button className="mt-3 h-12 w-full" onClick={() => navigate("/worker/tasks")}>Next order</Button></div>
