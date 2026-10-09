@@ -7,6 +7,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SellerMobileHome from "@/components/SellerMobileHome";
+import { MobileNetworkShortcuts } from "@/components/MobileNetworkShortcuts";
 
 const recentOrders = [
   { id: "ORD-1847", customer: "Priya M.", items: 3, total: "₹1,240", status: "pending", time: "12 min ago" },
@@ -47,6 +48,8 @@ export default function SellerDashboard() {
           </Button>
         </div>
       </div>
+
+      <div className="mb-4 md:hidden"><MobileNetworkShortcuts /></div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {/* Network Status */}
@@ -149,7 +152,7 @@ export default function SellerDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-6">
         <div className="animate-fade-up stagger-1"><StatCard title="Today's Orders" value="24" change="+12% from yesterday" changeType="positive" icon={ShoppingCart} /></div>
         <div className="animate-fade-up stagger-2"><StatCard title="Revenue" value="₹18,420" change="+8.3% this week" changeType="positive" icon={DollarSign} /></div>
         <div className="animate-fade-up stagger-3"><StatCard title="Low Stock Items" value="7" change="3 critical" changeType="negative" icon={AlertTriangle} /></div>

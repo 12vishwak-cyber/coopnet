@@ -2,6 +2,7 @@ import { AlertTriangle, ChevronRight, IndianRupee, Package, Plus, ShoppingBag, S
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSellerOrders, useSellerProducts } from "@/lib/coopnet-api";
+import { MobileNetworkShortcuts } from "@/components/MobileNetworkShortcuts";
 
 const SELLER_ID = "s1";
 
@@ -27,18 +28,26 @@ export default function SellerMobileHome() {
         <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Store className="h-3.5 w-3.5" /> Ravi General Store</p>
       </section>
 
-      <section className="grid grid-cols-2 gap-3">
-        <div className="rounded-lg border bg-card p-4">
-          <IndianRupee className="h-4 w-4 text-primary" />
-          <p className="mt-3 text-2xl font-bold tabular-nums">₹{Math.round(sales || 2480).toLocaleString("en-IN")}</p>
-          <p className="text-xs text-muted-foreground">Today’s sales</p>
+      <section aria-label="Store performance" className="grid grid-cols-2 gap-x-4 gap-y-3 border-y py-3">
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><IndianRupee className="h-3.5 w-3.5 text-primary" /> Revenue today</p>
+          <p className="mt-1 text-xl font-bold tabular-nums">₹{Math.round(sales || 2480).toLocaleString("en-IN")}</p>
         </div>
-        <div className="rounded-lg border bg-card p-4">
-          <ShoppingBag className="h-4 w-4 text-primary" />
-          <p className="mt-3 text-2xl font-bold tabular-nums">{todayOrders.length || 18}</p>
-          <p className="text-xs text-muted-foreground">Orders today</p>
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><ShoppingBag className="h-3.5 w-3.5 text-primary" /> Orders today</p>
+          <p className="mt-1 text-xl font-bold tabular-nums">{todayOrders.length || 18}</p>
+        </div>
+        <div className="min-w-0">
+          <Link to="/seller/inventory" className="flex items-center gap-1.5 text-xs text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5 text-warning" /> Low stock</Link>
+          <p className="mt-1 text-xl font-bold tabular-nums">{products.filter((product) => !product.in_stock).length}</p>
+        </div>
+        <div className="min-w-0">
+          <Link to="/seller/insights" className="flex items-center gap-1.5 text-xs text-muted-foreground"><Package className="h-3.5 w-3.5 text-primary" /> Products</Link>
+          <p className="mt-1 text-xl font-bold tabular-nums">{products.length}</p>
         </div>
       </section>
+
+      <MobileNetworkShortcuts />
 
       <section>
         <div className="mb-2 flex items-center justify-between">
