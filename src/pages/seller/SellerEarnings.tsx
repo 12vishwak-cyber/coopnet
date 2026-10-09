@@ -15,13 +15,13 @@ const history = [
 export default function SellerEarnings() {
   return (
     <div>
-      <div className="md:hidden">
+      <div className="mobile-variant md:hidden">
         <div className="mb-5"><p className="text-xs text-muted-foreground">Sales and settlements</p><h1 className="text-2xl font-bold">Earnings</h1></div>
         <div className="rounded-lg bg-primary p-5 text-primary-foreground"><p className="text-sm opacity-80">Today’s earnings</p><p className="mt-2 text-3xl font-bold">₹2,480</p><p className="mt-1 text-xs opacity-80">18 completed orders</p></div>
         <div className="mt-3 grid grid-cols-2 gap-3"><div className="rounded-lg border bg-card p-4"><p className="text-xl font-bold">₹12,640</p><p className="text-xs text-muted-foreground">This week</p></div><div className="rounded-lg border bg-card p-4"><p className="text-xl font-bold">₹138</p><p className="text-xs text-muted-foreground">Average order</p></div></div>
         <div className="mt-5"><h2 className="mb-2 text-sm font-bold">Recent sales</h2><div className="overflow-hidden rounded-lg border bg-card">{history.slice(0, 5).map((item) => <div key={item.id} className="flex items-center justify-between border-b p-4 last:border-0"><div><p className="text-sm font-bold">{item.id}</p><p className="text-xs text-muted-foreground">{item.date} · fee {item.fee}</p></div><p className="text-sm font-bold text-success">{item.net}</p></div>)}</div></div>
       </div>
-      <div className="hidden md:block">
+      <div className="full-controls hidden md:block">
       <PageHeader title="Earnings" description="Revenue and cooperative contributions" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">

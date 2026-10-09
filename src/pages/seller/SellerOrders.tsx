@@ -52,7 +52,7 @@ export default function SellerOrders() {
 
   return (
     <div>
-      <div className="md:hidden">
+      <div className="mobile-variant md:hidden">
         <div className="mb-5"><p className="text-xs text-muted-foreground">Live storefront</p><h1 className="text-2xl font-bold">Orders</h1></div>
         <div className="space-y-3">
           {orders.length === 0 ? (
@@ -79,7 +79,7 @@ export default function SellerOrders() {
           </DrawerContent>
         </Drawer>
       </div>
-      <div className="hidden md:block">
+      <div className="full-controls hidden md:block">
       <PageHeader title="Orders" description="Live orders from your storefront" />
       <p className="text-[11px] text-muted-foreground mb-4 -mt-4 animate-fade-up">
         Realtime feed · Updates instantly when customers place or drivers progress orders
