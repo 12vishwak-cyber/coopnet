@@ -116,8 +116,8 @@ export default function WorkerDelivery() {
 
   return (
     <>
-      <div className="md:hidden"><WorkerMobileDelivery /></div>
-      <div className="hidden md:block">
+      <div className="mobile-variant md:hidden"><WorkerMobileDelivery /></div>
+      <div className="full-controls hidden md:block">
       {!driveMode && (
         <PageHeader title="Delivery" description="Active delivery details" />
       )}

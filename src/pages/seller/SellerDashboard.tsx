@@ -30,8 +30,8 @@ export default function SellerDashboard() {
   const { t } = useLanguage();
   return (
     <>
-      <div className="md:hidden"><SellerMobileHome /></div>
-      <div className="hidden md:block">
+      <div className="mobile-variant md:hidden"><SellerMobileHome /></div>
+      <div className="full-controls hidden md:block">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <PageHeader title="Dashboard" description="Store performance overview" />
         <div className="flex gap-2">

@@ -35,7 +35,7 @@ export default function SellerInventory() {
 
   return (
     <div>
-      <div className="md:hidden">
+      <div className="mobile-variant md:hidden">
         <div className="mb-4 flex items-end justify-between"><div><p className="text-xs text-muted-foreground">Ravi General Store</p><h1 className="text-2xl font-bold">Products</h1></div><Button asChild size="icon" className="h-11 w-11"><Link to="/seller/inventory/new" aria-label="Add product"><Plus className="h-5 w-5" /></Link></Button></div>
         <div className="relative mb-3"><Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products" className="h-11 pl-9" /></div>
         <div className="mb-4 grid grid-cols-2 gap-2"><Button asChild variant="outline" className="h-11"><Link to="/seller/inventory/bulk"><Upload className="mr-2 h-4 w-4" /> Upload list</Link></Button><Button asChild className="h-11"><Link to="/seller/inventory/new"><Plus className="mr-2 h-4 w-4" /> Add product</Link></Button></div>
@@ -44,7 +44,7 @@ export default function SellerInventory() {
           {!mobileProducts.length && <div className="rounded-lg border bg-card p-8 text-center text-sm text-muted-foreground">No matching products.</div>}
         </div>
       </div>
-      <div className="hidden md:block">
+      <div className="full-controls hidden md:block">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <PageHeader title="Inventory" description="Manage your product stock" />
         <div className="flex gap-2">

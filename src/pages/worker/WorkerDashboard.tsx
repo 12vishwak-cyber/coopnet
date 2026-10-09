@@ -23,8 +23,8 @@ export default function WorkerDashboard() {
 
   return (
     <>
-      <div className="md:hidden"><WorkerMobileHome /></div>
-      <div className="hidden md:block">
+      <div className="mobile-variant md:hidden"><WorkerMobileHome /></div>
+      <div className="full-controls hidden md:block">
       <PageHeader title="Dashboard" description="Your delivery overview" />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">

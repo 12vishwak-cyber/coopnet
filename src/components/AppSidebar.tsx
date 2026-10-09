@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-const sellerItems = [
+export const sellerItems = [
   { title: "Dashboard", url: "/seller", icon: LayoutDashboard },
   { title: "Orders", url: "/seller/orders", icon: ShoppingCart },
   { title: "Inventory", url: "/seller/inventory", icon: Package },
@@ -23,7 +23,7 @@ const sellerItems = [
   { title: "Support", url: "/seller/support", icon: LifeBuoy },
 ];
 
-const workerItems = [
+export const workerItems = [
   { title: "Dashboard", url: "/worker", icon: LayoutDashboard },
   { title: "Tasks", url: "/worker/tasks", icon: ClipboardList },
   { title: "Delivery", url: "/worker/delivery", icon: Truck },
@@ -32,7 +32,7 @@ const workerItems = [
   { title: "Support", url: "/worker/support", icon: LifeBuoy },
 ];
 
-const networkItems = [
+export const networkItems = [
   { title: "Overview", url: "/network", icon: Globe },
   { title: "Members", url: "/network/members", icon: Users },
   { title: "Rules", url: "/network/rules", icon: Scale },
@@ -44,7 +44,7 @@ const networkItems = [
   { title: "Activity", url: "/network/activity", icon: Activity },
 ];
 
-const bottomItems = [
+export const bottomItems = [
   { title: "About", url: "/about", icon: Info },
   { title: "Profile", url: "/profile", icon: User },
   { title: "Help", url: "/help", icon: HelpCircle },

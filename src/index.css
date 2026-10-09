@@ -165,3 +165,7 @@
 .stagger-3 { animation-delay: 150ms; }
 .stagger-4 { animation-delay: 200ms; }
 .stagger-5 { animation-delay: 250ms; }
+
+/* Mobile "All controls" mode: show the full desktop controls on phones */
+[data-full-controls="true"] .full-controls { display: block; }
+[data-full-controls="true"] .mobile-variant { display: none; }
