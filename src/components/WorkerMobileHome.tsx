@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useActiveOrders, assignDriver } from "@/lib/coopnet-api";
 import { toast } from "sonner";
+import { MobileNetworkShortcuts } from "@/components/MobileNetworkShortcuts";
 
 export default function WorkerMobileHome() {
   const navigate = useNavigate();
@@ -38,15 +39,17 @@ export default function WorkerMobileHome() {
         <div className="flex flex-col items-end gap-1"><Switch checked={online} onCheckedChange={setOnline} /><span className={`text-[10px] font-bold ${online ? "text-success" : "text-muted-foreground"}`}>{online ? "ONLINE" : "OFFLINE"}</span></div>
       </section>
 
-      <section className="rounded-lg border bg-card p-4">
+      <section className="border-y py-3">
         <p className="text-xs font-semibold uppercase text-muted-foreground">Today</p>
-        <div className="mt-3 grid grid-cols-2 gap-y-5">
+        <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-3">
           <Metric icon={IndianRupee} value="₹620" label="earned" />
           <Metric icon={Truck} value="12" label="deliveries" />
           <Metric icon={Route} value="38.4 km" label="travelled" />
           <Metric icon={Timer} value="6h 12m" label="working" />
         </div>
       </section>
+
+      <MobileNetworkShortcuts />
 
       {online && nextOrder ? (
         <section className="rounded-lg border-2 border-primary/30 bg-card p-4">
@@ -74,5 +77,5 @@ export default function WorkerMobileHome() {
 }
 
 function Metric({ icon: Icon, value, label }: { icon: typeof Truck; value: string; label: string }) {
-  return <div className="flex items-center gap-2.5"><div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10"><Icon className="h-4 w-4 text-primary" /></div><div><p className="text-base font-bold tabular-nums">{value}</p><p className="text-[10px] text-muted-foreground">{label}</p></div></div>;
+  return <div className="flex min-w-0 items-center gap-2"><Icon className="h-4 w-4 shrink-0 text-primary" /><div className="min-w-0"><p className="text-lg font-bold tabular-nums">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div></div>;
 }

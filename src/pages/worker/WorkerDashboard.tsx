@@ -5,6 +5,7 @@ import { Truck, DollarSign, ClipboardList, BarChart3, ToggleLeft, ToggleRight, G
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import WorkerMobileHome from "@/components/WorkerMobileHome";
+import { MobileNetworkShortcuts } from "@/components/MobileNetworkShortcuts";
 
 const tasks = [
   { id: "TSK-412", seller: "Sharma General Store", pickup: "MG Road", delivery: "Sector 12", items: 3, pay: "₹65", status: "assigned" },
@@ -26,6 +27,15 @@ export default function WorkerDashboard() {
       <div className="mobile-variant md:hidden"><WorkerMobileHome /></div>
       <div className="full-controls hidden md:block">
       <PageHeader title="Dashboard" description="Your delivery overview" />
+
+      <div className="mb-4 md:hidden"><MobileNetworkShortcuts /></div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-6">
+        <div className="animate-fade-up stagger-1"><StatCard title="Active Tasks" value="2" change="1 pending pickup" changeType="neutral" icon={Truck} /></div>
+        <div className="animate-fade-up stagger-2"><StatCard title="Today's Earnings" value="₹485" change="7 deliveries" changeType="positive" icon={DollarSign} /></div>
+        <div className="animate-fade-up stagger-3"><StatCard title="Completed Today" value="7" change="+3 vs yesterday" changeType="positive" icon={ClipboardList} /></div>
+        <div className="animate-fade-up stagger-4"><StatCard title="Performance" value="96%" change="Top 15% worker" changeType="positive" icon={BarChart3} /></div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {/* Availability */}
@@ -106,12 +116,7 @@ export default function WorkerDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="animate-fade-up stagger-1"><StatCard title="Active Tasks" value="2" change="1 pending pickup" changeType="neutral" icon={Truck} /></div>
-        <div className="animate-fade-up stagger-2"><StatCard title="Today's Earnings" value="₹485" change="7 deliveries" changeType="positive" icon={DollarSign} /></div>
-        <div className="animate-fade-up stagger-3"><StatCard title="Completed Today" value="7" change="+3 vs yesterday" changeType="positive" icon={ClipboardList} /></div>
-        <div className="animate-fade-up stagger-4"><StatCard title="Performance" value="96%" change="Top 15% worker" changeType="positive" icon={BarChart3} /></div>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card border rounded-lg animate-fade-up stagger-3">
