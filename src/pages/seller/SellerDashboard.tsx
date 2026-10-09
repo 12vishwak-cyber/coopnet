@@ -51,6 +51,13 @@ export default function SellerDashboard() {
 
       <div className="mb-4 md:hidden"><MobileNetworkShortcuts /></div>
 
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-6">
+        <div className="animate-fade-up stagger-1"><StatCard title="Today's Orders" value="24" change="+12% from yesterday" changeType="positive" icon={ShoppingCart} /></div>
+        <div className="animate-fade-up stagger-2"><StatCard title="Revenue" value="₹18,420" change="+8.3% this week" changeType="positive" icon={DollarSign} /></div>
+        <div className="animate-fade-up stagger-3"><StatCard title="Low Stock Items" value="7" change="3 critical" changeType="negative" icon={AlertTriangle} /></div>
+        <div className="animate-fade-up stagger-4"><StatCard title="Demand Score" value="82/100" change="Above area avg" changeType="positive" icon={TrendingUp} /></div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {/* Network Status */}
         <div className="bg-card border rounded-lg p-5 animate-fade-up">
@@ -152,12 +159,7 @@ export default function SellerDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-6">
-        <div className="animate-fade-up stagger-1"><StatCard title="Today's Orders" value="24" change="+12% from yesterday" changeType="positive" icon={ShoppingCart} /></div>
-        <div className="animate-fade-up stagger-2"><StatCard title="Revenue" value="₹18,420" change="+8.3% this week" changeType="positive" icon={DollarSign} /></div>
-        <div className="animate-fade-up stagger-3"><StatCard title="Low Stock Items" value="7" change="3 critical" changeType="negative" icon={AlertTriangle} /></div>
-        <div className="animate-fade-up stagger-4"><StatCard title="Demand Score" value="82/100" change="Above area avg" changeType="positive" icon={TrendingUp} /></div>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card border rounded-lg animate-fade-up stagger-3">
