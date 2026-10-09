@@ -7,7 +7,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const isWorker = location.pathname.startsWith("/worker");
+  const path = location.pathname;
+  if (path.startsWith("/worker")) localStorage.setItem("coopnet-dashboard-role", "worker");
+  else if (path.startsWith("/seller")) localStorage.setItem("coopnet-dashboard-role", "seller");
+  const isWorker = path.startsWith("/worker") || (!path.startsWith("/seller") && localStorage.getItem("coopnet-dashboard-role") === "worker");
   const nodeLabel = isWorker ? "Worker-07" : "Seller-23";
   const isMobile = useIsMobile();
 
