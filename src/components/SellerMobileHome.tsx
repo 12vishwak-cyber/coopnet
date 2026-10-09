@@ -42,7 +42,7 @@ export default function SellerMobileHome() {
           <p className="mt-1 text-xl font-bold tabular-nums">{products.filter((product) => !product.in_stock).length}</p>
         </div>
         <div className="min-w-0">
-          <Link to="/seller/insights" className="flex items-center gap-1.5 text-xs text-muted-foreground"><Package className="h-3.5 w-3.5 text-primary" /> Products</Link>
+          <Link to="/seller/inventory" className="flex items-center gap-1.5 text-xs text-muted-foreground"><Package className="h-3.5 w-3.5 text-primary" /> Products</Link>
           <p className="mt-1 text-xl font-bold tabular-nums">{products.length}</p>
         </div>
       </section>
