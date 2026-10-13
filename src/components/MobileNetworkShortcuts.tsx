@@ -17,10 +17,10 @@ export function MobileNetworkShortcuts() {
       <h2 className="text-sm font-bold">Your cooperative</h2>
       <div className="grid grid-cols-3 gap-2">
         {shortcuts.map(({ title, url, icon: Icon }) => (
-          <Button key={url} variant="outline" asChild className="h-11 min-w-0 gap-1.5 px-2 text-xs">
+          <Button key={url} variant="outline" asChild className="h-11 min-w-0 gap-1 px-1.5 text-[11px] sm:text-xs">
             <Link to={url}>
               <Icon className="h-4 w-4 shrink-0 text-primary" />
-              <span className="truncate">{title}</span>
+              <span>{title}</span>
             </Link>
           </Button>
         ))}
